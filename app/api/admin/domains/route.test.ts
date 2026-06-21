@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const { requireAdmin } = vi.hoisted(() => ({ requireAdmin: vi.fn() }));
-vi.mock("@/lib/auth", () => ({ requireAdmin }));
+const requireApiSession = vi.fn();
+vi.mock("@/lib/admin/guard", () => ({ requireApiSession: () => requireApiSession() }));
 
 const { addDomain, listDomains } = vi.hoisted(() => ({
   addDomain: vi.fn(),
@@ -21,6 +21,9 @@ import { GET, POST } from "@/app/api/admin/domains/route";
 import { InvalidHostnameError } from "@/lib/domains";
 import { VercelApiError } from "@/lib/vercel";
 
+const authed = { ok: true, session: { user: { email: "admin@x.com" } } };
+const denied = { ok: false, response: Response.json({ error: "Unauthorized" }, { status: 401 }) };
+
 function postReq(body: unknown) {
   return new Request("http://admin.local/api/admin/domains", {
     method: "POST",
@@ -30,14 +33,14 @@ function postReq(body: unknown) {
 }
 
 beforeEach(() => {
-  requireAdmin.mockReset().mockResolvedValue({ email: "admin@x.com" });
+  requireApiSession.mockReset().mockResolvedValue(authed);
   addDomain.mockReset();
   listDomains.mockReset();
 });
 
 describe("GET /api/admin/domains", () => {
   it("401s when not authenticated", async () => {
-    requireAdmin.mockResolvedValue(null);
+    requireApiSession.mockResolvedValue(denied);
     const res = await GET(new Request("http://admin.local/api/admin/domains?landingId=L1"));
     expect(res.status).toBe(401);
   });
@@ -58,7 +61,7 @@ describe("GET /api/admin/domains", () => {
 
 describe("POST /api/admin/domains", () => {
   it("401s when not authenticated", async () => {
-    requireAdmin.mockResolvedValue(null);
+    requireApiSession.mockResolvedValue(denied);
     const res = await POST(postReq({ landingId: "L1", hostname: "promo.com" }));
     expect(res.status).toBe(401);
   });

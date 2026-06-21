@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth";
+import { requireApiSession } from "@/lib/admin/guard";
 import { addDomain, listDomains } from "@/lib/domains";
 import { vercelConfigFromEnv } from "@/lib/vercel";
 import { domainErrorResponse } from "./errors";
 
 export async function GET(req: Request) {
-  if (!(await requireAdmin())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const guard = await requireApiSession();
+  if (!guard.ok) return guard.response;
   const landingId = new URL(req.url).searchParams.get("landingId");
   if (!landingId) {
     return NextResponse.json({ error: "landingId is required" }, { status: 400 });
@@ -16,9 +15,8 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  if (!(await requireAdmin())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const guard = await requireApiSession();
+  if (!guard.ok) return guard.response;
   const { landingId, hostname } = (await req.json().catch(() => ({}))) as {
     landingId?: string;
     hostname?: string;
