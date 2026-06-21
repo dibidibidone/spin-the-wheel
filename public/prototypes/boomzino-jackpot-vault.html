@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Boomzino — Jackpot Boom Vault</title>
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./boomzino.css" />
+<style>
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 16px; }
+  .back { background: var(--surface); color: var(--text); border: 1px solid rgba(255,255,255,.08);
+    border-radius: 999px; padding: 8px 14px; font-size: 14px; }
+  .logo { color: var(--gold); font-weight: 800; letter-spacing: .5px; font-size: 20px; }
+  .hero { text-align: center; padding: 4px 16px 0; }
+  .hero h1 { margin: 6px 0; font-size: 34px; font-weight: 800; color: var(--gold-bright);
+    text-shadow: 0 0 22px color-mix(in srgb, var(--gold) 60%, transparent); }
+  .banner { display: inline-block; margin-top: 4px; padding: 6px 14px; border-radius: 10px;
+    background: var(--red); color: var(--cream); font-weight: 800; letter-spacing: 4px;
+    border: 2px solid var(--gold); }
+  .vault { position: relative; height: 380px; margin-top: 10px; }
+  .rays { position: absolute; left: 50%; top: 150px; transform: translate(-50%,-50%);
+    width: 360px; height: 360px; animation: ray-rotate 14s linear infinite;
+    background: repeating-conic-gradient(from 0deg,
+      color-mix(in srgb, var(--gold) 38%, transparent) 0 9deg, transparent 9deg 18deg);
+    -webkit-mask: radial-gradient(circle, transparent 96px, #000 98px);
+            mask: radial-gradient(circle, transparent 96px, #000 98px); }
+  .boom { position: absolute; left: 50%; top: 150px; transform: translate(-50%,-50%);
+    width: 300px; height: 300px; border-radius: 50%; animation: glow-pulse 2.6s ease-in-out infinite;
+    background: radial-gradient(circle, color-mix(in srgb, var(--lab-green) 30%, transparent) 0%, transparent 60%); }
+  .wheel-wrap { position: absolute; left: 50%; top: 150px; transform: translate(-50%,-50%);
+    width: 220px; height: 220px; }
+  .rotor { position: relative; width: 220px; height: 220px; border-radius: 50%; animation: wheel-glow 3s ease-in-out infinite;
+    background:
+      conic-gradient(from 0deg,
+        var(--gold) 0 45deg, #1E7A3A 45deg 90deg, var(--gold) 90deg 135deg, #1E7A3A 135deg 180deg,
+        var(--gold) 180deg 225deg, #1E7A3A 225deg 270deg, var(--gold) 270deg 315deg, var(--red) 315deg 360deg);
+    border: 8px solid var(--gold-bright); box-shadow: 0 0 0 4px var(--surface-deep) inset; }
+  .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+    border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 20px solid var(--gold-bright); z-index: 3; }
+  .spin { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 4;
+    width: 84px; height: 84px; border-radius: 50%; border: 4px solid var(--bg);
+    background: radial-gradient(circle at 50% 35%, var(--gold-bright), var(--gold));
+    color: #2a1e00; font-weight: 800; font-size: 13px; cursor: pointer;
+    box-shadow: 0 0 22px color-mix(in srgb, var(--gold) 80%, transparent); }
+  .spin:disabled { opacity: .8; cursor: default; }
+  .coin-rain { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .coin { position: absolute; top: -20px; width: 18px; height: 18px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-bright), #b8860b);
+    animation: confetti-fall 3s linear infinite; }
+  .cta { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%);
+    padding: 14px 30px; border-radius: 999px; border: none; background: var(--gold);
+    color: #2a1e00; font-weight: 800; font-size: 16px; cursor: pointer;
+    box-shadow: 0 0 24px color-mix(in srgb, var(--gold) 70%, transparent); }
+  .win { position: fixed; inset: 0; display: grid; place-items: center; z-index: 50;
+    background: rgba(2,10,6,.72); backdrop-filter: blur(4px); pointer-events: none; }
+  .win:not([hidden]) { pointer-events: auto; }
+  .win .card { width: min(330px, 86vw); text-align: center; padding: 26px; border-radius: 20px;
+    background: var(--surface); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+    box-shadow: 0 0 44px color-mix(in srgb, var(--gold) 40%, transparent); }
+  .win h2 { margin: 6px 0; } .win .prize { color: var(--gold); font-size: 30px; font-weight: 800; }
+  .win .claim { width: 100%; margin-top: 16px; padding: 14px; border: none; border-radius: 12px;
+    background: var(--gold); color: #2a1e00; font-weight: 800; font-size: 16px; cursor: pointer; }
+</style>
+</head>
+<body>
+  <main class="stage">
+    <header class="top"><button class="back">‹ Back</button><div class="logo">BOOMZINO</div></header>
+    <section class="hero"><h1>BOOM your luck</h1><div class="banner">7 7 7</div></section>
+
+    <section class="vault">
+      <div class="coin-rain" id="coins"></div>
+      <div class="rays"></div>
+      <div class="boom"></div>
+      <div class="wheel-wrap">
+        <div class="pointer"></div>
+        <div class="rotor" data-testid="wheel-rotor" id="rotor"></div>
+        <button class="spin" data-testid="spin-button" id="spin">SPIN<br>TO WIN</button>
+      </div>
+      <button class="cta" id="cta">SPIN TO WIN</button>
+    </section>
+
+    <div class="win" data-testid="win-burst" id="win" hidden>
+      <div class="card">
+        <div style="font-size:42px">💰</div>
+        <h2>JACKPOT — You won</h2>
+        <div class="prize">JACKPOT!</div>
+        <button class="claim">Claim bonus</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="./boomzino.js"></script>
+  <script>
+    // continuous idle coin rain
+    var rain = document.getElementById("coins");
+    for (var i = 0; i < 10; i++) {
+      var c = document.createElement("span");
+      c.className = "coin";
+      c.style.left = (Math.random() * 100) + "%";
+      c.style.animationDelay = (Math.random() * 3) + "s";
+      c.style.animationDuration = (2.4 + Math.random() * 1.6) + "s";
+      rain.appendChild(c);
+    }
+    Boomzino.labelWheel({
+      rotor: "#rotor", radius: 80,
+      labels: ["€5", "50 FS", "€10", "100 FS", "€20", "200 FS", "50% Bonus", "JACKPOT"]
+    });
+    function startSpin() {
+      Boomzino.spinWheel({
+        rotor: "#rotor", button: "#spin", segmentCount: 8, winningIndex: 7,
+        onWin: function () { Boomzino.celebrate({ burst: "#win", confettiLayer: "#win", count: 120 }); }
+      });
+    }
+    startSpin();
+    // mirror the big CTA onto the wheel button
+    document.getElementById("cta").addEventListener("click", function () {
+      document.getElementById("spin").click();
+    });
+  </script>
+</body>
+</html>
