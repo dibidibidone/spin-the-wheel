@@ -413,6 +413,7 @@ hooks, and JS calls MUST remain. (Reduced-motion is inherited from `boomzino.css
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Boomzino — The Alchemy Lab</title>
+<link rel="icon" href="data:," />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="./boomzino.css" />
@@ -589,6 +590,7 @@ exact ids/testids and `<script>` wiring; enrich the visuals from Stitch where us
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Boomzino — Jackpot Boom Vault</title>
+<link rel="icon" href="data:," />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="./boomzino.css" />
