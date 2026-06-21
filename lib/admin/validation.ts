@@ -2,7 +2,16 @@ import { z } from "zod";
 
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a 6-digit hex color");
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers and dashes");
-const url = z.string().url("Must be a valid URL");
+const url = z
+  .string()
+  .url("Must be a valid URL")
+  .refine((u) => {
+    try {
+      return /^https?:$/.test(new URL(u).protocol);
+    } catch {
+      return false;
+    }
+  }, "Must be an http(s) URL");
 
 const themeSchema = z.object({
   bg: hex, surface: hex, accent: hex, gold: hex, text: hex, muted: hex,

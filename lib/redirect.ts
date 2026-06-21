@@ -1,7 +1,6 @@
-// SECURITY (Plan 2): `redirectUrl` is trusted seed data in Plan 1. When the CMS
-// makes it admin-editable, validate it is an http(s) URL before navigating —
-// a `javascript:` URL passed to window.location.assign would execute (open
-// redirect / stored XSS).
+// `redirectUrl` is validated to be an http(s) URL at the CMS write layer
+// (lib/admin/validation.ts), so the value reaching window.location.assign here
+// cannot carry a javascript:/data: scheme.
 export function buildRedirectUrl(
   redirectUrl: string,
   prizeParam: string | null,

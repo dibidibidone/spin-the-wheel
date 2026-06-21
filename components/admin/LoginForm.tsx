@@ -15,13 +15,16 @@ export function LoginForm() {
     e.preventDefault();
     setBusy(true);
     setError("");
-    const res = await signIn("credentials", { email, password, redirect: false });
-    setBusy(false);
-    if (!res || res.error) {
-      setError("Invalid email or password");
-      return;
+    try {
+      const res = await signIn("credentials", { email, password, redirect: false });
+      if (!res || res.error) {
+        setError("Invalid email or password");
+        return;
+      }
+      router.push("/admin");
+    } finally {
+      setBusy(false);
     }
-    router.push("/admin");
   }
 
   return (

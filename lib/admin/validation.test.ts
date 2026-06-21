@@ -54,6 +54,14 @@ describe("parseWheelInput", () => {
   it("rejects a non-URL redirect", () => {
     expect(parseWheelInput({ spinsBeforeWin: 1, winningIndex: 0, redirectUrl: "not-a-url", redirectPrizeParam: null, prizes }).ok).toBe(false);
   });
+
+  it("rejects a javascript: scheme redirectUrl", () => {
+    expect(parseWheelInput({ spinsBeforeWin: 3, winningIndex: 1, redirectUrl: "javascript:alert(1)", redirectPrizeParam: null, prizes }).ok).toBe(false);
+  });
+
+  it("accepts a valid https redirectUrl", () => {
+    expect(parseWheelInput({ spinsBeforeWin: 3, winningIndex: 1, redirectUrl: "https://example.com/claim", redirectPrizeParam: null, prizes }).ok).toBe(true);
+  });
 });
 
 describe("parseCreateLanding", () => {
