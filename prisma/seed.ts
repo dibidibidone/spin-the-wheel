@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { boomzinoSeed } from "./seedData";
+import { seedAdmin } from "./seedAdmin";
 
 const prisma = new PrismaClient();
 
@@ -27,6 +28,13 @@ async function main() {
   });
 
   console.log(`Seeded landing "${landing.slug}" on ${hostname}`);
+
+  await seedAdmin(
+    prisma,
+    process.env.ADMIN_EMAIL ?? "admin@boomzino.example",
+    process.env.ADMIN_PASSWORD ?? "changeme123",
+  );
+  console.log(`Seeded admin ${process.env.ADMIN_EMAIL ?? "admin@boomzino.example"}`);
 }
 
 main()

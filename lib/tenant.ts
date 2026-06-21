@@ -1,6 +1,7 @@
 import { prisma } from "./db";
 import type { LandingView, ThemeColors, WheelSegment } from "./types";
 
+
 type PrizeRow = { id: string; order: number; label: string; icon: string; color: string; weight: number };
 type LandingRow = {
   slug: string; status: string;
@@ -49,4 +50,13 @@ export async function getLandingByHost(host: string): Promise<LandingView | null
   const landing = domain?.landing as LandingRow | undefined;
   if (!landing || landing.status !== "published" || !landing.winningPrize) return null;
   return toLandingView(landing);
+}
+
+export async function getLandingViewById(id: string): Promise<LandingView | null> {
+  const landing = await prisma.landing.findUnique({
+    where: { id },
+    include: { prizes: true, winningPrize: true },
+  });
+  if (!landing) return null;
+  return toLandingView(landing as unknown as Parameters<typeof toLandingView>[0]);
 }
