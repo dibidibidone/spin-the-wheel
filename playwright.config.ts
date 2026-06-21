@@ -1,4 +1,8 @@
 import { defineConfig } from "@playwright/test";
+import { loadEnvConfig } from "@next/env";
+
+// Load .env into process.env so Playwright tests can read ADMIN_EMAIL, ADMIN_PASSWORD, etc.
+loadEnvConfig(process.cwd());
 
 export default defineConfig({
   testDir: "./tests/e2e",
