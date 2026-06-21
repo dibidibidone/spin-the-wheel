@@ -19,6 +19,9 @@ export default async function LandingPage({ params }: Params) {
   const view = await getLandingByHost(decodeURIComponent(domain));
   if (!view) notFound();
 
+  // SECURITY (Plan 2): theme values are injected into an inline style attribute.
+  // They are trusted seed data in Plan 1; when the CMS makes `theme` editable,
+  // validate each value matches an expected color pattern on write.
   const style = themeToCssVars(view.theme) as CSSProperties;
 
   return (

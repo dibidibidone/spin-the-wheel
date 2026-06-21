@@ -19,7 +19,8 @@ async function main() {
     include: { prizes: true },
   });
 
-  const winner = landing.prizes.find((p) => p.order === winningOrder)!;
+  const winner = landing.prizes.find((p) => p.order === winningOrder);
+  if (!winner) throw new Error(`Seed error: no prize with order ${winningOrder} for winningOrder`);
   await prisma.landing.update({
     where: { id: landing.id },
     data: { winningPrizeId: winner.id },
