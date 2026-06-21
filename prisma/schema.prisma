@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Landing {
+  id                 String   @id @default(cuid())
+  slug               String   @unique
+  name               String
+  status             String   @default("draft") // draft | published
+
+  heading            String
+  subtitle           String
+  backLabel          String   @default("Back")
+  winTitle           String   @default("You won {prize}!")
+  claimLabel         String   @default("Claim")
+  almostText         String   @default("Almost! Spin again")
+
+  theme              Json
+  logoUrl            String?
+  faviconUrl         String?
+  coinImageUrl       String?
+  bgImageUrl         String?
+
+  spinsBeforeWin     Int      @default(3)
+  preWinBehavior     String   @default("near-miss")
+  redirectUrl        String
+  redirectPrizeParam String?
+
+  metaTitle          String?
+  metaDescription    String?
+
+  winningPrizeId     String?  @unique
+  winningPrize       Prize?   @relation("WinningPrize", fields: [winningPrizeId], references: [id])
+  prizes             Prize[]  @relation("LandingPrizes")
+  domains            Domain[]
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Prize {
+  id           String   @id @default(cuid())
+  landingId    String
+  landing      Landing  @relation("LandingPrizes", fields: [landingId], references: [id], onDelete: Cascade)
+  order        Int
+  label        String
+  icon         String   @default("")
+  color        String
+  weight       Int      @default(1)
+  wonByLanding Landing? @relation("WinningPrize")
+}
+
+model Domain {
+  id           String   @id @default(cuid())
+  landingId    String
+  landing      Landing  @relation(fields: [landingId], references: [id], onDelete: Cascade)
+  hostname     String   @unique
+  verified     Boolean  @default(false)
+  vercelStatus String?
+  createdAt    DateTime @default(now())
+}
+
+model Admin {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+}
