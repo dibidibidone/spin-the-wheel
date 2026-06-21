@@ -21,3 +21,33 @@ export type SpinConfig = {
   winningIndex: number;
   behavior: "near-miss";
 };
+
+export type LandingTexts = {
+  heading: string;
+  subtitle: string;
+  backLabel: string;
+  winTitle: string;
+  claimLabel: string;
+  almostText: string;
+};
+
+export type LandingAssets = {
+  logoUrl: string | null;
+  faviconUrl: string | null;
+  coinImageUrl: string | null;
+  bgImageUrl: string | null;
+};
+
+export type LandingView = {
+  slug: string;
+  texts: LandingTexts;
+  theme: ThemeColors;
+  assets: LandingAssets;
+  segments: WheelSegment[];
+  spin: SpinConfig;
+  redirectUrl: string;
+  redirectPrizeParam: string | null;
+  winningPrizeLabel: string;
+  metaTitle: string;
+  metaDescription: string;
+};
