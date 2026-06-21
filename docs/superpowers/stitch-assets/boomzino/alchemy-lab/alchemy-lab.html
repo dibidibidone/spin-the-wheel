@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Boomzino - The Alchemy Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;600;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        'boom-bg': '#0C1F1C',
+                        'boom-glow': '#16403A',
+                        'boom-surface': '#15564A',
+                        'boom-inset': '#0F3B33',
+                        'boom-gold': '#F5C24B',
+                        'boom-gold-light': '#FFD56A',
+                        'boom-green-glow': '#5BE36A',
+                        'boom-green-bright': '#8BFF5A',
+                        'boom-red': '#E2483D',
+                        'boom-cream': '#F4F1E8',
+                        'boom-text': '#EAF6EE',
+                        'boom-muted': '#8FB9AD',
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Public Sans", "sans-serif"],
+                        "display": ["Public Sans", "sans-serif"],
+                        "body": ["Public Sans", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: '1', boxShadow: '0 0 15px #FFD56A' },
+                            '50%': { opacity: '.8', boxShadow: '0 0 25px #F5C24B' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0C1F1C;
+            background-image: radial-gradient(circle at center, #16403A 0%, #0C1F1C 70%);
+            background-attachment: fixed;
+        }
+        
+        /* Subtle background lab shapes */
+        .lab-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.05;
+            background-image: 
+                radial-gradient(circle at 20% 30%, #5BE36A 2px, transparent 3px),
+                radial-gradient(circle at 80% 60%, #F5C24B 2px, transparent 3px);
+            background-size: 60px 60px;
+        }
+    </style>
+</head>
+<body class="text-boom-text font-body antialiased min-h-screen flex flex-col relative overflow-x-hidden">
+<!-- Ambient Lab Background -->
+<div class="lab-bg"></div>
+<!-- TopAppBar Component -->
+<header class="fixed top-0 w-full z-50 border-b border-[#15564A] bg-[#0C1F1C] bg-opacity-90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)] flex justify-between items-center px-6 py-3">
+<div class="flex items-center gap-2 text-[#F5C24B]">
+<span class="material-symbols-outlined font-variation-settings-'FILL' 1">science</span>
+</div>
+<div class="font-display font-black text-xl text-[#F5C24B] drop-shadow-[0_0_8px_rgba(245,194,75,0.5)] tracking-widest uppercase flex items-center justify-center">
+<img alt="Boomzino" class="h-8 object-contain" data-alt="A glowing gold circular logo with alchemical symbols and the word BOOMZINO Alchemy Casino in a premium 3D style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTozjFB--oBOLGmqm0C6v_Qxg-wq_UTMA1NUf1zehsBeIT47V8VFctxVjwW-31dBCGjiUrlXjzpE5CeGs_RPgI8vCHZ7dYseWbdS1_LvIUxo-_HDv3rklTpqP7GmO8ZbNHGQVYRJgZp6CsoKY9jA-KwnFyfWbpddhx6kUwF82zdMyNmfGpy8ORkOHvuqkaLEwjs6M5dnQlw4lxzk4naSHWftUDJApJIq8H_qc69BvMjR9HlJY-yliN6TodcCU3C972ReXMqgQcWi4"/>
+</div>
+<div class="flex items-center gap-2 bg-boom-inset rounded-full px-3 py-1 border border-boom-surface text-[#F5C24B]">
+<span class="font-headline text-sm font-bold">5,400</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">generating_tokens</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center pt-24 pb-28 px-4 relative z-10 w-full max-w-md mx-auto">
+<!-- Headers -->
+<div class="text-center mb-8 relative z-20">
+<h1 class="font-headline font-black text-4xl text-boom-gold uppercase tracking-wider drop-shadow-[0_2px_10px_rgba(245,194,75,0.4)] mb-1">
+                Spin the Wheel
+            </h1>
+<p class="font-body text-boom-green-glow text-lg font-semibold tracking-wide opacity-90">
+                and win bonuses
+            </p>
+</div>
+<!-- Central Wheel Area -->
+<div class="relative w-full aspect-square max-w-[340px] mb-10 flex items-center justify-center">
+<!-- Mascots -->
+<img class="absolute -left-10 top-1/2 -translate-y-1/2 w-32 h-auto z-10 animate-float" data-alt="A stylized male alchemist character with goggles and a green potion bottle, excited expression, high quality 2D game art." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXEjcd1HwWNA3ORdTTitefJAz4ZkIBrU9chYs6VpMScAM-kcmytHhZbKcFCDY-ZYq4CBwNPAg-8yeGCsr-gKbWnqT-N-chQGdv8IF2sQOxPPI-ob-makuXsiilWmfmUBxVZFc-FzzW11viJyN2dhFZZfflbM5MdjCdZ6_0ILl3kO-lkCUtu2O08Lcg57nGYSqJQ98xXPJ8DfCMLHEqPYukypZnfpkC1WRt84aLA_LLr8tNns4BjR1f7dSLGS-5nLM5x59RT164aq4" style="animation-delay: 0s;"/>
+<img class="absolute -right-10 top-1/2 -translate-y-1/2 w-32 h-auto z-10 animate-float scale-x-[-1]" data-alt="A stylized female alchemist character with a monocle and a green potion bottle, excited expression, high quality 2D game art." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXEjcd1HwWNA3ORdTTitefJAz4ZkIBrU9chYs6VpMScAM-kcmytHhZbKcFCDY-ZYq4CBwNPAg-8yeGCsr-gKbWnqT-N-chQGdv8IF2sQOxPPI-ob-makuXsiilWmfmUBxVZFc-FzzW11viJyN2dhFZZfflbM5MdjCdZ6_0ILl3kO-lkCUtu2O08Lcg57nGYSqJQ98xXPJ8DfCMLHEqPYukypZnfpkC1WRt84aLA_LLr8tNns4BjR1f7dSLGS-5nLM5x59RT164aq4" style="animation-delay: 1.5s;"/>
+<!-- The Wheel -->
+<div class="relative w-full h-full rounded-full shadow-[0_0_40px_rgba(91,227,106,0.3)] z-20 animate-spin-slow">
+<img class="w-full h-full object-contain drop-shadow-2xl" data-alt="A premium 3D rendering of a green and gold casino spin wheel erupting with gold coins, featuring segments for various prizes like Free Spins and Jackpots." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSuerPo6paTQF1oHKY5b2KGH90Axd5BGPKo1a__jm2wZkqnRqYoz4nUAXK2odYCN-A0sr7_ZDkTx_XnaV-X9nLByqmMFe3CVoamxKXPQNZTpl9CJYCzSh5yyAsaQJ4dN2Jnjv0Tdq26YIELI8iRlUG4bWb9QmOf7em64Rx-IIb4ayhW8Tl_hcwek9PleLoWdZm3yRt2ZrHuDkdNiD5g74EmdY86rEEoxJPgfQHV1RLfhCN6lyRY0l6MQXFcIj7K88QoJfdh2_fouQ"/>
+</div>
+<!-- Wheel Glow -->
+<div class="absolute inset-0 bg-boom-green-glow opacity-20 blur-3xl rounded-full z-0 pointer-events-none"></div>
+</div>
+<!-- CTA Button -->
+<button class="relative group z-30 w-full max-w-[280px]">
+<div class="absolute inset-0 bg-boom-gold-light rounded-full blur opacity-40 group-hover:opacity-70 transition duration-300"></div>
+<div class="relative bg-gradient-to-b from-boom-gold-light to-boom-gold text-boom-bg font-headline font-black text-2xl tracking-widest py-4 px-12 rounded-full shadow-[0_4px_15px_rgba(245,194,75,0.5)] border-2 border-[#FFE89A] hover:scale-105 active:scale-95 transition-all duration-200 animate-pulse-glow flex items-center justify-center gap-2">
+                SPIN
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rotate_right</span>
+</div>
+</button>
+</main>
+<!-- BottomNavBar Component -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-4 pt-2 z-50 rounded-t-lg bg-[#0F3B33] border-t border-[#15564A] shadow-[0_-10px_30px_rgba(22,64,58,0.6)] md:hidden">
+<!-- Active Tab: Lobby (Assuming 'Lobby' is the closest match for the main game screen) -->
+<a class="flex flex-col items-center justify-center text-[#F5C24B] bg-[#15564A] rounded-xl px-3 py-1 shadow-[inset_0_0_10px_rgba(91,227,106,0.2)] active:translate-y-1 transition-all duration-200 w-16" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1" style="font-variation-settings: 'FILL' 1;">casino</span>
+<span class="font-label text-[10px] font-bold uppercase">Lobby</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex flex-col items-center justify-center text-[#8FB9AD] px-3 py-1 hover:bg-[#15564A] hover:text-[#EAF6EE] active:translate-y-1 transition-all duration-200 w-16 rounded-xl" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1">class</span>
+<span class="font-label text-[10px] font-bold uppercase">Potions</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#8FB9AD] px-3 py-1 hover:bg-[#15564A] hover:text-[#EAF6EE] active:translate-y-1 transition-all duration-200 w-16 rounded-xl" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1">payments</span>
+<span class="font-label text-[10px] font-bold uppercase">Vault</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#8FB9AD] px-3 py-1 hover:bg-[#15564A] hover:text-[#EAF6EE] active:translate-y-1 transition-all duration-200 w-16 rounded-xl" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1">account_circle</span>
+<span class="font-label text-[10px] font-bold uppercase">Profile</span>
+</a>
+</nav>
+</body></html>

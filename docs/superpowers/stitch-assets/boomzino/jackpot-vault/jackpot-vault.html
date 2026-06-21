@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Boomzino - Alchemy Casino</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;family=Public+Sans:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#0C1F1C',
+                        surface: '#15564A',
+                        'surface-inset': '#0F3B33',
+                        gold: '#F5C24B',
+                        'gold-highlight': '#FFD56A',
+                        'toxic-green': '#5BE36A',
+                        'toxic-glow': '#8BFF5A',
+                        danger: '#E2483D',
+                        cream: '#F4F1E8',
+                        muted: '#8FB9AD',
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Public Sans", "sans-serif"],
+                        "display": ["Public Sans", "sans-serif"],
+                        "body": ["Outfit", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    },
+                    boxShadow: {
+                        'glow-green': '0 0 20px rgba(91, 227, 106, 0.4)',
+                        'glow-gold': '0 0 20px rgba(245, 194, 75, 0.4)',
+                        'inner-surface': 'inset 0 4px 6px -1px rgba(0, 0, 0, 0.2)',
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0C1F1C;
+            color: #EAF6EE;
+            overflow-x: hidden;
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        /* Particle Canvas Style */
+        #coin-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .gold-text-gradient {
+            background: linear-gradient(135deg, #F5C24B, #FFD56A, #F5C24B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .gold-button {
+            background: linear-gradient(180deg, #FFD56A 0%, #F5C24B 100%);
+            box-shadow: 0 4px 15px rgba(245, 194, 75, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+            transition: all 0.2s ease;
+        }
+        
+        .gold-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 10px rgba(245, 194, 75, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-panel {
+            background: rgba(21, 86, 74, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(143, 185, 173, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start pb-24 relative antialiased max-w-md mx-auto md:border-x md:border-surface/30 md:shadow-2xl md:shadow-black bg-background">
+<!-- Ambient Shader Background -->
+<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none max-w-md mx-auto">
+<div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#16403A] to-background opacity-80"></div>
+<!-- STITCH_SHADER_START:ANIMATION_7 class="absolute inset-0 w-full h-full opacity-60 mix-blend-screen" -->
+<div class="absolute inset-0 w-full h-full opacity-60 mix-blend-screen" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_7" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_7');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+varying vec2 v_texCoord;
+uniform float u_time;
+uniform vec2 u_resolution;
+
+void main() {
+    vec2 uv = (v_texCoord - 0.5) * 2.0;
+    float angle = atan(uv.y, uv.x);
+    float dist = length(uv);
+    
+    // Rotating gold rays
+    float rays = sin(angle * 12.0 + u_time * 1.5) * 0.5 + 0.5;
+    vec3 gold = vec3(0.96, 0.76, 0.29);
+    vec3 lightGold = vec3(1.0, 0.9, 0.6);
+    
+    vec3 color = mix(gold * 0.2, lightGold, rays * (1.0 - dist * 0.8));
+    
+    // Central green "BOOM" energy burst
+    float burst = exp(-dist * 4.0) * (sin(u_time * 10.0) * 0.2 + 0.8);
+    vec3 greenEnergy = vec3(0.35, 0.89, 0.42);
+    
+    color += greenEnergy * burst * 1.5;
+    
+    // Add some glimmer/sparkle
+    float glimmer = pow(sin(uv.x * 20.0 + u_time) * sin(uv.y * 20.0 - u_time), 10.0);
+    color += lightGold * glimmer * (1.0 - dist);
+
+    gl_FragColor = vec4(color, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_7 -->
+</div>
+<!-- Coin Particle Canvas -->
+<canvas id="coin-canvas"></canvas>
+<!-- TopAppBar JSON Construction -->
+<header class="fixed top-0 w-full z-50 border-b border-[#15564A] bg-[#0C1F1C] bg-opacity-90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)] max-w-md mx-auto left-0 right-0">
+<div class="flex justify-between items-center px-6 py-3 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#F5C24B]" style="font-variation-settings: 'FILL' 1;">science</span>
+<span class="font-display font-black text-xl text-[#F5C24B] drop-shadow-[0_0_8px_rgba(245,194,75,0.5)]">BOOMZINO</span>
+</div>
+<div class="flex items-center gap-1 bg-[#0F3B33] px-3 py-1 rounded-full border border-[#15564A]">
+<span class="material-symbols-outlined text-[#F5C24B] text-sm" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-headline text-headline-sm uppercase tracking-widest text-[#F5C24B] font-bold">5,400</span>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="w-full px-4 pt-24 z-10 flex flex-col items-center gap-6 relative">
+<!-- Hero Section -->
+<div class="text-center w-full mt-2">
+<h1 class="font-display font-black text-4xl italic tracking-tight mb-4 drop-shadow-lg relative inline-block">
+<span class="gold-text-gradient">BOOM YOUR LUCK</span>
+<div class="absolute -inset-2 bg-toxic-green/20 blur-xl rounded-full -z-10 mix-blend-screen"></div>
+</h1>
+<!-- Slot Machine Banner -->
+<div class="w-full rounded-2xl overflow-hidden shadow-glow-gold relative bg-surface p-1 border border-gold/30">
+<img class="w-full h-auto object-cover rounded-xl block" data-alt="A stylized, glowing digital slot machine interface showing 777. The slot machine is richly detailed with gold trim, deep ruby red accents, and bright, warm incandescent light bulbs lining its curved top frame. It exudes a premium, classic casino aesthetic but rendered with modern, glossy 3D depth against a dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpAZLi6u07zOmvQK7CE7ZkAt7bXMWU7WTjwoNkn0kwbCs9o3Ayx638t_uy3UG0kSgjTCwyeGFTKT442WItCUpxHeC6nPvSK7AkFfNVd2ihX5RwPYB9h4ZHpOGW8qTHdK2E4d_bcSZ2SDC2OGMrn9A91EEZUJVX4ADft1Bqek5Vv5mI4RtZp4YwhdmLot0NPcNJkpW13198h6PB6pAVcNJPTO-fQltBhT4so5LErt15FV0CylLPyk6LLPjve0rY0EFG7Qc3b3ilRXE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none rounded-xl"></div>
+<div class="absolute bottom-2 left-0 right-0 text-center">
+<span class="text-xs font-label uppercase tracking-widest text-gold drop-shadow-md">Current Jackpot</span>
+<div class="font-display font-black text-2xl text-white drop-shadow-md tracking-tighter">€1,250,000</div>
+</div>
+</div>
+</div>
+<!-- Wheel Centerpiece -->
+<div class="relative w-full aspect-square max-w-[340px] mt-2 flex items-center justify-center">
+<!-- Glow behind wheel -->
+<div class="absolute inset-0 bg-toxic-green/30 rounded-full blur-[40px] -z-10 animate-pulse-fast"></div>
+<!-- Wheel Image -->
+<img class="w-full h-full object-contain relative z-10 drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]" data-alt="A large, vibrant green casino fortune wheel heavily adorned with ornate gold borders, glowing rivets, and golden jackpot text. Golden coins are erupting and exploding out from the center axis of the wheel towards the viewer in a dynamic burst of wealth and luck. The background is a very dark, slightly out-of-focus casino environment to make the wheel pop." src="https://lh3.googleusercontent.com/aida/AP1WRLtmHWvs76AKvlwto1GeZQXLXzrL4Taa_izOWxPFi8MxgRHlnnmH3Y-lNO6NNJy4C391xUga5pmXPlASqguUBttHpNa6Zf4ue0qjIHVYVK59P6F-y4PvLxaQ8AbZWiW35kpBqQ01MoYgNXH8p6aNbRGhm1W4eB8VtOZCtIN7jTT_IVsNFW1m4N6JSqSw7_nistwKc3l02vg8hVoFpOLvwnu_lqUrsdEkZB63rG1yg2fVekIYe4SDChcnNQ"/>
+<!-- Floating Elements around wheel (Optional purely CSS) -->
+<div class="absolute top-4 left-4 w-8 h-8 rounded-full bg-surface-inset border border-toxic-green/50 flex items-center justify-center shadow-glow-green animate-[bounce_3s_infinite]">
+<span class="material-symbols-outlined text-toxic-glow text-sm">class</span>
+</div>
+<div class="absolute bottom-10 right-2 w-10 h-10 rounded-full bg-surface-inset border border-gold/50 flex items-center justify-center shadow-glow-gold animate-[bounce_4s_infinite_0.5s]">
+<span class="material-symbols-outlined text-gold">casino</span>
+</div>
+</div>
+<!-- Call to Action -->
+<div class="w-full px-6 mt-4 mb-8">
+<button class="gold-button w-full py-4 rounded-full font-display font-black text-2xl text-background uppercase tracking-wider relative overflow-hidden group">
+<span class="relative z-10 flex items-center justify-center gap-2">
+                    SPIN TO WIN
+                    <span class="material-symbols-outlined font-bold text-xl">bolt</span>
+</span>
+<!-- Button Shine Effect -->
+<div class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-40 group-hover:animate-[shine_1s]"></div>
+</button>
+<p class="text-center text-muted text-xs font-label mt-3">Cost: 100 Potions <span class="material-symbols-outlined text-[10px] align-middle">class</span></p>
+</div>
+</main>
+<!-- BottomNavBar JSON Construction -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-lg border-t border-[#15564A] bg-[#0F3B33] shadow-[0_-10px_30px_rgba(22,64,58,0.6)] max-w-md mx-auto left-0 right-0">
+<div class="flex justify-around items-center px-4 pb-4 pt-2">
+<!-- Inactive -->
+<a class="flex flex-col items-center justify-center text-[#8FB9AD] px-3 py-1 hover:bg-[#15564A] hover:text-[#EAF6EE] active:translate-y-1 transition-all duration-200 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">casino</span>
+<span class="font-label text-[10px] font-bold uppercase">Lobby</span>
+</a>
+<!-- Inactive -->
+<a class="flex flex-col items-center justify-center text-[#8FB9AD] px-3 py-1 hover:bg-[#15564A] hover:text-[#EAF6EE] active:translate-y-1 transition-all duration-200 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">class</span>
+<span class="font-label text-[10px] font-bold uppercase">Potions</span>
+</a>
+<!-- ACTIVE (Vault is most appropriate for a Jackpot screen) -->
+<a class="flex flex-col items-center justify-center text-[#F5C24B] bg-[#15564A] rounded-xl px-3 py-1 shadow-[inset_0_0_10px_rgba(91,227,106,0.2)] active:translate-y-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-label text-[10px] font-bold uppercase">Vault</span>
+</a>
+<!-- Inactive -->
+<a class="flex flex-col items-center justify-center text-[#8FB9AD] px-3 py-1 hover:bg-[#15564A] hover:text-[#EAF6EE] active:translate-y-1 transition-all duration-200 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">account_circle</span>
+<span class="font-label text-[10px] font-bold uppercase">Profile</span>
+</a>
+</div>
+</nav>
+<!-- Vanilla JS Coin Rain Animation -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('coin-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            let width, height;
+            let coins = [];
+            const numCoins = 40; // Number of coins falling
+            
+            // Set canvas size to match window
+            function resize() {
+                // Constrain to mobile width logic if on desktop
+                const isDesktop = window.innerWidth > 448;
+                width = isDesktop ? 448 : window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = window.innerWidth; // Keep canvas full width but draw inside bounds
+                canvas.height = height;
+            }
+            
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Coin {
+                constructor() {
+                    this.reset();
+                    // Randomize initial Y to distribute them
+                    this.y = Math.random() * height * -1;
+                }
+
+                reset() {
+                    // Start above screen
+                    this.y = -20;
+                    
+                    // Determine x position (constrained if on desktop)
+                    const offset = (window.innerWidth - width) / 2;
+                    this.x = offset + Math.random() * width;
+                    
+                    this.size = Math.random() * 8 + 4; // Radius
+                    this.speed = Math.random() * 3 + 2;
+                    this.rotation = Math.random() * Math.PI * 2;
+                    this.rotationSpeed = (Math.random() - 0.5) * 0.2;
+                    
+                    // Slightly varied gold colors
+                    const golds = ['#F5C24B', '#FFD56A', '#D4A32C'];
+                    this.color = golds[Math.floor(Math.random() * golds.length)];
+                    
+                    this.settled = false;
+                }
+
+                update() {
+                    if (this.settled) return;
+
+                    this.y += this.speed;
+                    this.rotation += this.rotationSpeed;
+
+                    // Settle at bottom (above nav bar roughly)
+                    if (this.y > height - 80 - Math.random() * 40) {
+                        this.settled = true;
+                        
+                        // Slowly remove and respawn from top to keep continuous rain
+                        setTimeout(() => {
+                            this.reset();
+                        }, Math.random() * 5000 + 2000);
+                    }
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    
+                    // Pseudo 3D rotation effect by scaling Y
+                    const scaleY = Math.abs(Math.sin(this.rotation));
+                    ctx.scale(1, scaleY);
+                    
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    
+                    // Inner ring
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size * 0.7, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#B8860B'; // Darker gold for detail
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    ctx.restore();
+                }
+            }
+
+            for (let i = 0; i < numCoins; i++) {
+                coins.push(new Coin());
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                coins.forEach(coin => {
+                    coin.update();
+                    coin.draw();
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        });
+    </script>
+</body></html>
