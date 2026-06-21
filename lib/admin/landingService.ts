@@ -104,6 +104,9 @@ export async function getEditableLanding(id: string): Promise<EditableLanding | 
   };
 }
 
+// Metadata-only save (texts, theme, slug, status, asset URLs). The winning prize
+// and wheel/prize config are owned by saveWheel(); `LandingPatch` is a strict
+// schema that excludes winningPrizeId, so this passthrough cannot repoint the winner.
 export async function updateLanding(id: string, patch: LandingPatch): Promise<void> {
   await prisma.landing.update({ where: { id }, data: patch });
 }

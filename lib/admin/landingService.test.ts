@@ -11,7 +11,7 @@ const { landing, prize, $transaction } = vi.hoisted(() => ({
 vi.mock("@/lib/db", () => ({ prisma: { landing, prize, $transaction } }));
 
 import {
-  slugify, listLandings, createLanding, getEditableLanding, saveWheel,
+  slugify, listLandings, createLanding, getEditableLanding, updateLanding, saveWheel,
 } from "@/lib/admin/landingService";
 
 beforeEach(() => {
@@ -81,6 +81,17 @@ describe("getEditableLanding", () => {
     const view = await getEditableLanding("l1");
     expect(view?.name).toBe("Promo");
     expect(view?.prizes[0].id).toBe("p1");
+  });
+});
+
+describe("updateLanding", () => {
+  it("updates only the patched metadata fields for the given landing", async () => {
+    landing.update.mockResolvedValue({});
+    await updateLanding("l1", { heading: "New heading", status: "published" });
+    expect(landing.update).toHaveBeenCalledWith({
+      where: { id: "l1" },
+      data: { heading: "New heading", status: "published" },
+    });
   });
 });
 
