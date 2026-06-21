@@ -1,0 +1,42 @@
+/* boomzino.css — shared design tokens + motion for the Boomzino prototype mockups. */
+:root {
+  --bg: #0C1F1C; --bg-glow: #16403A; --surface: #15564A; --surface-deep: #0F3B33;
+  --gold: #F5C24B; --gold-bright: #FFD56A; --lab-green: #5BE36A; --lab-green-hot: #8BFF5A;
+  --red: #E2483D; --cream: #F4F1E8; --text: #EAF6EE; --muted: #8FB9AD;
+  --font: "Outfit", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: radial-gradient(120% 80% at 50% 0%, var(--bg-glow) 0%, var(--bg) 60%), var(--bg);
+  min-height: 100dvh;
+}
+.stage { position: relative; max-width: 430px; margin: 0 auto; min-height: 100dvh; overflow: hidden; }
+
+@keyframes coin-float { 0% { transform: translateY(0) rotate(0); opacity: .9; }
+  100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; } }
+@keyframes bubble-rise { 0% { transform: translateY(0) scale(.7); opacity: 0; }
+  30% { opacity: .9; } 100% { transform: translateY(-46px) scale(1); opacity: 0; } }
+@keyframes glow-pulse { 0%,100% { filter: drop-shadow(0 0 6px var(--lab-green)); }
+  50% { filter: drop-shadow(0 0 22px var(--lab-green-hot)); } }
+@keyframes ray-rotate { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+@keyframes wheel-glow { 0%,100% { filter: drop-shadow(0 0 18px color-mix(in srgb, var(--gold) 55%, transparent)); }
+  50% { filter: drop-shadow(0 0 34px color-mix(in srgb, var(--lab-green) 55%, transparent)); } }
+@keyframes confetti-fall { to { transform: translateY(115vh) rotate(720deg); opacity: 0; } }
+
+.confetti-bit {
+  position: absolute; top: -16px; width: 9px; height: 15px; border-radius: 2px;
+  animation: confetti-fall 2s linear forwards; pointer-events: none;
+}
+.seg-label {
+  position: absolute; left: 50%; top: 50%; width: 58px; text-align: center;
+  font-size: 11px; font-weight: 800; letter-spacing: .2px; line-height: 1;
+  color: var(--cream); text-shadow: 0 1px 3px rgba(0,0,0,.75); pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
