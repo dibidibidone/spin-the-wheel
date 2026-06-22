@@ -1,5 +1,5 @@
 "use client";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, Lightformer, Float, Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { Wheel3D } from "../kit/Wheel3D";
@@ -14,6 +14,8 @@ import { alchemyWheel, alchemySound, alchemyCopy, alchemyOverlayVars, alchemyCon
 import { Cauldron } from "./Cauldron";
 import { PotionBottle } from "./PotionBottle";
 import { LabBackdrop } from "./LabBackdrop";
+import { isWebGLAvailable } from "../kit/webgl";
+import { SceneFallback } from "../kit/SceneFallback";
 
 function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
   const wheel = <Wheel3D rotationRef={rotationRef} theme={alchemyWheel} />;
@@ -26,6 +28,16 @@ export function AlchemyLabScene() {
   const { rotationRef, status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } =
     useSpinScene({ reduced, sound, conversion: alchemyConversion });
   const won = status === "won";
+
+  const [webgl, setWebgl] = useState(true);
+  useEffect(() => { setWebgl(isWebGLAvailable()); }, []);
+  useEffect(() => {
+    const onVis = () => sound.setMuted(document.hidden ? true : muted);
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, [sound, muted]);
+
+  if (!webgl) return <SceneFallback copy={alchemyCopy} vars={alchemyOverlayVars} config={alchemyConversion} />;
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#0A1A14" }}>

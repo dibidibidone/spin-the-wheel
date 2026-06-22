@@ -25,24 +25,32 @@ export function SpinDriver({ controller, rotationRef, onStatus }: {
 
 export function Parallax({ children, reduced }: { children: ReactNode; reduced: boolean }) {
   const g = useRef<THREE.Group>(null!);
-  const tilt = useRef({ x: 0, y: 0 });
-  const { pointer } = useThree();
+  const drag = useRef({ x: 0, y: 0 });
+  const { pointer, gl } = useThree();
+
   useEffect(() => {
     if (reduced) return;
-    const onOrient = (e: DeviceOrientationEvent) => {
-      tilt.current.x = THREE.MathUtils.clamp((e.gamma ?? 0) / 45, -1, 1);
-      tilt.current.y = THREE.MathUtils.clamp(((e.beta ?? 0) - 45) / 45, -1, 1);
+    const el = gl.domElement;
+    const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+    if (!isTouch) return; // desktop keeps pointer parallax below
+    const onMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (!t) return;
+      drag.current.x = (t.clientX / window.innerWidth) * 2 - 1;
+      drag.current.y = (t.clientY / window.innerHeight) * 2 - 1;
     };
-    window.addEventListener("deviceorientation", onOrient);
-    return () => window.removeEventListener("deviceorientation", onOrient);
-  }, [reduced]);
+    el.addEventListener("touchmove", onMove, { passive: true });
+    return () => el.removeEventListener("touchmove", onMove);
+  }, [reduced, gl]);
+
   useFrame(() => {
     if (!g.current || reduced) return;
-    const px = pointer.x + tilt.current.x;
-    const py = pointer.y - tilt.current.y;
-    g.current.rotation.y = THREE.MathUtils.lerp(g.current.rotation.y, px * 0.25, 0.05);
-    g.current.rotation.x = THREE.MathUtils.lerp(g.current.rotation.x, -py * 0.18, 0.05);
+    const px = pointer.x + drag.current.x;
+    const py = pointer.y - drag.current.y;
+    g.current.rotation.y = THREE.MathUtils.lerp(g.current.rotation.y, px * 0.2, 0.05);
+    g.current.rotation.x = THREE.MathUtils.lerp(g.current.rotation.x, -py * 0.15, 0.05);
   });
+
   return <group ref={g}>{children}</group>;
 }
 

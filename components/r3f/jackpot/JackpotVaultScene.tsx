@@ -1,5 +1,5 @@
 "use client";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, Lightformer, Float, Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { Wheel3D } from "../kit/Wheel3D";
@@ -12,6 +12,8 @@ import { useReducedMotion } from "../kit/useReducedMotion";
 import { NeonSign } from "./NeonSign";
 import { ResponsiveCamera } from "../kit/ResponsiveCamera";
 import { jackpotWheel, jackpotSound, jackpotCopy, jackpotOverlayVars, jackpotConversion } from "./theme";
+import { isWebGLAvailable } from "../kit/webgl";
+import { SceneFallback } from "../kit/SceneFallback";
 
 function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
   const wheel = <Wheel3D rotationRef={rotationRef} theme={jackpotWheel} />;
@@ -23,6 +25,16 @@ export function JackpotVaultScene() {
   const sound = useMemo(() => createSound(jackpotSound), []);
   const { rotationRef, status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } =
     useSpinScene({ reduced, sound, conversion: jackpotConversion });
+
+  const [webgl, setWebgl] = useState(true);
+  useEffect(() => { setWebgl(isWebGLAvailable()); }, []);
+  useEffect(() => {
+    const onVis = () => sound.setMuted(document.hidden ? true : muted);
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, [sound, muted]);
+
+  if (!webgl) return <SceneFallback copy={jackpotCopy} vars={jackpotOverlayVars} config={jackpotConversion} />;
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#070D0B" }}>
