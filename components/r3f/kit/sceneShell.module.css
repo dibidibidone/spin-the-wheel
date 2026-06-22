@@ -1,6 +1,6 @@
-/* Boomzino scene backdrop: a contained luminous core behind the wheel, slow casino
-   light-rays, and a strong vignette — painted in CSS behind a transparent WebGL canvas
-   so the 3D wheel floats over a rich, themeable background instead of flat black.
+/* Boomzino scene backdrop: a contained luminous core behind the wheel, a soft
+   breathing halo, and a strong vignette — painted in CSS behind a transparent WebGL
+   canvas so the 3D wheel floats over a rich, themeable background instead of flat black.
    Kept dark and deep so the wheel keeps its contrast and the controls stay legible.
    Theme vars (--base, --glow, --glow2) are set per-scene. */
 .shell { position: fixed; inset: 0; overflow: hidden; background: var(--base); }
@@ -13,16 +13,14 @@
     var(--base);
 }
 
-/* Radiating light-rays from behind the wheel — the jackpot/casino signature, kept faint. */
+/* Soft halo behind the wheel that gently breathes — the casino "glow" without the
+   spiky ray pattern. `screen` blend adds light (no muddy overlay). */
 .rays {
-  position: absolute; inset: -25%; z-index: 0; pointer-events: none; opacity: .16;
-  background: repeating-conic-gradient(from 0deg at 50% 42%,
-    color-mix(in srgb, var(--glow) 60%, transparent) 0deg 2.6deg, transparent 2.6deg 15deg);
-  -webkit-mask-image: radial-gradient(closest-side at 50% 42%, #000 12%, transparent 58%);
-  mask-image: radial-gradient(closest-side at 50% 42%, #000 12%, transparent 58%);
-  animation: sweep 80s linear infinite;
+  position: absolute; inset: 0; z-index: 0; pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(44% 30% at 50% 38%, color-mix(in srgb, var(--glow) 32%, transparent) 0%, transparent 70%);
+  animation: breathe 5s ease-in-out infinite;
 }
-@keyframes sweep { to { transform: rotate(360deg); } }
+@keyframes breathe { 0%, 100% { opacity: .55; transform: scale(1); } 50% { opacity: .95; transform: scale(1.06); } }
 
 .vignette {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
