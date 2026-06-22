@@ -4,7 +4,6 @@ import type { OverlayStatus } from "./types";
 import type { OverlayCopy, ConversionConfig } from "./types";
 import type { ClaimStep } from "./claimMachine";
 import { WinSheet } from "./WinSheet";
-import { WinBurst } from "./WinBurst";
 import { SocialProof } from "./SocialProof";
 import { Countdown } from "./Countdown";
 import { TrustBar } from "./TrustBar";
@@ -63,8 +62,6 @@ export function SpinOverlay({
         </div>
         <TrustBar text={config.trust} />
       </div>
-
-      {status === "won" && <WinBurst />}
 
       <WinSheet
         step={claimStep} copy={copy} config={config} reduced={reduced}
