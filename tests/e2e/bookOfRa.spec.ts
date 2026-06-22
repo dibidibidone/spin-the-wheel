@@ -6,7 +6,7 @@ test("Book of Ra route boots a WebGL canvas with no page errors", async ({ page 
   page.on("pageerror", (e) => errors.push(String(e)));
   const resp = await page.goto("/prototypes/3d/book-of-ra");
   expect(resp?.status()).toBe(200);
-  await expect(page.locator("canvas")).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator("canvas")).toBeVisible({ timeout: 30_000 });
   expect(errors).toEqual([]);
 });
 

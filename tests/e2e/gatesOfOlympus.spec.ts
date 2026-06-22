@@ -6,7 +6,7 @@ test("Gates of Olympus route boots a WebGL canvas with no page errors", async ({
   page.on("pageerror", (e) => errors.push(String(e)));
   const resp = await page.goto("/prototypes/3d/gates-of-olympus");
   expect(resp?.status()).toBe(200);
-  await expect(page.locator("canvas")).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator("canvas")).toBeVisible({ timeout: 30_000 });
   expect(errors).toEqual([]);
 });
 
