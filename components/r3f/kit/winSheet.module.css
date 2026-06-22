@@ -36,3 +36,7 @@
 .field:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
 
 .footer { margin-top: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim, .sheet { animation: none; }
+}

@@ -40,4 +40,10 @@ describe("WinSheet", () => {
     await userEvent.click(screen.getByTestId("claim-submit"));
     expect(onSubmit).toHaveBeenCalledWith("");
   });
+
+  it("submitting disables the field and the submit button", () => {
+    render(<WinSheet step="submitting" copy={copy} config={config} reduced onOpen={() => {}} onSubmit={() => {}} onDismiss={() => {}} />);
+    expect(screen.getByTestId("claim-field")).toBeDisabled();
+    expect(screen.getByTestId("claim-submit")).toBeDisabled();
+  });
 });
