@@ -10,7 +10,8 @@ import { SpinOverlay } from "../kit/SpinOverlay";
 import { createSound } from "../kit/sound";
 import { useReducedMotion } from "../kit/useReducedMotion";
 import { NeonSign } from "./NeonSign";
-import { jackpotWheel, jackpotSound, jackpotCopy, jackpotOverlayVars } from "./theme";
+import { ResponsiveCamera } from "../kit/ResponsiveCamera";
+import { jackpotWheel, jackpotSound, jackpotCopy, jackpotOverlayVars, jackpotConversion } from "./theme";
 
 function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
   const wheel = <Wheel3D rotationRef={rotationRef} theme={jackpotWheel} />;
@@ -20,12 +21,14 @@ function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObjec
 export function JackpotVaultScene() {
   const reduced = useReducedMotion();
   const sound = useMemo(() => createSound(jackpotSound), []);
-  const { rotationRef, status, muted, modalOpen, controller, onSpin, onStatus, onToggleSound } = useSpinScene({ reduced, sound });
+  const { rotationRef, status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } =
+    useSpinScene({ reduced, sound, conversion: jackpotConversion });
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#070D0B" }}>
       <Canvas camera={{ position: [0, 0.2, 7], fov: 42 }} dpr={[1, 2]} gl={{ antialias: false }}>
         <color attach="background" args={["#070D0B"]} />
+        <ResponsiveCamera radius={jackpotWheel.radius} />
         <ambientLight intensity={0.35} />
         <pointLight position={[5, 6, 6]} intensity={120} color="#FFD56A" />
         <pointLight position={[-6, -3, 4]} intensity={50} color="#5BE36A" />
@@ -51,9 +54,10 @@ export function JackpotVaultScene() {
       </Canvas>
 
       <SpinOverlay
-        copy={jackpotCopy} vars={jackpotOverlayVars}
-        status={status} modalOpen={modalOpen} muted={muted}
-        onSpin={onSpin} onToggleSound={onToggleSound} onClaim={() => {}}
+        copy={jackpotCopy} vars={jackpotOverlayVars} config={jackpotConversion}
+        status={status} claimStep={claimStep} muted={muted} reduced={reduced}
+        onSpin={onSpin} onToggleSound={onToggleSound}
+        onClaimOpen={onClaimOpen} onClaimSubmit={onClaimSubmit} onDismiss={onDismiss}
       />
     </div>
   );
