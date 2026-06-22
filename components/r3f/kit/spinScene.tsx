@@ -26,13 +26,13 @@ export function SpinDriver({ controller, rotationRef, onStatus }: {
 export function Parallax({ children, reduced }: { children: ReactNode; reduced: boolean }) {
   const g = useRef<THREE.Group>(null!);
   const drag = useRef({ x: 0, y: 0 });
+  const isTouch = useRef(false);
   const { pointer, gl } = useThree();
 
   useEffect(() => {
-    if (reduced) return;
+    isTouch.current = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+    if (reduced || !isTouch.current) return; // desktop keeps pointer parallax below
     const el = gl.domElement;
-    const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
-    if (!isTouch) return; // desktop keeps pointer parallax below
     const onMove = (e: TouchEvent) => {
       const t = e.touches[0];
       if (!t) return;
@@ -45,8 +45,8 @@ export function Parallax({ children, reduced }: { children: ReactNode; reduced: 
 
   useFrame(() => {
     if (!g.current || reduced) return;
-    const px = pointer.x + drag.current.x;
-    const py = pointer.y - drag.current.y;
+    const px = isTouch.current ? drag.current.x : pointer.x;
+    const py = isTouch.current ? -drag.current.y : pointer.y;
     g.current.rotation.y = THREE.MathUtils.lerp(g.current.rotation.y, px * 0.2, 0.05);
     g.current.rotation.x = THREE.MathUtils.lerp(g.current.rotation.x, -py * 0.15, 0.05);
   });
