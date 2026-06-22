@@ -4,8 +4,8 @@
 
 .top { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between;
   padding: max(env(safe-area-inset-top), 14px) max(env(safe-area-inset-right), 18px) 0 max(env(safe-area-inset-left), 18px); }
-.logo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; display: block;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 45%, transparent), 0 0 18px color-mix(in srgb, var(--gold) 40%, transparent); }
+.logo { height: 30px; width: auto; display: block;
+  filter: drop-shadow(0 1px 6px rgba(0,0,0,.5)) drop-shadow(0 0 10px color-mix(in srgb, var(--gold) 30%, transparent)); }
 .sound { background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--text); border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
   border-radius: 999px; min-width: 44px; min-height: 44px; font-size: 16px; cursor: pointer; touch-action: manipulation; }
 

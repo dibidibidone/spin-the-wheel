@@ -25,8 +25,8 @@
 
 .grab { width: 42px; height: 4px; border-radius: 999px; background: color-mix(in srgb, var(--text) 28%, transparent); margin: 2px auto 10px; }
 
-.logo { display: block; width: 68px; height: 68px; border-radius: 50%; margin: 0 auto 6px; object-fit: cover;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent), 0 0 28px color-mix(in srgb, var(--gold) 45%, transparent); }
+.logo { display: block; height: 34px; width: auto; margin: 2px auto 10px;
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--gold) 35%, transparent)); }
 
 .eyebrow { text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase;
   color: color-mix(in srgb, var(--accent) 78%, white); opacity: .9; }
