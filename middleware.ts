@@ -11,6 +11,7 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Exclude Next internals, API, and static files; those must never be host-rewritten.
-  matcher: ["/((?!_next/|api/|favicon.ico|.*\\..*).*)"],
+  // Exclude Next internals, API, the /prototypes showcase routes, and static files;
+  // those must never be host-rewritten.
+  matcher: ["/((?!_next/|api/|prototypes/|favicon.ico|.*\\..*).*)"],
 };
