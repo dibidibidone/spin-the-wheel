@@ -26,7 +26,9 @@ export function reelStopMs(reelIndex: number, reelCount: number, totalMs: number
   return totalMs * (1 - spread) + totalMs * spread * frac;
 }
 
-// The rows-tall visible window of a strip starting at `topRow`.
+// The rows-tall visible window of a strip starting at `topRow`. This is a plain
+// slice: if the window overruns the strip end it returns FEWER than `rows` items
+// (no wrap-around). Callers that need a full window must pass an in-bounds topRow.
 export function visibleWindow(strip: string[], topRow: number, rows: number): string[] {
   return strip.slice(topRow, topRow + rows);
 }

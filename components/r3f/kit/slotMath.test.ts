@@ -44,4 +44,7 @@ describe("visibleWindow", () => {
   it("slices the rows-tall window from a top row", () => {
     expect(visibleWindow(["a", "b", "c", "d", "e"], 2, 3)).toEqual(["c", "d", "e"]);
   });
+  it("returns a short slice at the strip boundary (no wrap-around)", () => {
+    expect(visibleWindow(["a", "b", "c"], 2, 3)).toEqual(["c"]);
+  });
 });
