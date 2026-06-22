@@ -18,7 +18,7 @@
 /* Bottom dock: social proof · sticky CTA · countdown — clears the home indicator */
 .dock { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 8px;
   padding: 0 16px max(env(safe-area-inset-bottom), 16px); }
-.strip { min-height: 18px; }
+.strip { min-height: 38px; display: flex; align-items: center; justify-content: center; }
 .cta { pointer-events: auto; min-height: 56px; padding: 16px 40px; border-radius: 999px; border: none; touch-action: manipulation;
   background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 85%, white), var(--gold)); color: #2a1e00; font-weight: 800; font-size: 18px;
   cursor: pointer; box-shadow: 0 0 30px color-mix(in srgb, var(--gold) 60%, transparent); width: min(360px, 100%); }

@@ -23,7 +23,6 @@ export type OverlayCopy = {
   spinningLabel: string;
   winTitle: string;
   winPrize: string;
-  claimLabel: string;
   winEmoji: string;
 };
 

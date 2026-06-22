@@ -6,6 +6,7 @@ import type { ClaimStep } from "./claimMachine";
 import { WinSheet } from "./WinSheet";
 import { SocialProof } from "./SocialProof";
 import { Countdown } from "./Countdown";
+import { TrustBar } from "./TrustBar";
 
 export type OverlayVars = {
   gold: string; accent: string; surface: string; text: string; bannerBg: string; bannerBorder: string;
@@ -58,6 +59,7 @@ export function SpinOverlay({
         <div className={css.strip}>
           <Countdown durationMs={config.urgencyMs} storageKey="stw-claim-deadline" />
         </div>
+        <TrustBar text={config.trust} />
       </div>
 
       <WinSheet

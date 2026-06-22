@@ -29,7 +29,6 @@ export const jackpotCopy: OverlayCopy = {
   spinningLabel: "SPINNING…",
   winTitle: "JACKPOT — You won",
   winPrize: "JACKPOT!",
-  claimLabel: "Claim bonus",
   winEmoji: "💰",
 };
 

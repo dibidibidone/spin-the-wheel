@@ -29,7 +29,6 @@ export const alchemyCopy: OverlayCopy = {
   spinningLabel: "BREWING…",
   winTitle: "You won",
   winPrize: "JACKPOT!",
-  claimLabel: "Claim bonus",
   winEmoji: "🧪",
 };
 

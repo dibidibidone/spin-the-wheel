@@ -17,7 +17,7 @@ export function createHaptics(opts: {
 
   return {
     spin() { fire([8, 30, 8, 30, 8]); }, // light "ticking" burst
-    win() { fire([0, 60, 40, 120]); },   // strong celebratory pattern
+    win() { fire([40, 60, 80, 40, 120]); }, // strong celebratory pattern
     claim() { fire(20); },                // crisp confirm tap
   };
 }
