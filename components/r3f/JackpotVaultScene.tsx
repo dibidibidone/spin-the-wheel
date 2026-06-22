@@ -3,13 +3,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, Float, Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import * as THREE from "three";
-import { Wheel3D } from "./Wheel3D";
+import { Wheel3D } from "./kit/Wheel3D";
 import { NeonSign } from "./NeonSign";
 import { Effects } from "./kit/Effects";
 import { JackpotVaultOverlay } from "./JackpotVaultOverlay";
 import { useReducedMotion } from "./kit/useReducedMotion";
 import { createSpinController, type SpinStatus } from "./kit/spinController";
-import { getSound } from "./sound";
+import { createSound } from "./kit/sound";
+import { jackpotWheel, jackpotSound } from "./jackpot/theme";
 import { CoinStorm } from "./kit/CoinStorm";
 
 function SpinDriver({ controller, rotationRef, onStatus }: {
@@ -53,13 +54,14 @@ function Parallax({ children, reduced }: { children: React.ReactNode; reduced: b
 }
 
 function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
-  const wheel = <Wheel3D rotationRef={rotationRef} />;
+  const wheel = <Wheel3D rotationRef={rotationRef} theme={jackpotWheel} />;
   return reduced ? <>{wheel}</> : <Float speed={2} rotationIntensity={0.15} floatIntensity={0.4}>{wheel}</Float>;
 }
 
 export function JackpotVaultScene() {
   const reduced = useReducedMotion();
   const rotationRef = useRef(0);
+  const sound = useMemo(() => createSound(jackpotSound), []);
   const [status, setStatus] = useState<SpinStatus>("idle");
   const [muted, setMuted] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -78,16 +80,16 @@ export function JackpotVaultScene() {
     if (controller.status !== "idle") return;
     controller.start();
     setStatus("spinning");
-    getSound().tick();
+    sound.tick();
   };
   const onStatus = (s: SpinStatus) => {
     setStatus(s);
-    if (s === "won") getSound().win();
+    if (s === "won") sound.win();
   };
   const onToggleSound = () => {
     const next = !muted;
     setMuted(next);
-    getSound().setMuted(next);
+    sound.setMuted(next);
   };
   const onClaim = () => { /* demo: no real redirect */ };
 

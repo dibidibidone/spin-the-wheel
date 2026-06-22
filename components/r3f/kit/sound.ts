@@ -1,4 +1,5 @@
 import { Howl, Howler } from "howler";
+import type { SoundConfig, SoundInstance } from "./types";
 
 function wavDataUri(freqs: number[], ms: number, gain = 0.25): string {
   const rate = 44100;
@@ -15,7 +16,7 @@ function wavDataUri(freqs: number[], ms: number, gain = 0.25): string {
     const t = i / rate;
     let s = 0;
     for (const f of freqs) s += Math.sin(2 * Math.PI * f * t);
-    s = (s / freqs.length) * gain * Math.exp(-3 * (i / n)); // decay
+    s = (s / freqs.length) * gain * Math.exp(-3 * (i / n));
     v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, s)) * 32767, true);
   }
   let bin = "";
@@ -24,10 +25,9 @@ function wavDataUri(freqs: number[], ms: number, gain = 0.25): string {
   return "data:audio/wav;base64," + btoa(bin);
 }
 
-let inst: ReturnType<typeof build> | null = null;
-function build() {
-  const tick = new Howl({ src: [wavDataUri([1200], 40, 0.18)], format: ["wav"] });
-  const win = new Howl({ src: [wavDataUri([523, 659, 784], 900, 0.3)], format: ["wav"] });
+export function createSound(config: SoundConfig): SoundInstance {
+  const tick = new Howl({ src: [wavDataUri(config.tick.freqs, config.tick.ms, config.tick.gain)], format: ["wav"] });
+  const win = new Howl({ src: [wavDataUri(config.win.freqs, config.win.ms, config.win.gain)], format: ["wav"] });
   Howler.mute(true);
   let muted = true;
   return {
@@ -36,8 +36,4 @@ function build() {
     setMuted(m: boolean) { muted = m; Howler.mute(m); },
     muted() { return muted; },
   };
-}
-export function getSound() {
-  if (!inst) inst = build();
-  return inst;
 }
