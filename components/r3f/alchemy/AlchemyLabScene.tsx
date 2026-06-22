@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, Lightformer, Float, Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { Wheel3D } from "../kit/Wheel3D";
@@ -16,6 +16,7 @@ import { PotionBottle } from "./PotionBottle";
 import { LabBackdrop } from "./LabBackdrop";
 import { isWebGLAvailable } from "../kit/webgl";
 import { SceneFallback } from "../kit/SceneFallback";
+import shell from "../kit/sceneShell.module.css";
 
 function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
   const wheel = <Wheel3D rotationRef={rotationRef} theme={alchemyWheel} />;
@@ -40,9 +41,11 @@ export function AlchemyLabScene() {
   if (!webgl) return <SceneFallback copy={alchemyCopy} vars={alchemyOverlayVars} config={alchemyConversion} />;
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#0A1A14" }}>
-      <Canvas camera={{ position: [0, 0.1, 7], fov: 42 }} dpr={[1, 2]} gl={{ antialias: false }}>
-        <color attach="background" args={["#0A1A14"]} />
+    <div className={shell.shell} style={{ "--base": "#0A1A14", "--glow": "#8BFF5A", "--glow2": "#F5C24B" } as CSSProperties}>
+      <div className={shell.bg} />
+      <div className={shell.rays} />
+      <div className={shell.vignette} />
+      <Canvas className={shell.canvas} camera={{ position: [0, 0.1, 7], fov: 42 }} dpr={[1, 2]} gl={{ alpha: true, antialias: false }}>
         <ResponsiveCamera radius={alchemyWheel.radius} />
         <ambientLight intensity={0.4} />
         <pointLight position={[5, 6, 6]} intensity={90} color="#EAF6EE" />

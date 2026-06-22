@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, Lightformer, Float, Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { Wheel3D } from "../kit/Wheel3D";
@@ -14,6 +14,7 @@ import { ResponsiveCamera } from "../kit/ResponsiveCamera";
 import { jackpotWheel, jackpotSound, jackpotCopy, jackpotOverlayVars, jackpotConversion } from "./theme";
 import { isWebGLAvailable } from "../kit/webgl";
 import { SceneFallback } from "../kit/SceneFallback";
+import shell from "../kit/sceneShell.module.css";
 
 function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
   const wheel = <Wheel3D rotationRef={rotationRef} theme={jackpotWheel} />;
@@ -37,9 +38,11 @@ export function JackpotVaultScene() {
   if (!webgl) return <SceneFallback copy={jackpotCopy} vars={jackpotOverlayVars} config={jackpotConversion} />;
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#070D0B" }}>
-      <Canvas camera={{ position: [0, 0.2, 7], fov: 42 }} dpr={[1, 2]} gl={{ antialias: false }}>
-        <color attach="background" args={["#070D0B"]} />
+    <div className={shell.shell} style={{ "--base": "#070D0B", "--glow": "#F5C24B", "--glow2": "#5BE36A" } as CSSProperties}>
+      <div className={shell.bg} />
+      <div className={shell.rays} />
+      <div className={shell.vignette} />
+      <Canvas className={shell.canvas} camera={{ position: [0, 0.2, 7], fov: 42 }} dpr={[1, 2]} gl={{ alpha: true, antialias: false }}>
         <ResponsiveCamera radius={jackpotWheel.radius} />
         <ambientLight intensity={0.35} />
         <pointLight position={[5, 6, 6]} intensity={120} color="#FFD56A" />

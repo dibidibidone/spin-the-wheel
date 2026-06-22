@@ -1,4 +1,4 @@
-.overlay { position: fixed; inset: 0; pointer-events: none; font-family: system-ui, sans-serif; color: var(--text);
+.overlay { position: fixed; inset: 0; z-index: 2; pointer-events: none; font-family: system-ui, sans-serif; color: var(--text);
   touch-action: manipulation; overscroll-behavior: none; }
 .overlay [data-pe] { pointer-events: auto; }
 
@@ -9,18 +9,32 @@
 .sound { background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--text); border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
   border-radius: 999px; min-width: 44px; min-height: 44px; font-size: 16px; cursor: pointer; touch-action: manipulation; }
 
-.hero { position: absolute; top: calc(max(env(safe-area-inset-top), 14px) + 46px); left: 0; right: 0; text-align: center; padding: 0 16px; }
-.hero h1 { margin: 0; font-size: clamp(28px, 6vw, 52px); line-height: 1.05; font-weight: 800; color: var(--gold);
-  text-shadow: 0 0 26px color-mix(in srgb, var(--gold) 50%, transparent); }
-.subtitle { margin: 6px 0 0; color: var(--text); opacity: .85; font-size: clamp(14px, 2.5vw, 18px); }
-.banner { display: inline-block; margin-top: 8px; padding: 6px 16px; border-radius: 10px; background: var(--bannerBg); color: #F4F1E8;
-  font-weight: 800; letter-spacing: 6px; border: 2px solid var(--bannerBorder); }
+.hero { position: absolute; top: calc(max(env(safe-area-inset-top), 14px) + 50px); left: 0; right: 0; text-align: center; padding: 0 16px; }
+.hero h1 { margin: 0; font-size: clamp(30px, 7.5vw, 58px); line-height: 1.0; font-weight: 900; letter-spacing: .5px;
+  background: linear-gradient(100deg, #FFF7EB 0%, var(--gold) 28%, #FFE9A8 50%, var(--gold) 72%, #C8881E 100%);
+  background-size: 220% 100%; -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 2px 1px rgba(0,0,0,.55)) drop-shadow(0 0 22px color-mix(in srgb, var(--gold) 50%, transparent));
+  animation: shine 6s ease-in-out infinite; }
+@keyframes shine { 0%, 100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
+.subtitle { margin: 8px 0 0; color: var(--text); opacity: .82; font-size: clamp(13px, 2.6vw, 17px); letter-spacing: .4px;
+  text-shadow: 0 1px 8px rgba(0,0,0,.6); }
+.banner { display: inline-block; margin-top: 11px; padding: 7px 18px; border-radius: 12px; background: var(--bannerBg); color: #FFF7EB;
+  font-weight: 900; letter-spacing: 8px; border: 2px solid var(--bannerBorder);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--gold) 70%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--bannerBorder) 50%, transparent), inset 0 0 12px rgba(0,0,0,.32);
+  animation: bannerpulse 2.2s ease-in-out infinite; }
+@keyframes bannerpulse {
+  0%, 100% { box-shadow: 0 0 14px color-mix(in srgb, var(--bannerBorder) 42%, transparent), inset 0 0 12px rgba(0,0,0,.32); }
+  50% { box-shadow: 0 0 28px color-mix(in srgb, var(--bannerBorder) 78%, transparent), inset 0 0 12px rgba(0,0,0,.32); }
+}
+@media (prefers-reduced-motion: reduce) { .hero h1, .banner { animation: none; } }
 
 /* Bottom dock: social proof · sticky CTA · countdown — clears the home indicator.
    The gradient scrim lifts the controls off the busy wheel so text stays legible. */
 .dock { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 8px;
   padding: 64px 16px max(env(safe-area-inset-bottom), 16px);
-  background: linear-gradient(to top, rgba(0,0,0,.9) 0%, rgba(0,0,0,.72) 34%, rgba(0,0,0,.34) 68%, transparent 100%); }
+  background: linear-gradient(to top, rgba(0,0,0,.94) 0%, rgba(0,0,0,.88) 46%, rgba(0,0,0,.6) 74%, transparent 100%); }
 .strip { min-height: 46px; display: flex; align-items: center; justify-content: center; }
 .cta { position: relative; overflow: hidden; pointer-events: auto; min-height: 58px; padding: 16px 40px; border-radius: 999px; border: none; touch-action: manipulation;
   background: linear-gradient(180deg, #FFE9A8 0%, var(--gold) 48%, #C8881E 100%); color: #2a1e00; font-weight: 900; font-size: 18px; letter-spacing: .5px;

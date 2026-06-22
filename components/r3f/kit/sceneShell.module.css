@@ -1,0 +1,36 @@
+/* Boomzino scene backdrop: a contained luminous core behind the wheel, slow casino
+   light-rays, and a strong vignette — painted in CSS behind a transparent WebGL canvas
+   so the 3D wheel floats over a rich, themeable background instead of flat black.
+   Kept dark and deep so the wheel keeps its contrast and the controls stay legible.
+   Theme vars (--base, --glow, --glow2) are set per-scene. */
+.shell { position: fixed; inset: 0; overflow: hidden; background: var(--base); }
+
+.bg {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(70% 48% at 50% 33%, color-mix(in srgb, var(--glow) 22%, transparent) 0%, transparent 50%),
+    radial-gradient(60% 30% at 12% 14%, color-mix(in srgb, var(--glow2) 14%, transparent) 0%, transparent 60%),
+    var(--base);
+}
+
+/* Radiating light-rays from behind the wheel — the jackpot/casino signature, kept faint. */
+.rays {
+  position: absolute; inset: -25%; z-index: 0; pointer-events: none; opacity: .16;
+  background: repeating-conic-gradient(from 0deg at 50% 42%,
+    color-mix(in srgb, var(--glow) 60%, transparent) 0deg 2.6deg, transparent 2.6deg 15deg);
+  -webkit-mask-image: radial-gradient(closest-side at 50% 42%, #000 12%, transparent 58%);
+  mask-image: radial-gradient(closest-side at 50% 42%, #000 12%, transparent 58%);
+  animation: sweep 80s linear infinite;
+}
+@keyframes sweep { to { transform: rotate(360deg); } }
+
+.vignette {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(124% 86% at 50% 36%, transparent 38%, rgba(0,0,0,.7) 78%, rgba(0,0,0,.95) 100%),
+    linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.4) 24%, transparent 42%);
+}
+
+.canvas { position: absolute !important; inset: 0; z-index: 1; }
+
+@media (prefers-reduced-motion: reduce) { .rays { animation: none; } }

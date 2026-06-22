@@ -1,0 +1,31 @@
+/* DOM win celebration layered over the 3D coin storm and behind the win sheet:
+   a one-shot radial light flash + falling gold/green/cream confetti. */
+.wrap { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
+
+.flash {
+  position: absolute; inset: 0; mix-blend-mode: screen;
+  background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--gold) 60%, transparent) 0%, transparent 52%);
+  animation: flash .75s ease-out both;
+}
+@keyframes flash {
+  0% { opacity: 0; transform: scale(.55); }
+  22% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+
+.confetti {
+  position: absolute; top: -6%; border-radius: 2px;
+  animation-name: fall; animation-timing-function: ease-in; animation-fill-mode: both;
+  box-shadow: 0 0 6px rgba(0,0,0,.25);
+}
+@keyframes fall {
+  0% { transform: translate(0, -12vh) rotate(var(--rot)); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translate(var(--drift), 112vh) rotate(calc(var(--rot) + 600deg)); opacity: 1; }
+}
+
+.h0 { background: linear-gradient(180deg, #FFE9A8, var(--gold)); }
+.h1 { background: var(--accent); }
+.h2 { background: #FFF7EB; }
+
+@media (prefers-reduced-motion: reduce) { .wrap { display: none; } }
