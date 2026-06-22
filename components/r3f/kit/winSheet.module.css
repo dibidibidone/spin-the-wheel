@@ -1,0 +1,38 @@
+.scrim { position: fixed; inset: 0; background: rgba(2,10,6,.55); backdrop-filter: blur(3px); display: grid; align-items: end; animation: fade .3s ease both; }
+.scrim[hidden] { display: none !important; }
+@keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+
+.sheet {
+  pointer-events: auto; width: 100%; box-sizing: border-box;
+  background: var(--surface); color: var(--text);
+  border-top: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
+  border-radius: 22px 22px 0 0;
+  padding: 14px 20px max(env(safe-area-inset-bottom), 18px);
+  box-shadow: 0 -20px 60px color-mix(in srgb, var(--gold) 28%, transparent);
+  animation: slideup .35s cubic-bezier(.2,.8,.2,1) both;
+}
+.noanim { animation: none; }
+@keyframes slideup { from { transform: translateY(100%) } to { transform: translateY(0) } }
+
+/* Landscape phone: become a centered card instead of a full-width sheet */
+@media (orientation: landscape) and (max-height: 520px) {
+  .scrim { place-items: center; }
+  .sheet { width: min(440px, 92vw); border-radius: 18px; }
+}
+
+.grab { width: 40px; height: 4px; border-radius: 999px; background: color-mix(in srgb, var(--text) 35%, transparent); margin: 2px auto 12px; }
+.emoji { font-size: 40px; text-align: center; }
+.title { margin: 2px 0 0; text-align: center; font-size: 16px; opacity: .9; }
+.prize { margin: 2px 0 10px; text-align: center; color: var(--gold); font-size: 30px; font-weight: 800; }
+.center { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+
+.cta { width: 100%; min-height: 56px; padding: 16px; border: none; border-radius: 14px; touch-action: manipulation;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 88%, white), var(--gold)); color: #2a1e00; font-weight: 800; font-size: 17px; cursor: pointer; }
+.cta:active { transform: translateY(1px); }
+.cta:disabled { opacity: .7; cursor: default; }
+
+.field { width: 100%; box-sizing: border-box; min-height: 52px; padding: 14px 16px; border-radius: 12px; font-size: 16px;
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); background: rgba(0,0,0,.25); color: var(--text); margin-bottom: 10px; }
+.field:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+.footer { margin-top: 12px; }
