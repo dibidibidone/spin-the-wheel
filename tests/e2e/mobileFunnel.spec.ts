@@ -15,6 +15,7 @@ for (const r of ROUTES) {
     test.use({ ...iphone12, contextOptions: { reducedMotion: "reduce" } });
 
     test("portrait: canvas + sticky CTA visible, no page error", async ({ page }) => {
+      test.setTimeout(60_000);
       const errors: string[] = [];
       page.on("pageerror", (e) => errors.push(String(e)));
       await page.goto(r.path);
@@ -32,22 +33,24 @@ for (const r of ROUTES) {
     });
 
     test("spin → sheet → form field has the mobile-friendly type", async ({ page }) => {
+      test.setTimeout(90_000);
       await page.goto(r.path);
       await expect(page.locator("canvas")).toBeVisible({ timeout: 20_000 });
-      await page.getByTestId("spin-button").click();
-      await expect(page.getByTestId("win-modal")).toBeVisible({ timeout: 10_000 });
-      await expect(page.getByText(r.prize)).toBeVisible();
+      // force skips Playwright's rAF-based stability wait, which stalls while the R3F loop starves requestAnimationFrame under SwiftShader
+      await page.getByTestId("spin-button").click({ force: true });
+      await expect(page.getByTestId("win-modal")).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByText(r.prize)).toBeVisible({ timeout: 15_000 });
 
       const claimOpen = page.getByTestId("claim-open");
-      await expect(claimOpen).toBeVisible();
+      await expect(claimOpen).toBeVisible({ timeout: 15_000 });
       await expect(claimOpen).toBeEnabled();
       // force:true bypasses scroll-into-view, which stalls on active SwiftShader WebGL contexts;
       // visibility/enabled are asserted above so this can't mask a click-interception bug.
       await claimOpen.click({ force: true });
       const field = page.getByTestId("claim-field");
-      await expect(field).toBeVisible();
-      await expect(field).toHaveAttribute("type", "email");
-      await expect(field).toHaveAttribute("inputmode", "email");
+      await expect(field).toBeVisible({ timeout: 15_000 });
+      await expect(field).toHaveAttribute("type", "email", { timeout: 10_000 });
+      await expect(field).toHaveAttribute("inputmode", "email", { timeout: 10_000 });
     });
   });
 }
