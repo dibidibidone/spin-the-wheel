@@ -10,6 +10,7 @@ import { JackpotVaultOverlay } from "./JackpotVaultOverlay";
 import { useReducedMotion } from "./useReducedMotion";
 import { createSpinController, type SpinStatus } from "./spinController";
 import { getSound } from "./sound";
+import { CoinStorm } from "./CoinStorm";
 
 function SpinDriver({ controller, rotationRef, onStatus }: {
   controller: ReturnType<typeof createSpinController>;
@@ -100,6 +101,9 @@ export function JackpotVaultScene() {
         <Parallax reduced={reduced}>
           <NeonSign />
           <WheelRig rotationRef={rotationRef} reduced={reduced} />
+          {status === "won" && (
+            <CoinStorm count={reduced ? 30 : (typeof window !== "undefined" && window.innerWidth < 700 ? 60 : 120)} />
+          )}
           {!reduced && <Sparkles count={60} scale={[10, 8, 4]} size={3} speed={0.3} color="#FFD56A" />}
         </Parallax>
 
