@@ -21,7 +21,7 @@
 .strip { min-height: 18px; }
 .cta { pointer-events: auto; min-height: 56px; padding: 16px 40px; border-radius: 999px; border: none; touch-action: manipulation;
   background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 85%, white), var(--gold)); color: #2a1e00; font-weight: 800; font-size: 18px;
-  cursor: pointer; box-shadow: 0 0 30px color-mix(in srgb, var(--gold) 60%, transparent); }
+  cursor: pointer; box-shadow: 0 0 30px color-mix(in srgb, var(--gold) 60%, transparent); width: min(360px, 100%); }
 .cta:active { transform: translateY(1px); }
 .cta:disabled { opacity: .65; cursor: default; }
 
