@@ -1,9 +1,10 @@
 import type { CSSProperties } from "react";
 import css from "./spinOverlay.module.css";
-import type { SpinStatus } from "./spinController";
+import type { OverlayStatus } from "./types";
 import type { OverlayCopy, ConversionConfig } from "./types";
 import type { ClaimStep } from "./claimMachine";
 import { WinSheet } from "./WinSheet";
+import { WinBurst } from "./WinBurst";
 import { SocialProof } from "./SocialProof";
 import { Countdown } from "./Countdown";
 import { TrustBar } from "./TrustBar";
@@ -19,7 +20,7 @@ export function SpinOverlay({
   copy: OverlayCopy;
   vars: OverlayVars;
   config: ConversionConfig;
-  status: SpinStatus;
+  status: OverlayStatus;
   claimStep: ClaimStep;
   muted: boolean;
   reduced: boolean;
@@ -53,14 +54,17 @@ export function SpinOverlay({
         <div className={css.strip}>
           <SocialProof winners={config.social.winners} todayCount={config.social.todayCount} reduced={reduced} />
         </div>
-        <button data-pe data-testid="spin-button" className={css.cta} onClick={onSpin} disabled={status !== "idle"}>
-          {status === "spinning" ? copy.spinningLabel : copy.ctaLabel}
+        <button data-pe data-testid="spin-button" className={css.cta} onClick={onSpin} disabled={status === "spinning" || status === "won"}>
+          {status === "spinning" ? copy.spinningLabel : status === "nearmiss" ? (copy.retryLabel ?? copy.ctaLabel) : copy.ctaLabel}
         </button>
+        {status === "nearmiss" && copy.nearMissLine && <p className={css.retryHint} data-pe>{copy.nearMissLine}</p>}
         <div className={css.strip}>
           <Countdown durationMs={config.urgencyMs} storageKey="stw-claim-deadline" />
         </div>
         <TrustBar text={config.trust} />
       </div>
+
+      {status === "won" && <WinBurst />}
 
       <WinSheet
         step={claimStep} copy={copy} config={config} reduced={reduced}

@@ -21,6 +21,8 @@ export type OverlayCopy = {
   subBanner?: string;
   ctaLabel: string;
   spinningLabel: string;
+  retryLabel?: string;     // shown on the CTA during a near-miss
+  nearMissLine?: string;   // short sub-line under the CTA during a near-miss
   winTitle: string;
   winPrize: string;
   winEmoji: string;
@@ -39,4 +41,27 @@ export type ConversionConfig = {
   urgencyMs: number;
   social: { winners: SocialProofItem[]; todayCount: number };
   trust: string;
+};
+
+export type OverlayStatus = "idle" | "spinning" | "nearmiss" | "won";
+
+export type SlotSymbol = {
+  id: string;
+  label: string;
+  glyph: string;   // emoji/text fallback art
+  color: string;   // tile tint
+  isWin?: boolean; // the scatter/win symbol
+};
+
+export type SlotTheme = {
+  reels: number;            // 5 (Book of Ra) | 6 (Gates)
+  rows: number;             // 3 (Book of Ra) | 5 (Gates)
+  symbols: SlotSymbol[];
+  winSymbolId: string;
+  winCount: number;
+  winOnSpin: number;        // spin index that wins (default 2 = near-miss first)
+  nearMissGrid: string[][]; // winCount-1 win symbols
+  winGrid: string[][];      // winCount+ win symbols
+  durationMs: number;
+  cabinet: { frame: string; glass: string; glow: string; accent: string };
 };
