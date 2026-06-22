@@ -60,9 +60,7 @@ export function AlchemyLabScene() {
           <PotionBottle position={[2.9, -0.6, 0.6]} phase={1.5} />
           <WheelRig rotationRef={rotationRef} reduced={reduced} />
           <Cauldron erupting={won} />
-          {won && (
-            <CoinStorm count={reduced ? 30 : (typeof window !== "undefined" && window.innerWidth < 700 ? 60 : 120)} />
-          )}
+          <CoinStorm active={won} count={reduced ? 30 : (typeof window !== "undefined" && window.innerWidth < 700 ? 60 : 120)} />
           {!reduced && <Sparkles count={60} scale={[11, 8, 5]} size={2.6} speed={0.25} color="#8BFF5A" />}
         </Parallax>
 

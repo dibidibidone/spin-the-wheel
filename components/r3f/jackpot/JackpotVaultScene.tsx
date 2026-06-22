@@ -54,9 +54,7 @@ export function JackpotVaultScene() {
         <Parallax reduced={reduced}>
           <NeonSign />
           <WheelRig rotationRef={rotationRef} reduced={reduced} />
-          {status === "won" && (
-            <CoinStorm count={reduced ? 30 : (typeof window !== "undefined" && window.innerWidth < 700 ? 60 : 120)} />
-          )}
+          <CoinStorm active={status === "won"} count={reduced ? 30 : (typeof window !== "undefined" && window.innerWidth < 700 ? 60 : 120)} />
           {!reduced && <Sparkles count={60} scale={[10, 8, 4]} size={3} speed={0.3} color="#FFD56A" />}
         </Parallax>
 
