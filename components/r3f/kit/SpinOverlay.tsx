@@ -37,7 +37,7 @@ export function SpinOverlay({
   return (
     <div className={css.overlay} style={style}>
       <div className={css.top}>
-        <div className={css.logo}>{copy.logo}</div>
+        <img className={css.logo} src="/boomzino-logo.jpg" alt={copy.logo} />
         <button data-pe data-testid="sound-toggle" className={css.sound} onClick={onToggleSound} aria-label="Toggle sound">
           {muted ? "🔇" : "🔊"}
         </button>

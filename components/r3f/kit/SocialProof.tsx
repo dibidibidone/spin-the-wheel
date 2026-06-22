@@ -19,11 +19,18 @@ export function SocialProof({ winners, todayCount, reduced }: {
 
   if (winners.length === 0) return null;
   const item = winners[Math.min(i, winners.length - 1)];
+  const initial = item.name.slice(0, 1).toUpperCase();
 
   return (
     <div className={css.wrap} data-testid="social-proof">
-      <span className={css.line}>{formatWinner(item)}</span>
-      <span className={css.count}>{todayCount.toLocaleString()} players won today</span>
+      <span className={css.row} title={formatWinner(item)}>
+        <span className={css.live}><span className={css.dot} aria-hidden />Live</span>
+        <span className={css.avatar} aria-hidden>{initial}</span>
+        <span className={css.who}>{item.name} won</span>
+        <span className={css.amount}>{item.amount}</span>
+        <span className={css.ago}>· {item.minutesAgo <= 0 ? "now" : `${item.minutesAgo}m`}</span>
+      </span>
+      <span className={css.count}><b>{todayCount.toLocaleString()}</b> players won today</span>
     </div>
   );
 }

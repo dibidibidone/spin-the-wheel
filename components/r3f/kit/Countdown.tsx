@@ -19,11 +19,16 @@ export function Countdown({ durationMs, storageKey, prominent = false }: {
 
   const left = remainingMs(deadline.current, now);
   const pct = Math.max(0, Math.min(100, (left / durationMs) * 100));
-  const text = left > 0 ? `Bonus locked for ${formatMMSS(left)}` : "Last chance!";
+  const urgent = left <= 60_000;
+  const cls = `${css.wrap}${prominent ? " " + css.prominent : ""}${urgent ? " " + css.urgent : ""}`;
 
   return (
-    <div className={css.wrap} data-testid="countdown">
-      <span className={`${css.label}${prominent ? " " + css.prominent : ""}`}>⏱ {text}</span>
+    <div className={cls} data-testid="countdown">
+      <span className={css.chip}>
+        <span className={css.icon} aria-hidden>⏳</span>
+        <span className={css.eyebrow}>{left > 0 ? "Bonus locked" : "Hurry"}</span>
+        <span className={css.time}>{left > 0 ? formatMMSS(left) : "Last chance!"}</span>
+      </span>
       <span className={css.bar}><span className={css.fill} style={{ width: `${pct}%` }} /></span>
     </div>
   );

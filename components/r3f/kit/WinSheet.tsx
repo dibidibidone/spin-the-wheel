@@ -26,9 +26,10 @@ export function WinSheet({ step, copy, config, reduced, onOpen, onSubmit, onDism
       onClick={(e) => { if (e.target === e.currentTarget) onDismiss(); }}>
       <div className={`${css.sheet}${reduced ? " " + css.noanim : ""}`} data-pe>
         <div className={css.grab} aria-hidden />
-        <div className={css.emoji}>{copy.winEmoji}</div>
-        <div className={css.title}>{copy.winTitle}</div>
+        <img className={css.logo} src="/boomzino-logo.jpg" alt={copy.logo} />
+        <div className={css.eyebrow}>{copy.winEmoji} {copy.winTitle}</div>
         <div className={css.prize}>{config.prize}</div>
+        <div className={css.rule} aria-hidden />
 
         {step === "reveal" && (
           <div className={css.center}>
