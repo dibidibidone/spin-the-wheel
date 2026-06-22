@@ -19,11 +19,11 @@ describe("withConversionDefaults", () => {
     expect(c.urgencyMs).toBe(600_000); // still default
   });
 
-  it("merges a partial social object, preserving unspecified social fields", () => {
-    const c = withConversionDefaults({ social: { todayCount: 99 } });
-    expect(c.social.todayCount).toBe(99);          // override applied
-    expect(Array.isArray(c.social.winners)).toBe(true); // unspecified field preserved from defaults
-    expect(c.social.winners.length).toBeGreaterThan(0);
-    expect(c.urgencyMs).toBe(600_000);             // unrelated defaults intact
+  it("applies a provided social object over the defaults", () => {
+    const winners = [{ name: "Zoe", amount: "€9", minutesAgo: 3 }];
+    const c = withConversionDefaults({ social: { winners, todayCount: 99 } });
+    expect(c.social.todayCount).toBe(99);
+    expect(c.social.winners).toEqual(winners);
+    expect(c.urgencyMs).toBe(600_000); // unrelated defaults intact
   });
 });
