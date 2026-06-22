@@ -1,4 +1,5 @@
 import type { WheelTheme, SoundConfig, OverlayCopy } from "../kit/types";
+import type { OverlayVars } from "../kit/SpinOverlay";
 
 const LABELS = ["€5", "50 FS", "€10", "100 FS", "€20", "200 FS", "50% Bonus", "JACKPOT"];
 
@@ -31,7 +32,7 @@ export const jackpotCopy: OverlayCopy = {
   winEmoji: "💰",
 };
 
-export const jackpotOverlayVars = {
+export const jackpotOverlayVars: OverlayVars = {
   gold: "#F5C24B", accent: "#FFD56A", surface: "#15564A",
   text: "#EAF6EE", bannerBg: "#E2483D", bannerBorder: "#F5C24B",
 };

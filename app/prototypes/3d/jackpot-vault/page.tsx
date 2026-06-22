@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 
 const JackpotVaultScene = dynamic(
-  () => import("@/components/r3f/JackpotVaultScene").then((m) => m.JackpotVaultScene),
+  () => import("@/components/r3f/jackpot/JackpotVaultScene").then((m) => m.JackpotVaultScene),
   {
     ssr: false,
     loading: () => (
