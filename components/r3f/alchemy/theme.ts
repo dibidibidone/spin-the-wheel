@@ -1,5 +1,6 @@
 import type { WheelTheme, SoundConfig, OverlayCopy } from "../kit/types";
 import type { OverlayVars } from "../kit/SpinOverlay";
+import { withConversionDefaults } from "../kit/conversion";
 
 const LABELS = ["€5", "50 FS", "€10", "100 FS", "€20", "200 FS", "50% Bonus", "JACKPOT"];
 
@@ -36,3 +37,20 @@ export const alchemyOverlayVars: OverlayVars = {
   gold: "#F5C24B", accent: "#5BE36A", surface: "#15564A",
   text: "#EAF6EE", bannerBg: "#15564A", bannerBorder: "#5BE36A",
 };
+
+export const alchemyConversion = withConversionDefaults({
+  prize: "500 Free Spins",
+  claimLabel: "Claim my potion →",
+  registerField: "email",
+  registerPlaceholder: "you@email.com",
+  redirectUrl: "https://example.com/register?src=alchemy-lab",
+  urgencyMs: 600_000,
+  social: {
+    winners: [
+      { name: "Nadia", amount: "200 FS", minutesAgo: 1 },
+      { name: "Yusuf", amount: "€100", minutesAgo: 4 },
+      { name: "Eva", amount: "€50", minutesAgo: 7 },
+    ],
+    todayCount: 1894,
+  },
+});

@@ -1,5 +1,6 @@
 import type { WheelTheme, SoundConfig, OverlayCopy } from "../kit/types";
 import type { OverlayVars } from "../kit/SpinOverlay";
+import { withConversionDefaults } from "../kit/conversion";
 
 const LABELS = ["€5", "50 FS", "€10", "100 FS", "€20", "200 FS", "50% Bonus", "JACKPOT"];
 
@@ -36,3 +37,20 @@ export const jackpotOverlayVars: OverlayVars = {
   gold: "#F5C24B", accent: "#FFD56A", surface: "#15564A",
   text: "#EAF6EE", bannerBg: "#E2483D", bannerBorder: "#F5C24B",
 };
+
+export const jackpotConversion = withConversionDefaults({
+  prize: "1,000 Free Spins",
+  claimLabel: "Claim jackpot bonus →",
+  registerField: "email",
+  registerPlaceholder: "you@email.com",
+  redirectUrl: "https://example.com/register?src=jackpot-vault",
+  urgencyMs: 600_000,
+  social: {
+    winners: [
+      { name: "Aisha", amount: "€500", minutesAgo: 2 },
+      { name: "Marco", amount: "JACKPOT", minutesAgo: 6 },
+      { name: "Lena", amount: "€200", minutesAgo: 9 },
+    ],
+    todayCount: 3127,
+  },
+});

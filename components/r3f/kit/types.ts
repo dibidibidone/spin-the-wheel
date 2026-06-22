@@ -26,3 +26,18 @@ export type OverlayCopy = {
   claimLabel: string;
   winEmoji: string;
 };
+
+export type RegisterField = "email" | "tel";
+
+export type SocialProofItem = { name: string; amount: string; minutesAgo: number };
+
+export type ConversionConfig = {
+  prize: string;
+  claimLabel: string;
+  registerField: RegisterField;
+  registerPlaceholder: string;
+  redirectUrl: string;
+  urgencyMs: number;
+  social: { winners: SocialProofItem[]; todayCount: number };
+  trust: string;
+};
