@@ -2,10 +2,11 @@ import css from "./jackpotVault.module.css";
 import type { SpinStatus } from "./spinController";
 
 export function JackpotVaultOverlay({
-  status, muted, onSpin, onToggleSound, onClaim,
+  status, muted, modalOpen, onSpin, onToggleSound, onClaim,
 }: {
   status: SpinStatus;
   muted: boolean;
+  modalOpen: boolean;
   onSpin: () => void;
   onToggleSound: () => void;
   onClaim: () => void;
@@ -28,7 +29,7 @@ export function JackpotVaultOverlay({
       >
         {status === "spinning" ? "SPINNING…" : "SPIN TO WIN"}
       </button>
-      <div className={css.win} data-testid="win-modal" hidden={status !== "won"}>
+      <div className={css.win} data-testid="win-modal" hidden={!modalOpen}>
         <div className={css.card} data-pe>
           <div style={{ fontSize: 44 }}>💰</div>
           <h2>JACKPOT — You won</h2>

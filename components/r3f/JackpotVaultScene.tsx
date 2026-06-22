@@ -62,6 +62,13 @@ export function JackpotVaultScene() {
   const rotationRef = useRef(0);
   const [status, setStatus] = useState<SpinStatus>("idle");
   const [muted, setMuted] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  // On win, let the coin storm play for a beat before the modal fades in (instant under reduced motion).
+  useEffect(() => {
+    if (status !== "won") { setModalOpen(false); return; }
+    const t = setTimeout(() => setModalOpen(true), reduced ? 0 : 1100);
+    return () => clearTimeout(t);
+  }, [status, reduced]);
   const controller = useMemo(
     () => createSpinController({ winningIndex: 7, durationMs: reduced ? 250 : 4500, turns: reduced ? 0 : 6 }),
     [reduced]
@@ -113,7 +120,7 @@ export function JackpotVaultScene() {
       </Canvas>
 
       <JackpotVaultOverlay
-        status={status} muted={muted}
+        status={status} muted={muted} modalOpen={modalOpen}
         onSpin={onSpin} onToggleSound={onToggleSound} onClaim={onClaim}
       />
     </div>
