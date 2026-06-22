@@ -64,7 +64,7 @@ export function Wheel3D({ rotationRef }: { rotationRef: MutableRefObject<number>
         const geom = new THREE.ExtrudeGeometry(shape, {
           depth: 0.35, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.05, bevelSegments: 2,
         });
-        return { geom, color: SEG_COLORS[i], jackpot: i === 7 };
+        return { geom, color: SEG_COLORS[i], jackpot: i === 7, gold: i === 1 || i === 3 || i === 5 };
       }),
     [seg]
   );
@@ -93,11 +93,11 @@ export function Wheel3D({ rotationRef }: { rotationRef: MutableRefObject<number>
         {wedges.map((w, i) => (
           <mesh key={i} geometry={w.geom} castShadow>
             <meshStandardMaterial
-              color={w.color}
-              metalness={w.jackpot || w.color === "#F5C24B" ? 0.95 : 0.4}
-              roughness={0.3}
-              emissive={w.jackpot ? "#E2483D" : w.color === "#F5C24B" ? "#5a3d00" : "#08221c"}
-              emissiveIntensity={w.jackpot ? 1.4 : 0.6}
+              color={w.gold ? "#FFD24A" : w.color}
+              metalness={w.jackpot ? 0.95 : w.gold ? 0.6 : 0.4}
+              roughness={w.gold ? 0.28 : 0.3}
+              emissive={w.jackpot ? "#E2483D" : w.gold ? "#8a6200" : "#08221c"}
+              emissiveIntensity={w.jackpot ? 1.4 : w.gold ? 1.15 : 0.6}
             />
           </mesh>
         ))}
