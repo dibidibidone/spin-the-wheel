@@ -26,12 +26,14 @@ export function createSlotController({
   let elapsed = 0;
   let winning = false;
   const offsets = new Array<number>(reels).fill(0);
-  const stopped = new Array<boolean>(reels).fill(true);
+  const stopped = new Array<boolean>(reels).fill(true); // true = at rest (idle); set false per reel on start()
 
   // Neutral idle board: a calm strip per reel so something renders before spin 1.
   const neutralGrid = Array.from({ length: reels }, (_, i) =>
     Array.from({ length: rows }, (_, r) => pool[(i * rows + r) % pool.length])
   );
+  // NOTE: `strips` is REPLACED (new array) on each start()/reset() — never cache
+  // `controller.strips`; always read it through the getter so you see the current spin.
   let strips: string[][] = neutralGrid.map((col) => buildReelStrip(pool, col, spinRows));
 
   return {

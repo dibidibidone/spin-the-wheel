@@ -62,5 +62,6 @@ describe("createSlotController", () => {
     c.reset();
     expect(c.status).toBe("idle");
     expect(c.spinCount).toBe(0);
+    expect(c.strips.map((s) => s.slice(-3))).not.toEqual(winGrid); // reset rebuilds neutral strips, not the win grid
   });
 });
