@@ -1,0 +1,19 @@
+.wrap { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none;
+  padding-bottom: 24vh; padding-top: 14vh; z-index: 1; }
+.cabinet { --tile: clamp(38px, 12.5vw, 82px); padding: 14px; border-radius: 20px;
+  background: var(--frame); border: 3px solid var(--accent);
+  box-shadow: 0 24px 70px rgba(0,0,0,.62), inset 0 0 34px var(--glow); }
+.glass { display: grid; grid-auto-flow: column; gap: 6px; padding: 8px; border-radius: 14px;
+  background: var(--glass); }
+.reel { width: var(--tile); height: calc(var(--tile) * var(--rows)); overflow: hidden; position: relative;
+  border-radius: 8px; background: rgba(0,0,0,.25); }
+.strip { position: absolute; top: 0; left: 0; right: 0; display: flex; flex-direction: column;
+  will-change: transform; }
+.tile { height: var(--tile); display: grid; place-items: center; font-size: calc(var(--tile) * .52);
+  line-height: 1; border-bottom: 1px solid rgba(0,0,0,.22);
+  text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.tile.win { filter: drop-shadow(0 0 10px currentColor); }
+@media (orientation: landscape) and (max-height: 560px) {
+  .wrap { padding-bottom: 16vh; padding-top: 8vh; }
+  .cabinet { --tile: clamp(30px, 8.5vh, 60px); }
+}
