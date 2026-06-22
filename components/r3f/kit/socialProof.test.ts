@@ -10,6 +10,10 @@ describe("socialProof", () => {
     expect(formatWinner({ name: "Eva", amount: "€50", minutesAgo: 0 })).toBe("🔥 Eva won €50 · just now");
   });
 
+  it("treats negative minutesAgo as 'just now'", () => {
+    expect(formatWinner({ name: "X", amount: "€1", minutesAgo: -1 })).toBe("🔥 X won €1 · just now");
+  });
+
   it("rotates the index and wraps", () => {
     expect(nextIndex(0, 3)).toBe(1);
     expect(nextIndex(2, 3)).toBe(0);

@@ -9,7 +9,10 @@ export function SocialProof({ winners, todayCount, reduced }: {
 }) {
   const [i, setI] = useState(0);
   useEffect(() => {
-    if (reduced || winners.length <= 1) return;
+    if (reduced || winners.length <= 1) {
+      setI(0);
+      return;
+    }
     const id = window.setInterval(() => setI((p) => nextIndex(p, winners.length)), 3500);
     return () => window.clearInterval(id);
   }, [reduced, winners.length]);
