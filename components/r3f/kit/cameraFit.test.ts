@@ -22,4 +22,10 @@ describe("fitCameraDistance", () => {
     const halfH = d * Math.tan((fovDeg * Math.PI) / 180 / 2) * 0.46;
     expect(halfH).toBeGreaterThan(radius); // wheel fits horizontally with room to spare
   });
+
+  it("landscape viewport is not pushed further back than square (min(aspect,1) clamp)", () => {
+    const square = fitCameraDistance({ radius, aspect: 1, fovDeg, margin: 1 });
+    const landscape = fitCameraDistance({ radius, aspect: 2, fovDeg, margin: 1 });
+    expect(landscape).toBeCloseTo(square, 5); // aspect>1 clamps to 1; vertical axis limits
+  });
 });

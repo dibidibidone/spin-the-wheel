@@ -14,7 +14,6 @@ export function ResponsiveCamera({ radius, portraitBias = 0.35 }: { radius: numb
     const portrait = aspect < 1;
     camera.position.y = portrait ? portraitBias * radius : 0;
     camera.lookAt(0, camera.position.y * 0.4, 0);
-    camera.updateProjectionMatrix();
   }, [camera, width, height, radius, portraitBias]);
 
   return null;
