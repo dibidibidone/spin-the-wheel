@@ -38,11 +38,12 @@ for (const r of ROUTES) {
       await expect(page.getByTestId("win-modal")).toBeVisible({ timeout: 10_000 });
       await expect(page.getByText(r.prize)).toBeVisible();
 
-      // force:true bypasses Playwright's scroll-into-view machinery, which stalls indefinitely
-      // on pages with active software-WebGL contexts (GPU ReadPixels stalls). The button is
-      // confirmed visible/enabled; direct DOM click works — this is a Playwright + SwiftShader
-      // interaction, not an app bug.
-      await page.getByTestId("claim-open").click({ force: true });
+      const claimOpen = page.getByTestId("claim-open");
+      await expect(claimOpen).toBeVisible();
+      await expect(claimOpen).toBeEnabled();
+      // force:true bypasses scroll-into-view, which stalls on active SwiftShader WebGL contexts;
+      // visibility/enabled are asserted above so this can't mask a click-interception bug.
+      await claimOpen.click({ force: true });
       const field = page.getByTestId("claim-field");
       await expect(field).toBeVisible();
       await expect(field).toHaveAttribute("type", "email");
