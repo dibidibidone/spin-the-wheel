@@ -65,7 +65,7 @@ export function Cauldron({ erupting = false }: { erupting?: boolean }) {
       </mesh>
       <pointLight position={[0, 0.6, 0]} intensity={erupting ? 80 : 24} distance={7} color="#5BE36A" />
       <group position={[0, 0.25, 0]}>
-        <Bubbles count={erupting ? 90 : 42} radius={1.0} rise={erupting ? 3.4 : 1.7} color="#8BFF5A" />
+        <Bubbles key={erupting ? "erupt" : "idle"} count={erupting ? 90 : 42} radius={1.0} rise={erupting ? 3.4 : 1.7} color="#8BFF5A" />
       </group>
     </group>
   );

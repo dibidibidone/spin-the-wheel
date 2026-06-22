@@ -1,4 +1,4 @@
-import { Float, Sparkles } from "@react-three/drei";
+import { Float } from "@react-three/drei";
 import * as THREE from "three";
 
 function Beaker({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
