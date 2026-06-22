@@ -10,6 +10,9 @@ import { SpinOverlay } from "../kit/SpinOverlay";
 import { createSound } from "../kit/sound";
 import { useReducedMotion } from "../kit/useReducedMotion";
 import { alchemyWheel, alchemySound, alchemyCopy, alchemyOverlayVars } from "./theme";
+import { Cauldron } from "./Cauldron";
+import { PotionBottle } from "./PotionBottle";
+import { LabBackdrop } from "./LabBackdrop";
 
 function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
   const wheel = <Wheel3D rotationRef={rotationRef} theme={alchemyWheel} />;
@@ -20,6 +23,7 @@ export function AlchemyLabScene() {
   const reduced = useReducedMotion();
   const sound = useMemo(() => createSound(alchemySound), []);
   const { rotationRef, status, muted, modalOpen, controller, onSpin, onStatus, onToggleSound } = useSpinScene({ reduced, sound });
+  const won = status === "won";
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#0A1A14" }}>
@@ -36,8 +40,12 @@ export function AlchemyLabScene() {
 
         <SpinDriver controller={controller} rotationRef={rotationRef} onStatus={onStatus} />
         <Parallax reduced={reduced}>
+          <LabBackdrop reduced={reduced} />
+          <PotionBottle position={[-2.9, -0.6, 0.6]} phase={0} />
+          <PotionBottle position={[2.9, -0.6, 0.6]} phase={1.5} />
           <WheelRig rotationRef={rotationRef} reduced={reduced} />
-          {status === "won" && (
+          <Cauldron erupting={won} />
+          {won && (
             <CoinStorm count={reduced ? 30 : (typeof window !== "undefined" && window.innerWidth < 700 ? 60 : 120)} />
           )}
           {!reduced && <Sparkles count={60} scale={[11, 8, 5]} size={2.6} speed={0.25} color="#8BFF5A" />}
