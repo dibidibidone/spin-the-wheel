@@ -18,4 +18,12 @@ describe("withConversionDefaults", () => {
     expect(c.registerField).toBe("tel");
     expect(c.urgencyMs).toBe(600_000); // still default
   });
+
+  it("merges a partial social object, preserving unspecified social fields", () => {
+    const c = withConversionDefaults({ social: { todayCount: 99 } });
+    expect(c.social.todayCount).toBe(99);          // override applied
+    expect(Array.isArray(c.social.winners)).toBe(true); // unspecified field preserved from defaults
+    expect(c.social.winners.length).toBeGreaterThan(0);
+    expect(c.urgencyMs).toBe(600_000);             // unrelated defaults intact
+  });
 });
