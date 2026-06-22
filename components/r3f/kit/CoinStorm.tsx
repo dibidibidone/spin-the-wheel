@@ -7,7 +7,7 @@ class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   render() { return this.state.failed ? null : this.props.children; }
 }
 
-function Coins({ count }: { count: number }) {
+function Coins({ count, color }: { count: number; color: string }) {
   // A fountain from the wheel hub: coins erupt radially outward + up + toward the
   // camera, arc within the frame, then fall and settle on a floor just below the
   // visible wheel so the pile-up reads on-screen.
@@ -32,7 +32,7 @@ function Coins({ count }: { count: number }) {
         <RigidBody key={i} position={c.pos} rotation={c.rot} linearVelocity={c.vel} angularVelocity={c.spin} colliders="hull" restitution={0.45} friction={0.6}>
           <mesh>
             <cylinderGeometry args={[0.19, 0.19, 0.05, 22]} />
-            <meshStandardMaterial color="#FFD56A" metalness={1} roughness={0.22} emissive="#7a5200" emissiveIntensity={0.9} />
+            <meshStandardMaterial color={color} metalness={1} roughness={0.22} emissive="#7a5200" emissiveIntensity={0.9} />
           </mesh>
         </RigidBody>
       ))}
@@ -40,10 +40,10 @@ function Coins({ count }: { count: number }) {
   );
 }
 
-export function CoinStorm({ count = 120 }: { count?: number }) {
+export function CoinStorm({ count = 120, color = "#FFD56A" }: { count?: number; color?: string }) {
   return (
     <Boundary>
-      <Coins count={count} />
+      <Coins count={count} color={color} />
     </Boundary>
   );
 }

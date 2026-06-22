@@ -5,12 +5,12 @@ import { Environment, Lightformer, Float, Sparkles, PerformanceMonitor, Adaptive
 import * as THREE from "three";
 import { Wheel3D } from "./Wheel3D";
 import { NeonSign } from "./NeonSign";
-import { Effects } from "./Effects";
+import { Effects } from "./kit/Effects";
 import { JackpotVaultOverlay } from "./JackpotVaultOverlay";
-import { useReducedMotion } from "./useReducedMotion";
-import { createSpinController, type SpinStatus } from "./spinController";
+import { useReducedMotion } from "./kit/useReducedMotion";
+import { createSpinController, type SpinStatus } from "./kit/spinController";
 import { getSound } from "./sound";
-import { CoinStorm } from "./CoinStorm";
+import { CoinStorm } from "./kit/CoinStorm";
 
 function SpinDriver({ controller, rotationRef, onStatus }: {
   controller: ReturnType<typeof createSpinController>;

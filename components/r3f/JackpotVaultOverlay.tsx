@@ -1,5 +1,5 @@
 import css from "./jackpotVault.module.css";
-import type { SpinStatus } from "./spinController";
+import type { SpinStatus } from "./kit/spinController";
 
 export function JackpotVaultOverlay({
   status, muted, modalOpen, onSpin, onToggleSound, onClaim,
