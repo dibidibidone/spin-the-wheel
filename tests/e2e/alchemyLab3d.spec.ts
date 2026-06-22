@@ -10,7 +10,7 @@ test("3D Alchemy Lab route boots a WebGL canvas", async ({ page }) => {
 });
 
 test.describe("spin to win", () => {
-  test.use({ reducedMotion: "reduce" });
+  test.use({ contextOptions: { reducedMotion: "reduce" } });
   test("SPIN reaches the win modal; overlay UI present", async ({ page }) => {
     await page.goto("/prototypes/3d/alchemy-lab");
     await expect(page.locator("canvas")).toBeVisible({ timeout: 20_000 });

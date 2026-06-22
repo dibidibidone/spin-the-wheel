@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - Test runner: `npm test` (vitest run). Tests are `*.test.ts(x)` co-located next to source. jsdom env, globals on, `@/*` → repo root, jest-dom matchers available.
-- E2E: `npm run e2e` (Playwright, `tests/e2e/*.spec.ts`). Select by `data-testid`. Use the `reducedMotion: "reduce"` fixture to shorten the demo spin to ~250ms.
+- E2E: `npm run e2e` (Playwright, `tests/e2e/*.spec.ts`). Select by `data-testid`. Shorten the demo spin to ~250ms by emulating reduced motion via `test.use({ contextOptions: { reducedMotion: "reduce" } })` — note: in Playwright 1.49 `reducedMotion` is NOT a top-level `test.use` option (only `colorScheme`/`locale`/`viewport` are); it must go through `contextOptions`.
 - All new kit code lives under `components/r3f/kit/`. Keep files small and single-responsibility.
 - Per-page difference is **data only** — no bespoke layout code in page files or scenes beyond passing config.
 - Reduced-motion (`prefers-reduced-motion: reduce`) MUST disable haptics, sheet slide animation, social-proof auto-rotation, and the float/sparkles (existing behaviour).
@@ -1547,7 +1547,7 @@ Replace the `test.describe("spin to win", ...)` block in `tests/e2e/jackpotVault
 
 ```ts
 test.describe("spin to win", () => {
-  test.use({ reducedMotion: "reduce" }); // shortens the demo spin to ~250ms
+  test.use({ contextOptions: { reducedMotion: "reduce" } }); // shortens the demo spin to ~250ms
   test("SPIN reveals the win sheet with the concrete prize", async ({ page }) => {
     await page.goto("/prototypes/3d/jackpot-vault");
     await expect(page.locator("canvas")).toBeVisible({ timeout: 20_000 });
@@ -1586,7 +1586,7 @@ const ROUTES = [
 
 for (const r of ROUTES) {
   test.describe(`${r.name} mobile funnel`, () => {
-    test.use({ ...devices["iPhone 12"], reducedMotion: "reduce" });
+    test.use({ ...devices["iPhone 12"], contextOptions: { reducedMotion: "reduce" } });
 
     test("portrait: canvas + sticky CTA visible, no page error", async ({ page }) => {
       const errors: string[] = [];
@@ -1639,7 +1639,7 @@ const ROUTES = ["/prototypes/3d/jackpot-vault", "/prototypes/3d/alchemy-lab"];
 for (const path of ROUTES) {
   const slug = path.split("/").pop();
   test.describe(`shots ${slug}`, () => {
-    test.use({ ...devices["iPhone 12"], reducedMotion: "reduce" });
+    test.use({ ...devices["iPhone 12"], contextOptions: { reducedMotion: "reduce" } });
     test("idle + win", async ({ page }) => {
       await page.goto(path);
       await page.locator("canvas").waitFor({ state: "visible", timeout: 20_000 });
