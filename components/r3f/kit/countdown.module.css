@@ -1,0 +1,5 @@
+.wrap { display: inline-flex; flex-direction: column; gap: 4px; align-items: center; font-variant-numeric: tabular-nums; }
+.label { font-size: 13px; opacity: .9; color: var(--text); }
+.label.prominent { font-size: 15px; font-weight: 700; color: var(--gold); }
+.bar { width: min(280px, 80vw); height: 4px; border-radius: 999px; background: color-mix(in srgb, var(--gold) 20%, transparent); overflow: hidden; }
+.fill { height: 100%; background: var(--gold); transition: width .9s linear; }
