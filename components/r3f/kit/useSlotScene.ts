@@ -22,7 +22,7 @@ export function useSlotScene({ reduced, sound, theme, conversion, onClaim, navig
     () => createSlotController({
       reels: theme.reels,
       rows: theme.rows,
-      pool: theme.symbols.map((s) => s.id),
+      pool: theme.symbols.filter((s) => !s.isOrb).map((s) => s.id), // orbs only drop on the win, never in the spinning filler
       nearMissGrid: theme.nearMissGrid,
       winGrid: theme.winGrid,
       winOnSpin: theme.winOnSpin,

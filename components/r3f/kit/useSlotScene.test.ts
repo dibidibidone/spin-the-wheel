@@ -14,6 +14,7 @@ const theme: SlotTheme = {
   winSymbolId: "book", winCount: 3, winOnSpin: 2,
   nearMissGrid: [["a", "book", "b"], ["a", "b", "a"], ["b", "a", "b"]],
   winGrid: [["a", "book", "b"], ["a", "book", "a"], ["b", "book", "b"]],
+  winningCells: [[0, 1], [1, 1], [2, 1]],
   durationMs: 1000,
   cabinet: { frame: "#000", glass: "#000", glow: "#000", accent: "#fc0" },
 };

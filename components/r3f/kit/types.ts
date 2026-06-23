@@ -50,8 +50,13 @@ export type SlotSymbol = {
   label: string;
   glyph: string;   // emoji/text fallback art
   color: string;   // tile tint
-  isWin?: boolean; // the scatter/win symbol
+  isWin?: boolean; // the scatter/win symbol (subtle constant glow)
+  tier?: number;   // value tier (higher = richer) → styling weight
+  isOrb?: boolean; // Gates multiplier orb: render a glowing sphere, glyph = the ×value
 };
+
+// A visible result cell, as [reel index, row index] into the rows-tall window.
+export type SlotCell = [reel: number, row: number];
 
 export type SlotTheme = {
   reels: number;            // 5 (Book of Ra) | 6 (Gates)
@@ -62,6 +67,8 @@ export type SlotTheme = {
   winOnSpin: number;        // spin index that wins (default 2 = near-miss first)
   nearMissGrid: string[][]; // winCount-1 win symbols
   winGrid: string[][];      // winCount+ win symbols
+  winningCells: SlotCell[]; // cells forming the win; lit on `won`, others dimmed
+  winLineRow?: number;      // optional payline row (Book of Ra draws a line across it)
   durationMs: number;
   cabinet: { frame: string; glass: string; glow: string; accent: string };
 };
