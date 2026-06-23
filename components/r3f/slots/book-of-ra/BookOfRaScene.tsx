@@ -23,7 +23,7 @@ export function BookOfRaScene({ config }: { config?: LandingSceneConfig } = {}) 
   const sound = useMemo(() => createSound(bookOfRaSound), []);
   const conversion = config?.conversion ?? bookOfRaConversion;
   const copy = config?.copy ? { ...bookOfRaCopy, ...config.copy } : bookOfRaCopy;
-  const theme = config?.spinsBeforeWin ? { ...bookOfRaTheme, winOnSpin: config.spinsBeforeWin } : bookOfRaTheme;
+  const theme = config?.spinsBeforeWin != null ? { ...bookOfRaTheme, winOnSpin: config.spinsBeforeWin } : bookOfRaTheme;
   const pwa = usePwaInstall();
   const prompted = useRef(false);
   const handleSpinStart = config ? () => { if (!prompted.current) { prompted.current = true; pwa.promptInstall(); } } : undefined;

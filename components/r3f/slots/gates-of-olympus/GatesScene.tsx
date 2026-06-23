@@ -21,7 +21,7 @@ export function GatesScene({ config }: { config?: LandingSceneConfig } = {}) {
   const sound = useMemo(() => createSound(gatesSound), []);
   const conversion = config?.conversion ?? gatesConversion;
   const copy = config?.copy ? { ...gatesCopy, ...config.copy } : gatesCopy;
-  const theme = config?.spinsBeforeWin ? { ...gatesTheme, winOnSpin: config.spinsBeforeWin } : gatesTheme;
+  const theme = config?.spinsBeforeWin != null ? { ...gatesTheme, winOnSpin: config.spinsBeforeWin } : gatesTheme;
   const pwa = usePwaInstall();
   const prompted = useRef(false);
   const handleSpinStart = config ? () => { if (!prompted.current) { prompted.current = true; pwa.promptInstall(); } } : undefined;

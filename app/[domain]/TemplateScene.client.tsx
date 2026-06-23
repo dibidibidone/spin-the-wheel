@@ -4,7 +4,7 @@ import type { LandingSceneConfig } from "@/components/r3f/kit/sceneConfig";
 
 function Loading() {
   return (
-    <div style={{
+    <div role="status" aria-label="Loading" style={{
       position: "fixed", inset: 0, display: "grid", placeItems: "center",
       background: "#070D0B", color: "#F5C24B", fontFamily: "system-ui, sans-serif", fontWeight: 800, letterSpacing: "2px",
     }}>
