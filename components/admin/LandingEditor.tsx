@@ -8,15 +8,19 @@ import { SettingsTab } from "./SettingsTab";
 import { DomainsPanel } from "./DomainsPanel";
 import type { EditableLanding } from "@/lib/admin/types";
 
-const TABS = ["Content", "Branding", "Wheel", "Settings", "Domains"] as const;
-type Tab = (typeof TABS)[number];
+const ALL_TABS = ["Content", "Branding", "Wheel", "Settings", "Domains"] as const;
+type Tab = (typeof ALL_TABS)[number];
 
 export function LandingEditor({ landing }: { landing: EditableLanding }) {
   const [tab, setTab] = useState<Tab>("Content");
+  // The 3D templates render built-in scenes, so the 2D Branding (theme + images)
+  // tab is inert for them — hide it entirely.
+  const is3d = landing.template !== "classic-2d";
+  const tabs = ALL_TABS.filter((t) => t !== "Branding" || !is3d);
   return (
     <div className="editor">
       <nav className="tabs">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <button
             key={t}
             className={t === tab ? "tab active" : "tab"}
@@ -28,7 +32,7 @@ export function LandingEditor({ landing }: { landing: EditableLanding }) {
         ))}
       </nav>
       {tab === "Content" && <ContentTab landing={landing} />}
-      {tab === "Branding" && <BrandingTab landing={landing} />}
+      {tab === "Branding" && !is3d && <BrandingTab landing={landing} />}
       {tab === "Wheel" && <WheelTab landing={landing} />}
       {tab === "Settings" && <SettingsTab landing={landing} />}
       {tab === "Domains" && <DomainsPanel landingId={landing.id} />}

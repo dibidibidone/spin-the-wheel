@@ -54,17 +54,8 @@ export function BrandingTab({ landing }: { landing: EditableLanding }) {
     }
   }
 
-  const is3d = landing.template !== "classic-2d";
-
   return (
     <div className="tab-panel">
-      {is3d && (
-        <p className="tab-note">
-          This template renders a built-in 3D scene, so these theme colours and images don’t change its
-          look — only the <strong>Background</strong> and <strong>Gold</strong> colours feed the installable
-          app’s manifest. Set the app icon in <strong>Settings → Download app</strong>.
-        </p>
-      )}
       <div className="theme-grid">
         {COLOR_LABELS.map(([key, label]) => (
           <Field key={key} label={label} type="text" value={theme[key]} onChange={setColor(key)} />

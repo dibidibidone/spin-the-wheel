@@ -30,4 +30,17 @@ describe("LandingEditor", () => {
     await userEvent.click(screen.getByTestId("tab-settings"));
     expect(screen.getByLabelText("Status")).toBeInTheDocument();
   });
+
+  it("shows the Branding tab for the classic-2d template", () => {
+    render(<LandingEditor landing={landing()} />);
+    expect(screen.getByTestId("tab-branding")).toBeInTheDocument();
+  });
+
+  it("hides the Branding tab for a 3D template, keeping the others", () => {
+    render(<LandingEditor landing={{ ...landing(), template: "jackpot-vault" }} />);
+    expect(screen.queryByTestId("tab-branding")).toBeNull();
+    for (const t of ["content", "wheel", "settings", "domains"]) {
+      expect(screen.getByTestId(`tab-${t}`)).toBeInTheDocument();
+    }
+  });
 });
