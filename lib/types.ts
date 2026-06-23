@@ -50,4 +50,8 @@ export type LandingView = {
   winningPrizeLabel: string;
   metaTitle: string;
   metaDescription: string;
+  template: string;
+  pwaName: string;
+  pwaIconUrl: string | null;
+  pwaUrl: string;
 };

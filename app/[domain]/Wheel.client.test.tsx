@@ -19,6 +19,10 @@ function view(): LandingView {
     redirectPrizeParam: "bonus",
     winningPrizeLabel: "JACKPOT",
     metaTitle: "Spin the Wheel", metaDescription: "and win bonuses",
+    template: "classic-2d",
+    pwaName: "",
+    pwaIconUrl: null,
+    pwaUrl: "",
   };
 }
 

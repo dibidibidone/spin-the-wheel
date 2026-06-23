@@ -11,6 +11,10 @@ const base: LandingView = {
   spin: { segmentCount: 0, spinsBeforeWin: 1, winningIndex: 0, behavior: "near-miss" },
   redirectUrl: "https://x", redirectPrizeParam: null, winningPrizeLabel: "",
   metaTitle: "Win Big — Boomzino", metaDescription: "Spin to win",
+  template: "classic-2d",
+  pwaName: "",
+  pwaIconUrl: null,
+  pwaUrl: "",
 };
 
 describe("buildMetadata", () => {

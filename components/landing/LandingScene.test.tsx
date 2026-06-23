@@ -16,6 +16,10 @@ function view(): LandingView {
     spin: { segmentCount: 2, spinsBeforeWin: 3, winningIndex: 1, behavior: "near-miss" },
     redirectUrl: "https://x.com", redirectPrizeParam: "bonus", winningPrizeLabel: "JACKPOT",
     metaTitle: "Spin & Win Big", metaDescription: "and win bonuses",
+    template: "classic-2d",
+    pwaName: "",
+    pwaIconUrl: null,
+    pwaUrl: "",
   };
 }
 

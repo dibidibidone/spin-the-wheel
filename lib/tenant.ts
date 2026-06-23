@@ -10,6 +10,7 @@ type LandingRow = {
   logoUrl: string | null; faviconUrl: string | null; coinImageUrl: string | null; bgImageUrl: string | null;
   spinsBeforeWin: number; redirectUrl: string; redirectPrizeParam: string | null;
   metaTitle: string | null; metaDescription: string | null;
+  template: string; pwaName: string; pwaIconUrl: string | null; pwaUrl: string;
   winningPrizeId: string | null;
   winningPrize: PrizeRow | null;
   prizes: PrizeRow[];
@@ -38,6 +39,10 @@ export function toLandingView(landing: LandingRow): LandingView {
     winningPrizeLabel: landing.winningPrize?.label ?? "",
     metaTitle: landing.metaTitle ?? landing.heading,
     metaDescription: landing.metaDescription ?? landing.subtitle,
+    template: landing.template,
+    pwaName: landing.pwaName,
+    pwaIconUrl: landing.pwaIconUrl,
+    pwaUrl: landing.pwaUrl,
   };
 }
 
