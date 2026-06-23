@@ -54,7 +54,8 @@ async function main() {
     },
     include: { prizes: true },
   });
-  const demoWinner = demo.prizes.find((p) => p.order === winningOrder) ?? demo.prizes[demo.prizes.length - 1];
+  const demoWinner = demo.prizes.find((p) => p.order === winningOrder);
+  if (!demoWinner) throw new Error(`Seed error: no prize with order ${winningOrder} for 3D demo landing "${demo.slug}"`);
   await prisma.landing.update({ where: { id: demo.id }, data: { winningPrizeId: demoWinner.id } });
   console.log(`Seeded 3D landing "${demo.slug}" on ${pwaHost}`);
 
