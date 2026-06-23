@@ -29,6 +29,35 @@ async function main() {
 
   console.log(`Seeded landing "${landing.slug}" on ${hostname}`);
 
+  // A second landing on its own host to exercise the 3D template + PWA flow.
+  const pwaHost = "jackpot.localhost";
+  await prisma.domain.deleteMany({ where: { hostname: pwaHost } });
+  await prisma.landing.deleteMany({ where: { slug: "jackpot-demo" } });
+  const demo = await prisma.landing.create({
+    data: {
+      slug: "jackpot-demo",
+      name: "Jackpot Demo",
+      status: "published",
+      heading: "BOOM your luck",
+      subtitle: "Spin to win",
+      winTitle: "JACKPOT — You won!",
+      claimLabel: "Claim jackpot →",
+      theme,
+      template: "jackpot-vault",
+      spinsBeforeWin: 1,
+      redirectUrl: "https://example.com/offer",
+      pwaName: "Boomzino App",
+      pwaIconUrl: "https://example.com/icon.png",
+      pwaUrl: "https://example.com/offer?app=1",
+      prizes: { create: prizes },
+      domains: { create: { hostname: pwaHost, verified: true } },
+    },
+    include: { prizes: true },
+  });
+  const demoWinner = demo.prizes.find((p) => p.order === winningOrder) ?? demo.prizes[demo.prizes.length - 1];
+  await prisma.landing.update({ where: { id: demo.id }, data: { winningPrizeId: demoWinner.id } });
+  console.log(`Seeded 3D landing "${demo.slug}" on ${pwaHost}`);
+
   await seedAdmin(
     prisma,
     process.env.ADMIN_EMAIL ?? "admin@boomzino.example",
