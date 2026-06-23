@@ -37,7 +37,7 @@ export function usePwaInstall(): PwaInstall {
   const [iosHintOpen, setIosHintOpen] = useState(false);
 
   useEffect(() => {
-    navigator.serviceWorker?.register("/sw.js").catch(() => { /* installability is best-effort */ });
+    navigator?.serviceWorker?.register("/sw.js").catch(() => { /* installability is best-effort */ });
 
     const onBip = (e: Event) => {
       e.preventDefault();
