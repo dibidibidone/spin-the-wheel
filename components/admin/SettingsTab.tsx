@@ -61,19 +61,21 @@ export function SettingsTab({ landing }: { landing: EditableLanding }) {
         </select>
       </label>
 
-      <fieldset className="pwa-group">
-        <legend>Download app (PWA)</legend>
-        <Field label="App name" value={pwaName} onChange={setPwaName} />
-        <label className="field">
-          <span>App link</span>
-          <input aria-label="App link" type="url" value={pwaUrl} onChange={(e) => setPwaUrl(e.target.value)} placeholder="https://offer.example.com (defaults to Redirect URL)" />
-        </label>
-        <label className="field">
-          <span>App icon</span>
-          <input type="file" accept="image/*" onChange={onIcon} />
-        </label>
-        {pwaIconUrl && <img className="asset-preview" src={pwaIconUrl} alt="" />}
-      </fieldset>
+      {template !== "classic-2d" && (
+        <fieldset className="pwa-group">
+          <legend>Download app (PWA)</legend>
+          <Field label="App name" value={pwaName} onChange={setPwaName} />
+          <label className="field">
+            <span>App link</span>
+            <input aria-label="App link" type="url" value={pwaUrl} onChange={(e) => setPwaUrl(e.target.value)} placeholder="https://offer.example.com (defaults to Redirect URL)" />
+          </label>
+          <label className="field">
+            <span>App icon</span>
+            <input type="file" accept="image/*" onChange={onIcon} />
+          </label>
+          {pwaIconUrl && <img className="asset-preview" src={pwaIconUrl} alt="" />}
+        </fieldset>
+      )}
 
       <div className="save-row">
         <button className="btn-primary" onClick={save} disabled={busy}>Save</button>

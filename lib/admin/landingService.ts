@@ -13,6 +13,41 @@ const DEFAULT_PRIZES = [
   { label: "JACKPOT", icon: "👑", color: "#F5C24B", weight: 1 },
 ];
 
+// Template-appropriate starting point applied at creation. The winning prize's
+// label (the "you won X" text) and the PWA app name differ per template; the
+// classic-2d preset reproduces the historical defaults so 2D creation is unchanged.
+type TemplatePreset = {
+  heading: string;
+  subtitle: string;
+  winTitle: string;
+  claimLabel: string;
+  winnerLabel: string;
+  pwaName: string;
+};
+
+const TEMPLATE_PRESETS: Record<string, TemplatePreset> = {
+  "classic-2d": {
+    heading: "Spin the Wheel", subtitle: "and win bonuses",
+    winTitle: "You won {prize}!", claimLabel: "Claim", winnerLabel: "JACKPOT", pwaName: "",
+  },
+  "jackpot-vault": {
+    heading: "BOOM your luck", subtitle: "Spin the vault to win",
+    winTitle: "JACKPOT — you won!", claimLabel: "Claim jackpot →", winnerLabel: "1,000 Free Spins", pwaName: "Jackpot Vault",
+  },
+  "alchemy-lab": {
+    heading: "Brew your fortune", subtitle: "Spin the alchemy wheel",
+    winTitle: "The potion paid out!", claimLabel: "Claim your bonus →", winnerLabel: "500 Free Spins", pwaName: "Alchemy Lab",
+  },
+  "book-of-ra": {
+    heading: "Unearth the Book", subtitle: "Spin to reveal riches",
+    winTitle: "Riches revealed!", claimLabel: "Claim your bonus →", winnerLabel: "200 Free Spins", pwaName: "Book of Ra",
+  },
+  "gates-of-olympus": {
+    heading: "Summon the gods", subtitle: "Spin for divine wins",
+    winTitle: "The gods reward you!", claimLabel: "Claim your bonus →", winnerLabel: "500 Free Spins + ×500", pwaName: "Gates of Olympus",
+  },
+};
+
 export function slugify(name: string): string {
   const base = name
     .toLowerCase()
@@ -46,18 +81,27 @@ export async function listLandings(): Promise<LandingListItem[]> {
 }
 
 export async function createLanding(input: CreateLandingInput): Promise<{ id: string }> {
+  const preset = TEMPLATE_PRESETS[input.template] ?? TEMPLATE_PRESETS["classic-2d"];
   const slug = await uniqueSlug(slugify(input.name));
+  // The last default prize is the winner — give it the template's prize text.
+  const prizes = DEFAULT_PRIZES.map((p, i) =>
+    i === DEFAULT_PRIZES.length - 1 ? { ...p, label: preset.winnerLabel } : p,
+  );
   const landing = await prisma.landing.create({
     data: {
       slug,
       name: input.name,
       status: "draft",
-      heading: "Spin the Wheel",
-      subtitle: "and win bonuses",
+      template: input.template,
+      heading: preset.heading,
+      subtitle: preset.subtitle,
+      winTitle: preset.winTitle,
+      claimLabel: preset.claimLabel,
+      pwaName: preset.pwaName,
       theme: boomzinoTheme,
       spinsBeforeWin: 3,
       redirectUrl: "https://example.com",
-      prizes: { create: DEFAULT_PRIZES.map((p, i) => ({ ...p, order: i })) },
+      prizes: { create: prizes.map((p, i) => ({ ...p, order: i })) },
     },
     include: { prizes: { orderBy: { order: "asc" } } },
   });

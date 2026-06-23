@@ -13,6 +13,15 @@ const url = z
     }
   }, "Must be an http(s) URL");
 
+export const TEMPLATE_VALUES = [
+  "classic-2d",
+  "jackpot-vault",
+  "alchemy-lab",
+  "book-of-ra",
+  "gates-of-olympus",
+] as const;
+export type TemplateId = (typeof TEMPLATE_VALUES)[number];
+
 const themeSchema = z.object({
   bg: hex, surface: hex, accent: hex, gold: hex, text: hex, muted: hex,
 });
@@ -35,13 +44,7 @@ const patchSchema = z
     faviconUrl: url.nullable(),
     coinImageUrl: url.nullable(),
     bgImageUrl: url.nullable(),
-    template: z.enum([
-      "classic-2d",
-      "jackpot-vault",
-      "alchemy-lab",
-      "book-of-ra",
-      "gates-of-olympus",
-    ]),
+    template: z.enum(TEMPLATE_VALUES),
     pwaName: z.string(),
     pwaIconUrl: url.nullable(),
     pwaUrl: z.union([url, z.literal("")]),
@@ -69,7 +72,12 @@ const wheelSchema = z
     path: ["winningIndex"],
   });
 
-const createSchema = z.object({ name: z.string().min(1) }).strict();
+const createSchema = z
+  .object({
+    name: z.string().min(1),
+    template: z.enum(TEMPLATE_VALUES).default("classic-2d"),
+  })
+  .strict();
 
 export type Parsed<T> = { ok: true; value: T } | { ok: false; error: string };
 

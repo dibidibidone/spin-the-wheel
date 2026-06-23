@@ -69,6 +69,22 @@ describe("parseCreateLanding", () => {
     expect(parseCreateLanding({ name: "Promo" }).ok).toBe(true);
     expect(parseCreateLanding({}).ok).toBe(false);
   });
+
+  it("defaults the template to classic-2d when omitted", () => {
+    const r = parseCreateLanding({ name: "Promo" });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value.template).toBe("classic-2d");
+  });
+
+  it("accepts an explicit template", () => {
+    const r = parseCreateLanding({ name: "Promo", template: "book-of-ra" });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value.template).toBe("book-of-ra");
+  });
+
+  it("rejects an unknown template", () => {
+    expect(parseCreateLanding({ name: "Promo", template: "roulette" }).ok).toBe(false);
+  });
 });
 
 describe("parseLandingPatch — template + PWA", () => {

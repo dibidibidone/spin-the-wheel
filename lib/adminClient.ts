@@ -11,7 +11,7 @@ async function sendJson<T>(method: string, url: string, body: unknown): Promise<
   return res.json() as Promise<T>;
 }
 
-export function createLandingReq(body: { name: string }): Promise<{ id: string }> {
+export function createLandingReq(body: { name: string; template: string }): Promise<{ id: string }> {
   return sendJson("POST", "/api/admin/landings", body);
 }
 

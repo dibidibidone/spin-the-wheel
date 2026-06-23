@@ -67,4 +67,17 @@ describe("SettingsTab — template + PWA", () => {
     expect((screen.getByLabelText("App name") as HTMLInputElement).value).toBe("Lucky App");
     expect((screen.getByLabelText("App link") as HTMLInputElement).value).toBe("https://offer.example.com");
   });
+
+  it("hides the PWA group for the classic-2d template", () => {
+    render(<SettingsTab landing={landing()} />); // landing() is classic-2d
+    expect(screen.queryByLabelText("App name")).toBeNull();
+    expect(screen.queryByLabelText("App link")).toBeNull();
+  });
+
+  it("reveals the PWA group after switching to a 3D template", async () => {
+    render(<SettingsTab landing={landing()} />);
+    expect(screen.queryByLabelText("App name")).toBeNull();
+    await userEvent.selectOptions(screen.getByLabelText("Template"), "jackpot-vault");
+    expect(screen.getByLabelText("App name")).toBeTruthy();
+  });
 });

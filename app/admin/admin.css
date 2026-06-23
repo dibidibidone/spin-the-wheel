@@ -58,7 +58,9 @@
 /* Dashboard */
 .dash-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 16px; flex-wrap: wrap; }
 .new-landing { display: flex; gap: 8px; align-items: center; }
-.new-landing input { background: var(--cms-bg); color: var(--cms-text); border: 1px solid var(--cms-border); border-radius: 8px; padding: 9px 11px; }
+.new-landing input, .new-landing select { background: var(--cms-bg); color: var(--cms-text); border: 1px solid var(--cms-border); border-radius: 8px; padding: 9px 11px; }
+.tab-note { margin: 0 0 14px; padding: 10px 12px; border-radius: 8px; background: #3a2f12; color: #f5c24b; border: 1px solid var(--cms-border); font-size: 13px; line-height: 1.45; }
+.tab-note strong { color: var(--cms-text); }
 .landings-table { width: 100%; border-collapse: collapse; }
 .landings-table th, .landings-table td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--cms-border); }
 .landings-table a { color: var(--cms-text); font-weight: 700; }

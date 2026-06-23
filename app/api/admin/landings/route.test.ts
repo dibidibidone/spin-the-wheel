@@ -44,12 +44,27 @@ describe("POST /api/admin/landings", () => {
     expect(createLanding).not.toHaveBeenCalled();
   });
 
-  it("creates and returns 201", async () => {
+  it("creates and returns 201, defaulting the template", async () => {
     requireApiSession.mockResolvedValue(authed);
     createLanding.mockResolvedValue({ id: "new1" });
     const res = await POST(new Request("http://x/api", { method: "POST", body: JSON.stringify({ name: "Promo" }) }));
     expect(res.status).toBe(201);
     await expect(res.json()).resolves.toEqual({ id: "new1" });
-    expect(createLanding).toHaveBeenCalledWith({ name: "Promo" });
+    expect(createLanding).toHaveBeenCalledWith({ name: "Promo", template: "classic-2d" });
+  });
+
+  it("passes an explicitly chosen template through", async () => {
+    requireApiSession.mockResolvedValue(authed);
+    createLanding.mockResolvedValue({ id: "new2" });
+    const res = await POST(new Request("http://x/api", { method: "POST", body: JSON.stringify({ name: "Promo", template: "gates-of-olympus" }) }));
+    expect(res.status).toBe(201);
+    expect(createLanding).toHaveBeenCalledWith({ name: "Promo", template: "gates-of-olympus" });
+  });
+
+  it("400 on an unknown template", async () => {
+    requireApiSession.mockResolvedValue(authed);
+    const res = await POST(new Request("http://x/api", { method: "POST", body: JSON.stringify({ name: "Promo", template: "roulette" }) }));
+    expect(res.status).toBe(400);
+    expect(createLanding).not.toHaveBeenCalled();
   });
 });

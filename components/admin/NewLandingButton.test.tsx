@@ -16,14 +16,24 @@ beforeEach(() => {
 });
 
 describe("NewLandingButton", () => {
-  it("creates a landing and navigates to its editor", async () => {
+  it("creates a landing with the default template and navigates to its editor", async () => {
     createLandingReq.mockResolvedValue({ id: "new1" });
     render(<NewLandingButton />);
     await userEvent.type(screen.getByPlaceholderText("New landing name"), "Summer Promo");
     await userEvent.click(screen.getByRole("button", { name: "Create" }));
 
-    expect(createLandingReq).toHaveBeenCalledWith({ name: "Summer Promo" });
+    expect(createLandingReq).toHaveBeenCalledWith({ name: "Summer Promo", template: "classic-2d" });
     expect(push).toHaveBeenCalledWith("/admin/landings/new1");
+  });
+
+  it("creates with the chosen template", async () => {
+    createLandingReq.mockResolvedValue({ id: "new3" });
+    render(<NewLandingButton />);
+    await userEvent.type(screen.getByPlaceholderText("New landing name"), "Slot Promo");
+    await userEvent.selectOptions(screen.getByLabelText("Template"), "gates-of-olympus");
+    await userEvent.click(screen.getByRole("button", { name: "Create" }));
+
+    expect(createLandingReq).toHaveBeenCalledWith({ name: "Slot Promo", template: "gates-of-olympus" });
   });
 
   it("does nothing when the name is blank", async () => {

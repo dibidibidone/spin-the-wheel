@@ -59,8 +59,17 @@ export function WheelTab({ landing }: { landing: EditableLanding }) {
     }
   }
 
+  const is3d = landing.template !== "classic-2d";
+
   return (
     <div className="tab-panel">
+      {is3d && (
+        <p className="tab-note">
+          For this 3D template the wheel/slot face is decorative — players don’t read these segment labels.
+          What matters here is the <strong>winning prize’s label</strong> (the “you won …” text) and
+          <strong> Spins before win</strong>.
+        </p>
+      )}
       <div className="prize-list">
         {rows.map((r, i) => (
           <div className="prize-row" data-testid="prize-row" key={i}>

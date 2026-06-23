@@ -41,23 +41,45 @@ describe("listLandings", () => {
 });
 
 describe("createLanding", () => {
-  it("creates a draft, then sets the last prize as winner", async () => {
+  const sixPrizeRow = {
+    id: "new1",
+    prizes: [{ id: "p0" }, { id: "p1" }, { id: "p2" }, { id: "p3" }, { id: "p4" }, { id: "p5" }],
+  };
+
+  it("creates a classic-2d draft, then sets the last prize as winner", async () => {
     landing.findUnique.mockResolvedValue(null); // slug is free
-    landing.create.mockResolvedValue({
-      id: "new1",
-      prizes: [{ id: "p0" }, { id: "p1" }, { id: "p2" }, { id: "p3" }, { id: "p4" }, { id: "p5" }],
-    });
+    landing.create.mockResolvedValue(sixPrizeRow);
     landing.update.mockResolvedValue({});
 
-    const result = await createLanding({ name: "Big Promo" });
+    const result = await createLanding({ name: "Big Promo", template: "classic-2d" });
     expect(result).toEqual({ id: "new1" });
 
     const created = landing.create.mock.calls[0][0];
     expect(created.data.slug).toBe("big-promo");
     expect(created.data.status).toBe("draft");
-    expect(created.data.prizes.create).toHaveLength(6);
+    expect(created.data.template).toBe("classic-2d");
+    expect(created.data.heading).toBe("Spin the Wheel");
+    expect(created.data.pwaName).toBe("");
+    const prizes = created.data.prizes.create;
+    expect(prizes).toHaveLength(6);
+    expect(prizes[prizes.length - 1].label).toBe("JACKPOT"); // classic winner text unchanged
 
     expect(landing.update).toHaveBeenCalledWith({ where: { id: "new1" }, data: { winningPrizeId: "p5" } });
+  });
+
+  it("applies the 3D template preset (smart defaults) on creation", async () => {
+    landing.findUnique.mockResolvedValue(null);
+    landing.create.mockResolvedValue(sixPrizeRow);
+    landing.update.mockResolvedValue({});
+
+    await createLanding({ name: "Vault Promo", template: "jackpot-vault" });
+
+    const created = landing.create.mock.calls[0][0];
+    expect(created.data.template).toBe("jackpot-vault");
+    expect(created.data.heading).toBe("BOOM your luck");
+    expect(created.data.pwaName).toBe("Jackpot Vault");
+    const prizes = created.data.prizes.create;
+    expect(prizes[prizes.length - 1].label).toBe("1,000 Free Spins"); // winner prize text from preset
   });
 });
 
