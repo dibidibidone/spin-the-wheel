@@ -20,6 +20,12 @@ model Landing {
   claimLabel         String   @default("Claim")
   almostText         String   @default("Almost! Spin again")
 
+  template           String   @default("classic-2d") // classic-2d | jackpot-vault | alchemy-lab | book-of-ra | gates-of-olympus
+
+  pwaName            String   @default("")
+  pwaIconUrl         String?
+  pwaUrl             String   @default("")
+
   theme              Json
   logoUrl            String?
   faviconUrl         String?
