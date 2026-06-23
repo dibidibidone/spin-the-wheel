@@ -42,3 +42,26 @@ describe("createSpinController", () => {
     expect(c.rotation).toBe(0);
   });
 });
+
+import { describe as d3, it as i3, expect as e3 } from "vitest";
+import { createSpinController as make } from "./spinController";
+
+d3("createSpinController — win on Nth spin", () => {
+  i3("near-misses on spin 1 then wins on spin 2 (winOnSpin=2)", () => {
+    const c = make({ winningIndex: 7, winOnSpin: 2, durationMs: 100, turns: 1 });
+    c.start();
+    c.update(100);
+    e3(c.status).toBe("nearmiss");
+    c.start(); // allowed from nearmiss
+    c.update(100);
+    e3(c.status).toBe("won");
+    e3(c.winning).toBe(true);
+  });
+
+  i3("wins on the first spin when winOnSpin=1", () => {
+    const c = make({ winningIndex: 3, winOnSpin: 1, durationMs: 100, turns: 1 });
+    c.start();
+    c.update(100);
+    e3(c.status).toBe("won");
+  });
+});

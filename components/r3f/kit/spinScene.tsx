@@ -54,12 +54,15 @@ export function Parallax({ children, reduced }: { children: ReactNode; reduced: 
   return <group ref={g}>{children}</group>;
 }
 
-export function useSpinScene({ reduced, sound, conversion, onClaim, navigate }: {
+export function useSpinScene({ reduced, sound, conversion, winningIndex = 7, winOnSpin = 1, onClaim, navigate, onSpinStart }: {
   reduced: boolean;
   sound: SoundInstance;
   conversion: ConversionConfig;
+  winningIndex?: number;
+  winOnSpin?: number;
   onClaim?: (p: { field: ConversionConfig["registerField"]; value: string; prize: string }) => void | Promise<void>;
   navigate?: (url: string) => void;
+  onSpinStart?: () => void;
 }) {
   const rotationRef = useRef(0);
   const [status, setStatus] = useState<SpinStatus>("idle");
@@ -69,8 +72,8 @@ export function useSpinScene({ reduced, sound, conversion, onClaim, navigate }: 
   const go = navigate ?? ((url: string) => { if (typeof window !== "undefined") window.location.assign(url); });
 
   const controller = useMemo(
-    () => createSpinController({ winningIndex: 7, durationMs: reduced ? 250 : 4500, turns: reduced ? 0 : 6 }),
-    [reduced]
+    () => createSpinController({ winningIndex, winOnSpin, durationMs: reduced ? 250 : 4500, turns: reduced ? 0 : 6 }),
+    [reduced, winningIndex, winOnSpin]
   );
 
   useEffect(() => {
@@ -80,15 +83,17 @@ export function useSpinScene({ reduced, sound, conversion, onClaim, navigate }: 
   }, [status, reduced]);
 
   const onSpin = () => {
-    if (controller.status !== "idle") return;
+    if (controller.status !== "idle" && controller.status !== "nearmiss") return;
     controller.start();
     setStatus("spinning");
     sound.tick();
     haptics.spin();
+    onSpinStart?.();
   };
   const onStatus = (s: SpinStatus) => {
     setStatus(s);
     if (s === "won") { sound.win(); haptics.win(); }
+    else if (s === "nearmiss") { sound.tick(); haptics.spin(); }
   };
   const onToggleSound = () => {
     const next = !muted;

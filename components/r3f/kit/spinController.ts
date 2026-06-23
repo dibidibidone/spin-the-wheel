@@ -1,18 +1,41 @@
 import { easeOutCubic, targetRotationDeg } from "./spinMath";
 
-export type SpinStatus = "idle" | "spinning" | "won";
+export type SpinStatus = "idle" | "spinning" | "nearmiss" | "won";
 
 export function createSpinController(
-  { winningIndex = 7, durationMs = 4500, turns = 6, segments = 8 } = {}
+  {
+    winningIndex = 7,
+    winOnSpin = 1,
+    durationMs = 4500,
+    turns = 6,
+    segments = 8,
+    nearMissIndex,
+  }: {
+    winningIndex?: number;
+    winOnSpin?: number;
+    durationMs?: number;
+    turns?: number;
+    segments?: number;
+    nearMissIndex?: number;
+  } = {}
 ) {
-  const target = targetRotationDeg(winningIndex, segments, turns);
+  const nearIdx = nearMissIndex ?? (winningIndex + 1) % segments;
+  const winTarget = targetRotationDeg(winningIndex, segments, turns);
+  const nearTarget = targetRotationDeg(nearIdx, segments, turns);
+
   let status: SpinStatus = "idle";
   let elapsed = 0;
   let rotation = 0;
+  let spinCount = 0;
+  let winning = false;
+  let target = winTarget;
 
   return {
     start() {
-      if (status !== "idle") return;
+      if (status !== "idle" && status !== "nearmiss") return;
+      spinCount += 1;
+      winning = spinCount >= winOnSpin;
+      target = winning ? winTarget : nearTarget;
       status = "spinning";
       elapsed = 0;
     },
@@ -22,16 +45,21 @@ export function createSpinController(
       rotation = easeOutCubic(elapsed / durationMs) * target;
       if (elapsed >= durationMs) {
         rotation = target;
-        status = "won";
+        status = winning ? "won" : "nearmiss";
       }
     },
     reset() {
       status = "idle";
       elapsed = 0;
       rotation = 0;
+      spinCount = 0;
+      winning = false;
+      target = winTarget;
     },
     get status() { return status; },
     get rotation() { return rotation; },
-    target,
+    get spinCount() { return spinCount; },
+    get winning() { return winning; },
+    get target() { return target; },
   };
 }
