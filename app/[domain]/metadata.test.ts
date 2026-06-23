@@ -30,3 +30,27 @@ describe("buildMetadata", () => {
     expect(m.icons).toBeUndefined();
   });
 });
+
+import { describe as describe2, it as it2, expect as expect2 } from "vitest";
+import { buildMetadata as bm } from "./buildMetadata";
+
+const base2 = {
+  slug: "d", texts: { heading: "Lucky", subtitle: "", backLabel: "", winTitle: "", claimLabel: "", almostText: "" },
+  theme: { bg: "#000000", surface: "#111111", accent: "#222222", gold: "#FFD24A", text: "#fff", muted: "#888" },
+  assets: { logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null },
+  segments: [], spin: { segmentCount: 8, spinsBeforeWin: 2, winningIndex: 7, behavior: "near-miss" as const },
+  redirectUrl: "https://x.example.com", redirectPrizeParam: null, winningPrizeLabel: "JACKPOT",
+  metaTitle: "t", metaDescription: "d", pwaName: "Lucky App", pwaIconUrl: "https://cdn/i.png", pwaUrl: "",
+};
+
+describe2("buildMetadata — PWA", () => {
+  it2("links the manifest for non-classic templates", () => {
+    const m = bm({ ...base2, template: "jackpot-vault" } as never);
+    expect2(m.manifest).toBe("/manifest");
+    expect2((m.appleWebApp as { title?: string }).title).toBe("Lucky App");
+  });
+  it2("does not link a manifest for classic-2d", () => {
+    const m = bm({ ...base2, template: "classic-2d" } as never);
+    expect2(m.manifest).toBeUndefined();
+  });
+});
