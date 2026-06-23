@@ -31,6 +31,40 @@ describe("SettingsTab", () => {
     await userEvent.selectOptions(screen.getByLabelText("Status"), "published");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    expect(patchLanding).toHaveBeenCalledWith("l1", { name: "Promo", slug: "promo", status: "published" });
+    expect(patchLanding).toHaveBeenCalledWith("l1", {
+      name: "Promo",
+      slug: "promo",
+      status: "published",
+      template: "classic-2d",
+      pwaName: "App",
+      pwaIconUrl: null,
+      pwaUrl: ""
+    });
+  });
+});
+
+describe("SettingsTab — template + PWA", () => {
+  it("shows the template select with the landing's value", () => {
+    const testLanding: EditableLanding = {
+      id: "1", slug: "demo", name: "Demo", status: "draft", heading: "", subtitle: "", backLabel: "",
+      winTitle: "", claimLabel: "", almostText: "", theme: { bg: "#000000", surface: "#000000", accent: "#000000", gold: "#000000", text: "#000000", muted: "#000000" },
+      logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
+      spinsBeforeWin: 2, redirectUrl: "https://x.example.com", redirectPrizeParam: null, metaTitle: null, metaDescription: null,
+      winningPrizeId: null, prizes: [], template: "jackpot-vault", pwaName: "Lucky App", pwaIconUrl: null, pwaUrl: "https://offer.example.com",
+    };
+    render(<SettingsTab landing={testLanding} />);
+    expect((screen.getByLabelText("Template") as HTMLSelectElement).value).toBe("jackpot-vault");
+  });
+  it("shows the PWA app fields", () => {
+    const testLanding: EditableLanding = {
+      id: "1", slug: "demo", name: "Demo", status: "draft", heading: "", subtitle: "", backLabel: "",
+      winTitle: "", claimLabel: "", almostText: "", theme: { bg: "#000000", surface: "#000000", accent: "#000000", gold: "#000000", text: "#000000", muted: "#000000" },
+      logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
+      spinsBeforeWin: 2, redirectUrl: "https://x.example.com", redirectPrizeParam: null, metaTitle: null, metaDescription: null,
+      winningPrizeId: null, prizes: [], template: "jackpot-vault", pwaName: "Lucky App", pwaIconUrl: null, pwaUrl: "https://offer.example.com",
+    };
+    render(<SettingsTab landing={testLanding} />);
+    expect((screen.getByLabelText("App name") as HTMLInputElement).value).toBe("Lucky App");
+    expect((screen.getByLabelText("App link") as HTMLInputElement).value).toBe("https://offer.example.com");
   });
 });
