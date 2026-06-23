@@ -4,13 +4,14 @@ import { claimReducer } from "./claimMachine";
 import { createHaptics } from "./haptics";
 import type { SoundInstance, ConversionConfig, SlotTheme } from "./types";
 
-export function useSlotScene({ reduced, sound, theme, conversion, onClaim, navigate }: {
+export function useSlotScene({ reduced, sound, theme, conversion, onClaim, navigate, onSpinStart }: {
   reduced: boolean;
   sound: SoundInstance;
   theme: SlotTheme;
   conversion: ConversionConfig;
   onClaim?: (p: { field: ConversionConfig["registerField"]; value: string; prize: string }) => void | Promise<void>;
   navigate?: (url: string) => void;
+  onSpinStart?: () => void;
 }) {
   const [status, setStatus] = useState<SlotStatus>("idle");
   const [muted, setMuted] = useState(true);
@@ -43,6 +44,7 @@ export function useSlotScene({ reduced, sound, theme, conversion, onClaim, navig
     setStatus("spinning");
     sound.tick();
     haptics.spin();
+    onSpinStart?.();
   };
   const onStatus = (s: SlotStatus) => {
     setStatus(s);

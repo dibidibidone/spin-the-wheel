@@ -52,4 +52,11 @@ describe("useSlotScene", () => {
     expect(result.current.status).toBe("idle");
     expect(result.current.claimStep).toBe("hidden");
   });
+
+  it("invokes onSpinStart when a spin starts", () => {
+    const onSpinStart = vi.fn();
+    const { result } = renderHook(() => useSlotScene({ reduced: true, sound, theme, conversion, onSpinStart }));
+    act(() => result.current.onSpin());
+    expect(onSpinStart).toHaveBeenCalledTimes(1);
+  });
 });
