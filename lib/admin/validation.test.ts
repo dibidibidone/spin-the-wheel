@@ -70,3 +70,25 @@ describe("parseCreateLanding", () => {
     expect(parseCreateLanding({}).ok).toBe(false);
   });
 });
+
+describe("parseLandingPatch — template + PWA", () => {
+  it("accepts a valid template and PWA fields", () => {
+    const r = parseLandingPatch({
+      template: "jackpot-vault",
+      pwaName: "Lucky App",
+      pwaIconUrl: "https://cdn.example.com/icon.png",
+      pwaUrl: "https://offer.example.com/go",
+    });
+    expect(r.ok).toBe(true);
+  });
+
+  it("accepts a blank pwaUrl (falls back to redirectUrl downstream)", () => {
+    const r = parseLandingPatch({ pwaUrl: "" });
+    expect(r.ok).toBe(true);
+  });
+
+  it("rejects an unknown template", () => {
+    const r = parseLandingPatch({ template: "roulette" });
+    expect(r.ok).toBe(false);
+  });
+});

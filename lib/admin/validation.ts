@@ -35,6 +35,16 @@ const patchSchema = z
     faviconUrl: url.nullable(),
     coinImageUrl: url.nullable(),
     bgImageUrl: url.nullable(),
+    template: z.enum([
+      "classic-2d",
+      "jackpot-vault",
+      "alchemy-lab",
+      "book-of-ra",
+      "gates-of-olympus",
+    ]),
+    pwaName: z.string(),
+    pwaIconUrl: url.nullable(),
+    pwaUrl: z.union([url, z.literal("")]),
   })
   .partial()
   .strict();
