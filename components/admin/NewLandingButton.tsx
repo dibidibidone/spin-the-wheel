@@ -31,7 +31,7 @@ export function NewLandingButton() {
         placeholder="New landing name"
         aria-label="New landing name"
       />
-      <button className="btn-primary" onClick={create} disabled={busy}>Create</button>
+      <button className="btn-primary" onClick={create} disabled={busy || !name.trim()}>Create</button>
       {error && <span className="err">{error}</span>}
     </div>
   );

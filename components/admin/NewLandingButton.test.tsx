@@ -31,4 +31,14 @@ describe("NewLandingButton", () => {
     await userEvent.click(screen.getByRole("button", { name: "Create" }));
     expect(createLandingReq).not.toHaveBeenCalled();
   });
+
+  it("disables Create until a non-blank name is entered", async () => {
+    render(<NewLandingButton />);
+    const btn = screen.getByRole("button", { name: "Create" }) as HTMLButtonElement;
+    expect(btn.disabled).toBe(true);
+    await userEvent.type(screen.getByPlaceholderText("New landing name"), "   ");
+    expect(btn.disabled).toBe(true); // whitespace-only is still blank
+    await userEvent.type(screen.getByPlaceholderText("New landing name"), "Summer");
+    expect(btn.disabled).toBe(false);
+  });
 });
