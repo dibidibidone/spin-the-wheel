@@ -30,7 +30,7 @@ async function main() {
   console.log(`Seeded landing "${landing.slug}" on ${hostname}`);
 
   // A second landing on its own host to exercise the 3D template + PWA flow.
-  const pwaHost = "jackpot.localhost";
+  const pwaHost = "jackpot.localhost:3000";
   await prisma.domain.deleteMany({ where: { hostname: pwaHost } });
   await prisma.landing.deleteMany({ where: { slug: "jackpot-demo" } });
   const demo = await prisma.landing.create({
