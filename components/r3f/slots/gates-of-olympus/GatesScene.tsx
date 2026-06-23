@@ -1,6 +1,6 @@
 // components/r3f/slots/gates-of-olympus/GatesScene.tsx
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { SlotReels } from "../../kit/SlotReels";
@@ -12,11 +12,25 @@ import { useSlotScene } from "../../kit/useSlotScene";
 import { isWebGLAvailable } from "../../kit/webgl";
 import { OlympusBackdrop } from "./OlympusBackdrop";
 import { gatesTheme, gatesSound, gatesCopy, gatesOverlayVars, gatesConversion } from "./theme";
+import type { LandingSceneConfig } from "../../kit/sceneConfig";
+import { usePwaInstall } from "../../kit/usePwaInstall";
+import { IosInstallHint } from "../../kit/IosInstallHint";
 
-export function GatesScene() {
+export function GatesScene({ config }: { config?: LandingSceneConfig } = {}) {
   const reduced = useReducedMotion();
   const sound = useMemo(() => createSound(gatesSound), []);
-  const scene = useSlotScene({ reduced, sound, theme: gatesTheme, conversion: gatesConversion });
+  const conversion = config?.conversion ?? gatesConversion;
+  const copy = config?.copy ? { ...gatesCopy, ...config.copy } : gatesCopy;
+  const theme = config?.spinsBeforeWin ? { ...gatesTheme, winOnSpin: config.spinsBeforeWin } : gatesTheme;
+  const pwa = usePwaInstall();
+  const prompted = useRef(false);
+  const handleSpinStart = config ? () => { if (!prompted.current) { prompted.current = true; pwa.promptInstall(); } } : undefined;
+
+  const scene = useSlotScene({
+    reduced, sound, theme, conversion,
+    navigate: config ? pwa.openApp : undefined,
+    onSpinStart: handleSpinStart,
+  });
   const { status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } = scene;
 
   const [webgl, setWebgl] = useState(true);
@@ -29,19 +43,20 @@ export function GatesScene() {
 
   const overlay = (
     <SpinOverlay
-      copy={gatesCopy} vars={gatesOverlayVars} config={gatesConversion}
+      copy={copy} vars={gatesOverlayVars} config={conversion}
       status={status} claimStep={claimStep} muted={muted} reduced={reduced}
       onSpin={onSpin} onToggleSound={onToggleSound}
       onClaimOpen={onClaimOpen} onClaimSubmit={onClaimSubmit} onDismiss={onDismiss}
     />
   );
-  const reels = <SlotReels theme={gatesTheme} controller={controller} status={status} onStatus={onStatus} />;
+  const reels = <SlotReels theme={theme} controller={controller} status={status} onStatus={onStatus} />;
 
   if (!webgl) {
     return (
       <div style={{ position: "fixed", inset: 0, background: "radial-gradient(120% 90% at 50% 0%, #2a1f5c 0%, #120c2e 70%)" }}>
         {reels}
         {overlay}
+        <IosInstallHint open={pwa.iosHintOpen} appName={config?.pwa.name ?? ""} iconUrl={config?.pwa.iconUrl ?? null} onClose={pwa.dismissIosHint} />
       </div>
     );
   }
@@ -60,6 +75,7 @@ export function GatesScene() {
       </Canvas>
       {reels}
       {overlay}
+      <IosInstallHint open={pwa.iosHintOpen} appName={config?.pwa.name ?? ""} iconUrl={config?.pwa.iconUrl ?? null} onClose={pwa.dismissIosHint} />
     </div>
   );
 }

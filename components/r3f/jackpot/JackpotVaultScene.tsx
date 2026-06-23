@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, Lightformer, Float, Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { Wheel3D } from "../kit/Wheel3D";
@@ -14,17 +14,32 @@ import { jackpotWheel, jackpotSound, jackpotCopy, jackpotOverlayVars, jackpotCon
 import { isWebGLAvailable } from "../kit/webgl";
 import { SceneFallback } from "../kit/SceneFallback";
 import shell from "../kit/sceneShell.module.css";
+import type { LandingSceneConfig } from "../kit/sceneConfig";
+import { usePwaInstall } from "../kit/usePwaInstall";
+import { IosInstallHint } from "../kit/IosInstallHint";
 
 function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
   const wheel = <Wheel3D rotationRef={rotationRef} theme={jackpotWheel} />;
   return reduced ? <>{wheel}</> : <Float speed={2} rotationIntensity={0.15} floatIntensity={0.4}>{wheel}</Float>;
 }
 
-export function JackpotVaultScene() {
+export function JackpotVaultScene({ config }: { config?: LandingSceneConfig } = {}) {
   const reduced = useReducedMotion();
   const sound = useMemo(() => createSound(jackpotSound), []);
+  const conversion = config?.conversion ?? jackpotConversion;
+  const copy = config?.copy ? { ...jackpotCopy, ...config.copy } : jackpotCopy;
+  const pwa = usePwaInstall();
+  const prompted = useRef(false);
+  const handleSpinStart = config ? () => { if (!prompted.current) { prompted.current = true; pwa.promptInstall(); } } : undefined;
+
   const { rotationRef, status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } =
-    useSpinScene({ reduced, sound, conversion: jackpotConversion });
+    useSpinScene({
+      reduced, sound, conversion,
+      winningIndex: config?.winningIndex ?? 7,
+      winOnSpin: config?.spinsBeforeWin ?? 1,
+      navigate: config ? pwa.openApp : undefined,
+      onSpinStart: handleSpinStart,
+    });
 
   const [webgl, setWebgl] = useState(true);
   useEffect(() => { setWebgl(isWebGLAvailable()); }, []);
@@ -34,7 +49,7 @@ export function JackpotVaultScene() {
     return () => document.removeEventListener("visibilitychange", onVis);
   }, [sound, muted]);
 
-  if (!webgl) return <SceneFallback copy={jackpotCopy} vars={jackpotOverlayVars} config={jackpotConversion} />;
+  if (!webgl) return <SceneFallback copy={copy} vars={jackpotOverlayVars} config={conversion} />;
 
   return (
     <div className={shell.shell} style={{ "--base": "#070D0B", "--glow": "#F5C24B", "--glow2": "#5BE36A" } as CSSProperties}>
@@ -65,11 +80,12 @@ export function JackpotVaultScene() {
       </Canvas>
 
       <SpinOverlay
-        copy={jackpotCopy} vars={jackpotOverlayVars} config={jackpotConversion}
+        copy={copy} vars={jackpotOverlayVars} config={conversion}
         status={status} claimStep={claimStep} muted={muted} reduced={reduced}
         onSpin={onSpin} onToggleSound={onToggleSound}
         onClaimOpen={onClaimOpen} onClaimSubmit={onClaimSubmit} onDismiss={onDismiss}
       />
+      <IosInstallHint open={pwa.iosHintOpen} appName={config?.pwa.name ?? ""} iconUrl={config?.pwa.iconUrl ?? null} onClose={pwa.dismissIosHint} />
     </div>
   );
 }

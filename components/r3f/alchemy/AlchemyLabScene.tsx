@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, Lightformer, Float, Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { Wheel3D } from "../kit/Wheel3D";
@@ -16,17 +16,32 @@ import { LabBackdrop } from "./LabBackdrop";
 import { isWebGLAvailable } from "../kit/webgl";
 import { SceneFallback } from "../kit/SceneFallback";
 import shell from "../kit/sceneShell.module.css";
+import type { LandingSceneConfig } from "../kit/sceneConfig";
+import { usePwaInstall } from "../kit/usePwaInstall";
+import { IosInstallHint } from "../kit/IosInstallHint";
 
 function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
   const wheel = <Wheel3D rotationRef={rotationRef} theme={alchemyWheel} />;
   return reduced ? <>{wheel}</> : <Float speed={2} rotationIntensity={0.12} floatIntensity={0.3}>{wheel}</Float>;
 }
 
-export function AlchemyLabScene() {
+export function AlchemyLabScene({ config }: { config?: LandingSceneConfig } = {}) {
   const reduced = useReducedMotion();
   const sound = useMemo(() => createSound(alchemySound), []);
+  const conversion = config?.conversion ?? alchemyConversion;
+  const copy = config?.copy ? { ...alchemyCopy, ...config.copy } : alchemyCopy;
+  const pwa = usePwaInstall();
+  const prompted = useRef(false);
+  const handleSpinStart = config ? () => { if (!prompted.current) { prompted.current = true; pwa.promptInstall(); } } : undefined;
+
   const { rotationRef, status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } =
-    useSpinScene({ reduced, sound, conversion: alchemyConversion });
+    useSpinScene({
+      reduced, sound, conversion,
+      winningIndex: config?.winningIndex ?? 7,
+      winOnSpin: config?.spinsBeforeWin ?? 1,
+      navigate: config ? pwa.openApp : undefined,
+      onSpinStart: handleSpinStart,
+    });
   const won = status === "won";
 
   const [webgl, setWebgl] = useState(true);
@@ -37,7 +52,7 @@ export function AlchemyLabScene() {
     return () => document.removeEventListener("visibilitychange", onVis);
   }, [sound, muted]);
 
-  if (!webgl) return <SceneFallback copy={alchemyCopy} vars={alchemyOverlayVars} config={alchemyConversion} />;
+  if (!webgl) return <SceneFallback copy={copy} vars={alchemyOverlayVars} config={conversion} />;
 
   return (
     <div className={shell.shell} style={{ "--base": "#0A1A14", "--glow": "#8BFF5A", "--glow2": "#F5C24B" } as CSSProperties}>
@@ -71,11 +86,12 @@ export function AlchemyLabScene() {
       </Canvas>
 
       <SpinOverlay
-        copy={alchemyCopy} vars={alchemyOverlayVars} config={alchemyConversion}
+        copy={copy} vars={alchemyOverlayVars} config={conversion}
         status={status} claimStep={claimStep} muted={muted} reduced={reduced}
         onSpin={onSpin} onToggleSound={onToggleSound}
         onClaimOpen={onClaimOpen} onClaimSubmit={onClaimSubmit} onDismiss={onDismiss}
       />
+      <IosInstallHint open={pwa.iosHintOpen} appName={config?.pwa.name ?? ""} iconUrl={config?.pwa.iconUrl ?? null} onClose={pwa.dismissIosHint} />
     </div>
   );
 }
