@@ -1,0 +1,17 @@
+.scrim {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-items: end center;
+  background: rgba(0, 0, 0, 0.55); padding: 0 0 24px;
+}
+.card {
+  width: min(420px, 92vw); background: #10201b; color: #eaf6ee;
+  border: 1px solid rgba(255, 210, 74, 0.35); border-radius: 18px;
+  padding: 20px; text-align: center; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+}
+.icon { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; }
+.title { margin: 10px 0 12px; font-size: 1.15rem; }
+.step { margin: 6px 0; opacity: 0.92; }
+.close {
+  margin-top: 14px; width: 100%; padding: 12px; border: 0; border-radius: 12px;
+  background: #F5C24B; color: #1a1207; font-weight: 800; cursor: pointer;
+}
