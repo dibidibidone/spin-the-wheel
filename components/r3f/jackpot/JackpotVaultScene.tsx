@@ -4,7 +4,6 @@ import { Canvas } from "@react-three/fiber";
 import { Environment, Lightformer, Float, Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { Wheel3D } from "../kit/Wheel3D";
 import { Effects } from "../kit/Effects";
-import { CoinStorm } from "../kit/CoinStorm";
 import { SpinDriver, Parallax, useSpinScene } from "../kit/spinScene";
 import { SpinOverlay } from "../kit/SpinOverlay";
 import { createSound } from "../kit/sound";
@@ -57,7 +56,6 @@ export function JackpotVaultScene() {
         <Parallax reduced={reduced}>
           <NeonSign />
           <WheelRig rotationRef={rotationRef} reduced={reduced} />
-          <CoinStorm active={status === "won"} count={reduced ? 30 : (typeof window !== "undefined" && window.innerWidth < 700 ? 60 : 120)} />
           {!reduced && <Sparkles count={60} scale={[10, 8, 4]} size={3} speed={0.3} color="#FFD56A" />}
         </Parallax>
 

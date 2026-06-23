@@ -4,7 +4,6 @@ import { Canvas } from "@react-three/fiber";
 import { Environment, Lightformer, Float, Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { Wheel3D } from "../kit/Wheel3D";
 import { Effects } from "../kit/Effects";
-import { CoinStorm } from "../kit/CoinStorm";
 import { SpinDriver, Parallax, useSpinScene } from "../kit/spinScene";
 import { SpinOverlay } from "../kit/SpinOverlay";
 import { createSound } from "../kit/sound";
@@ -63,7 +62,6 @@ export function AlchemyLabScene() {
           <PotionBottle position={[2.9, -0.6, 0.6]} phase={1.5} />
           <WheelRig rotationRef={rotationRef} reduced={reduced} />
           <Cauldron erupting={won} />
-          <CoinStorm active={won} count={reduced ? 30 : (typeof window !== "undefined" && window.innerWidth < 700 ? 60 : 120)} />
           {!reduced && <Sparkles count={60} scale={[11, 8, 5]} size={2.6} speed={0.25} color="#8BFF5A" />}
         </Parallax>
 

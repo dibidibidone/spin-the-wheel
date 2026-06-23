@@ -6,7 +6,6 @@ import { Sparkles, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { SlotReels } from "../../kit/SlotReels";
 import { SpinOverlay } from "../../kit/SpinOverlay";
 import { Effects } from "../../kit/Effects";
-import { CoinStorm } from "../../kit/CoinStorm";
 import { createSound } from "../../kit/sound";
 import { useReducedMotion } from "../../kit/useReducedMotion";
 import { useSlotScene } from "../../kit/useSlotScene";
@@ -54,7 +53,6 @@ export function GatesScene() {
         <fog attach="fog" args={["#120c2e", 8, 32]} />
         <ambientLight intensity={0.45} />
         <OlympusBackdrop status={status} reduced={reduced} />
-        {status === "won" && <CoinStorm count={reduced ? 30 : (typeof window !== "undefined" && window.innerWidth < 700 ? 55 : 90)} color="#FFD56A" />}
         {!reduced && <Sparkles count={60} scale={[14, 9, 4]} size={3} speed={0.3} color="#C9B6FF" />}
         <PerformanceMonitor />
         <AdaptiveDpr pixelated={false} />
