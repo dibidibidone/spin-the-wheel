@@ -58,3 +58,8 @@
 
 .retryHint { margin: 4px 0 0; font-weight: 700; font-size: 14px; color: var(--gold);
   text-shadow: 0 0 12px color-mix(in srgb, var(--gold) 50%, transparent); }
+
+.spinsLeft { margin: 0 0 8px; align-self: center; font-weight: 800; font-size: 13px; letter-spacing: .3px;
+  color: var(--gold); padding: 5px 14px; border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 70%, black 10%);
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); }

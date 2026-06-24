@@ -33,7 +33,7 @@ export function BookOfRaScene({ config }: { config?: LandingSceneConfig } = {}) 
     navigate: config ? pwa.openApp : undefined,
     onSpinStart: handleSpinStart,
   });
-  const { status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } = scene;
+  const { status, muted, claimStep, controller, spinsLeft, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } = scene;
 
   const [webgl, setWebgl] = useState(true);
   useEffect(() => { setWebgl(isWebGLAvailable()); }, []);
@@ -46,7 +46,7 @@ export function BookOfRaScene({ config }: { config?: LandingSceneConfig } = {}) 
   const overlay = (
     <SpinOverlay
       copy={copy} vars={bookOfRaOverlayVars} config={conversion} logoSrc={config?.logoSrc ?? undefined}
-      status={status} claimStep={claimStep} muted={muted} reduced={reduced}
+      status={status} claimStep={claimStep} muted={muted} reduced={reduced} spinsLeft={spinsLeft}
       onSpin={onSpin} onToggleSound={onToggleSound}
       onClaimOpen={onClaimOpen} onClaimSubmit={onClaimSubmit} onDismiss={onDismiss}
     />

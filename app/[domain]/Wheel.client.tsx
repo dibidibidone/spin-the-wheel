@@ -16,7 +16,7 @@ export function WheelClient({
   landing: LandingView;
   navigate?: (url: string) => void;
 }) {
-  const { rotation, status, spin, onAnimationComplete } = useSpinController(landing.spin);
+  const { rotation, status, spin, onAnimationComplete, spinsLeft } = useSpinController(landing.spin);
   const pwa = usePwaInstall();
   const prompted = useRef(false);
 
@@ -41,6 +41,12 @@ export function WheelClient({
       >
         <WheelSvg segments={landing.segments} size={360} />
       </div>
+
+      {(status === "idle" || status === "almost") && (
+        <p className="spins-left" data-testid="spins-left">
+          🎯 {spinsLeft} {spinsLeft === 1 ? "spin" : "spins"} left to win
+        </p>
+      )}
 
       <button
         className="spin-button"

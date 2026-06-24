@@ -14,7 +14,7 @@ export type OverlayVars = {
 };
 
 export function SpinOverlay({
-  copy, vars, config, status, claimStep, muted, reduced, logoSrc,
+  copy, vars, config, status, claimStep, muted, reduced, logoSrc, spinsLeft,
   onSpin, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss,
 }: {
   copy: OverlayCopy;
@@ -25,6 +25,7 @@ export function SpinOverlay({
   muted: boolean;
   reduced: boolean;
   logoSrc?: string;
+  spinsLeft?: number;
   onSpin: () => void;
   onToggleSound: () => void;
   onClaimOpen: () => void;
@@ -55,6 +56,11 @@ export function SpinOverlay({
         <div className={css.strip}>
           <SocialProof winners={config.social.winners} todayCount={config.social.todayCount} reduced={reduced} />
         </div>
+        {spinsLeft != null && (status === "idle" || status === "nearmiss") && (
+          <p className={css.spinsLeft} data-testid="spins-left">
+            🎯 {spinsLeft} {spinsLeft === 1 ? "spin" : "spins"} left to win
+          </p>
+        )}
         <button data-pe data-testid="spin-button" className={css.cta} onClick={onSpin} disabled={status === "spinning" || status === "won"}>
           {status === "spinning" ? copy.spinningLabel : status === "nearmiss" ? (copy.retryLabel ?? copy.ctaLabel) : copy.ctaLabel}
         </button>

@@ -59,4 +59,11 @@ describe("useSlotScene", () => {
     act(() => result.current.onSpin());
     expect(onSpinStart).toHaveBeenCalledTimes(1);
   });
+
+  it("counts down spinsLeft toward the winning spin (winOnSpin=2)", () => {
+    const { result } = renderHook(() => useSlotScene({ reduced: true, sound, theme, conversion }));
+    expect(result.current.spinsLeft).toBe(2); // before any spin
+    act(() => result.current.onSpin());        // spin 1 -> count 1
+    expect(result.current.spinsLeft).toBe(1);
+  });
 });

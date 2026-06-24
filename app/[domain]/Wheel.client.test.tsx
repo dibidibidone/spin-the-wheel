@@ -55,6 +55,14 @@ describe("WheelClient", () => {
     expect(screen.getByText("You won JACKPOT!")).toBeInTheDocument();
   });
 
+  it("shows the spins-left count and counts it down after a near-miss", async () => {
+    render(<WheelClient landing={view()} navigate={() => {}} />);
+    expect(screen.getByTestId("spins-left")).toHaveTextContent("2 spins left to win");
+    await userEvent.click(screen.getByTestId("spin-button"));
+    fireTransitionEnd(); // spin 1 -> near-miss
+    expect(screen.getByTestId("spins-left")).toHaveTextContent("1 spin left to win");
+  });
+
   it("prompts install on the first spin and opens the PWA via /go on claim", async () => {
     const navigate = vi.fn();
     render(<WheelClient landing={view()} navigate={navigate} />);

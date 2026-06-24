@@ -112,5 +112,9 @@ export function useSpinScene({ reduced, sound, conversion, winningIndex = 7, win
   };
   const onDismiss = () => dispatch({ type: "reset" });
 
-  return { rotationRef, status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss };
+  // How many spins remain until the scripted win (recomputed each render — status
+  // changes drive re-renders, so this updates after every spin / near-miss).
+  const spinsLeft = Math.max(0, winOnSpin - controller.spinCount);
+
+  return { rotationRef, status, muted, claimStep, controller, spinsLeft, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss };
 }

@@ -67,5 +67,8 @@ export function useSlotScene({ reduced, sound, theme, conversion, onClaim, navig
   };
   const onDismiss = () => { controller.reset(); setStatus("idle"); dispatch({ type: "reset" }); };
 
-  return { status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss };
+  // Spins remaining until the scripted win (theme.winOnSpin), recomputed each render.
+  const spinsLeft = Math.max(0, theme.winOnSpin - controller.spinCount);
+
+  return { status, muted, claimStep, controller, spinsLeft, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss };
 }

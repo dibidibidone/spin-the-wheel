@@ -38,5 +38,8 @@ export function useSpinController(config: SpinConfig) {
     setBothStatus(pendingWinRef.current ? "won" : "almost");
   }, [setBothStatus]);
 
-  return { rotation, status, spin, onAnimationComplete };
+  // Spins remaining until the win (config.spinsBeforeWin is the winning spin number).
+  const spinsLeft = Math.max(0, config.spinsBeforeWin - countRef.current);
+
+  return { rotation, status, spin, onAnimationComplete, spinsLeft };
 }

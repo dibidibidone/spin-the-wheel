@@ -39,7 +39,7 @@ export function AlchemyLabScene({ config }: { config?: LandingSceneConfig } = {}
   const prompted = useRef(false);
   const handleSpinStart = config ? () => { if (!prompted.current) { prompted.current = true; pwa.promptInstall(); } } : undefined;
 
-  const { rotationRef, status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } =
+  const { rotationRef, status, muted, claimStep, controller, spinsLeft, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } =
     useSpinScene({
       reduced, sound, conversion,
       winningIndex,
@@ -93,7 +93,7 @@ export function AlchemyLabScene({ config }: { config?: LandingSceneConfig } = {}
 
       <SpinOverlay
         copy={copy} vars={alchemyOverlayVars} config={conversion} logoSrc={config?.logoSrc ?? undefined}
-        status={status} claimStep={claimStep} muted={muted} reduced={reduced}
+        status={status} claimStep={claimStep} muted={muted} reduced={reduced} spinsLeft={spinsLeft}
         onSpin={onSpin} onToggleSound={onToggleSound}
         onClaimOpen={onClaimOpen} onClaimSubmit={onClaimSubmit} onDismiss={onDismiss}
       />
