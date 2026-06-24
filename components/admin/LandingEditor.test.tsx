@@ -31,15 +31,24 @@ describe("LandingEditor", () => {
     expect(screen.getByLabelText("Status")).toBeInTheDocument();
   });
 
-  it("shows the Branding tab for the classic-2d template", () => {
+  it("classic-2d shows all five tabs", () => {
     render(<LandingEditor landing={landing()} />);
-    expect(screen.getByTestId("tab-branding")).toBeInTheDocument();
+    for (const t of ["content", "branding", "wheel", "settings", "domains"]) {
+      expect(screen.getByTestId(`tab-${t}`)).toBeInTheDocument();
+    }
   });
 
-  it("hides the Branding tab for a 3D template, keeping the others", () => {
+  it("a 3D wheel hides Branding but keeps Wheel", () => {
     render(<LandingEditor landing={{ ...landing(), template: "jackpot-vault" }} />);
     expect(screen.queryByTestId("tab-branding")).toBeNull();
-    for (const t of ["content", "wheel", "settings", "domains"]) {
+    expect(screen.getByTestId("tab-wheel")).toBeInTheDocument();
+  });
+
+  it("a slot hides both Branding and Wheel", () => {
+    render(<LandingEditor landing={{ ...landing(), template: "book-of-ra" }} />);
+    expect(screen.queryByTestId("tab-branding")).toBeNull();
+    expect(screen.queryByTestId("tab-wheel")).toBeNull();
+    for (const t of ["content", "settings", "domains"]) {
       expect(screen.getByTestId(`tab-${t}`)).toBeInTheDocument();
     }
   });
