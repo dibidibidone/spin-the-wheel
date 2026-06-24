@@ -58,6 +58,36 @@ async function main() {
   await prisma.landing.update({ where: { id: demo.id }, data: { winningPrizeId: demoWinner.id } });
   console.log(`Seeded 3D landing "${demo.slug}" on ${pwaHost}`);
 
+  // A slot landing on its own host — no wheel config, just win text + the PWA link/logo.
+  const slotHost = "bookofra.localhost:3000";
+  await prisma.domain.deleteMany({ where: { hostname: slotHost } });
+  await prisma.landing.deleteMany({ where: { slug: "slot-demo" } });
+  const slot = await prisma.landing.create({
+    data: {
+      slug: "slot-demo",
+      name: "Slot Demo",
+      status: "published",
+      heading: "Unearth the Book",
+      subtitle: "Spin to reveal riches",
+      winTitle: "Riches revealed!",
+      claimLabel: "Claim your bonus →",
+      theme,
+      template: "book-of-ra",
+      spinsBeforeWin: 2,
+      redirectUrl: "https://example.com/slot-offer?app=1",
+      pwaName: "Book of Riches",
+      pwaIconUrl: "https://example.com/slot-icon.png",
+      winText: "200 Free Spins",
+      prizes: { create: prizes },
+      domains: { create: { hostname: slotHost, verified: true } },
+    },
+    include: { prizes: true },
+  });
+  const slotWinner = slot.prizes.find((p) => p.order === winningOrder);
+  if (!slotWinner) throw new Error(`Seed error: no prize with order ${winningOrder} for slot-demo`);
+  await prisma.landing.update({ where: { id: slot.id }, data: { winningPrizeId: slotWinner.id } });
+  console.log(`Seeded slot landing "${slot.slug}" on ${slotHost}`);
+
   await seedAdmin(
     prisma,
     process.env.ADMIN_EMAIL ?? "admin@boomzino.example",

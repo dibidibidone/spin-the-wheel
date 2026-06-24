@@ -19,12 +19,10 @@ test("spins twice (near-miss) then wins and claims", async ({ page }) => {
   await spin.click();
   await expect(page.getByText("You won JACKPOT!")).toBeVisible({ timeout: 10_000 });
 
-  // Claim redirects to the configured URL with the prize param.
-  // boomzino.example is not a real domain; intercept the navigation so it commits
-  // cleanly and the URL assertion can be verified deterministically.
-  await page.route("**/signup**", (route) =>
-    route.fulfill({ status: 200, contentType: "text/html", body: "ok" })
-  );
+  // Claim opens the PWA via the same-origin /go redirector (which then 302s to the
+  // offer link). Assert the claim navigates to /go — the meaningful new behavior —
+  // rather than chasing the external redirect target.
+  const goRequest = page.waitForRequest(/\/go$/, { timeout: 10_000 });
   await page.getByRole("button", { name: "Claim bonus" }).click();
-  await page.waitForURL(/boomzino\.example\/signup\?bonus=JACKPOT/, { timeout: 10_000 });
+  await goRequest;
 });
