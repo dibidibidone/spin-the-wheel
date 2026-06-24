@@ -44,6 +44,7 @@ model Landing {
   winningPrize       Prize?   @relation("WinningPrize", fields: [winningPrizeId], references: [id])
   prizes             Prize[]  @relation("LandingPrizes")
   domains            Domain[]
+  primaryDomainId    String?  @unique
 
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
@@ -62,13 +63,29 @@ model Prize {
 }
 
 model Domain {
-  id           String   @id @default(cuid())
-  landingId    String
-  landing      Landing  @relation(fields: [landingId], references: [id], onDelete: Cascade)
-  hostname     String   @unique
-  verified     Boolean  @default(false)
-  vercelStatus String?
-  createdAt    DateTime @default(now())
+  id               String    @id @default(cuid())
+  landingId        String
+  landing          Landing   @relation(fields: [landingId], references: [id], onDelete: Cascade)
+  hostname         String    @unique
+  status           String    @default("purchasing") // purchasing|dns_pending|attaching|ssl_pending|live|flagged|retiring|retired|failed
+
+  registrar        String?   // "namecheap"
+  registrarOrderId String?   // set once registration succeeds — the buy-once guard
+  autoRenew        Boolean   @default(false)
+  expiresAt        DateTime?
+
+  edgeProvider     String?   // "cloudflare"
+  edgeZoneId       String?
+  nameservers      String[]  // edge-assigned NS to set at the registrar
+  sslStatus        String?   // none|pending|active
+
+  vercelStatus     String?   // origin attach status (Phase 0)
+  verified         Boolean   @default(false)
+
+  statusReason     String?   // last error / flag reason
+  lastCheckedAt    DateTime?
+  createdAt        DateTime  @default(now())
+  retiredAt        DateTime?
 }
 
 model Admin {
