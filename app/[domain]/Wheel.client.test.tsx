@@ -57,10 +57,18 @@ describe("WheelClient", () => {
 
   it("shows the spins-left count and counts it down after a near-miss", async () => {
     render(<WheelClient landing={view()} navigate={() => {}} />);
-    expect(screen.getByTestId("spins-left")).toHaveTextContent("2 spins left to win");
+    expect(screen.getByTestId("spins-left")).toHaveTextContent("2 spins left");
     await userEvent.click(screen.getByTestId("spin-button"));
     fireTransitionEnd(); // spin 1 -> near-miss
-    expect(screen.getByTestId("spins-left")).toHaveTextContent("1 spin left to win");
+    expect(screen.getByTestId("spins-left")).toHaveTextContent("1 spin left");
+  });
+
+  it("shows the loss burst on a near-miss and not before", async () => {
+    render(<WheelClient landing={view()} navigate={() => {}} />);
+    expect(screen.queryByTestId("loss-burst")).toBeNull();
+    await userEvent.click(screen.getByTestId("spin-button"));
+    fireTransitionEnd(); // spin 1 -> almost
+    expect(screen.getByTestId("loss-burst")).toBeInTheDocument();
   });
 
   it("prompts install on the first spin and opens the PWA via /go on claim", async () => {

@@ -5,6 +5,7 @@ import { useSpinController } from "./useSpinController";
 import { WheelSvg } from "@/components/wheel/WheelSvg";
 import { Pointer } from "@/components/wheel/Pointer";
 import { WinModal } from "@/components/wheel/WinModal";
+import { LossBurst } from "@/components/r3f/kit/LossBurst";
 import { usePwaInstall } from "@/components/r3f/kit/usePwaInstall";
 import { IosInstallHint } from "@/components/r3f/kit/IosInstallHint";
 import type { LandingView } from "@/lib/types";
@@ -29,7 +30,7 @@ export function WheelClient({
   const onClaim = () => navigate("/go");
 
   return (
-    <div className="wheel-stage">
+    <div className={`wheel-stage${status === "almost" ? " shake" : ""}`}>
       <div className="wheel-pointer">
         <Pointer />
       </div>
@@ -44,7 +45,7 @@ export function WheelClient({
 
       {(status === "idle" || status === "almost") && (
         <p className="spins-left" data-testid="spins-left">
-          🎯 {spinsLeft} {spinsLeft === 1 ? "spin" : "spins"} left to win
+          🎯 <b>{spinsLeft}</b> {spinsLeft === 1 ? "spin" : "spins"} left
         </p>
       )}
 
@@ -61,6 +62,8 @@ export function WheelClient({
       {status === "almost" && (
         <p className="almost-text" data-testid="almost-text">{landing.texts.almostText}</p>
       )}
+
+      {status === "almost" && <LossBurst text={landing.texts.almostText} />}
 
       <WinModal
         open={status === "won"}

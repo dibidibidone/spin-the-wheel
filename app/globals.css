@@ -76,20 +76,24 @@ body { font-family: var(--font-outfit), system-ui, sans-serif; }
 }
 .spins-left {
   position: absolute;
-  top: -28px;
+  top: -34px;
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
   z-index: 5;
+  text-transform: uppercase;
   color: var(--gold);
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: 0.3px;
-  padding: 5px 14px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface) 80%, black 10%);
-  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  padding: 8px 18px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, black 8%), color-mix(in srgb, var(--surface) 82%, black 18%));
+  border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--gold) 45%, transparent);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
+.spins-left b { font-size: 1.5em; vertical-align: -1px; }
 .spin-button {
   position: absolute;
   top: calc(20px + 180px - 34px);
