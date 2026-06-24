@@ -59,7 +59,13 @@
 .retryHint { margin: 4px 0 0; font-weight: 700; font-size: 14px; color: var(--gold);
   text-shadow: 0 0 12px color-mix(in srgb, var(--gold) 50%, transparent); }
 
-.spinsLeft { margin: 0 0 8px; align-self: center; font-weight: 800; font-size: 13px; letter-spacing: .3px;
-  color: var(--gold); padding: 5px 14px; border-radius: 999px;
-  background: color-mix(in srgb, var(--surface) 70%, black 10%);
-  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); }
+.spinsLeft { margin: 0; align-self: center; width: min(360px, 100%); box-sizing: border-box;
+  text-align: center; text-transform: uppercase; font-weight: 900; font-size: 14px; letter-spacing: 1.5px;
+  color: var(--gold); padding: 8px 14px; border-radius: 14px 14px 0 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, black 8%), color-mix(in srgb, var(--surface) 82%, black 18%));
+  border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent); border-bottom: none;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--gold) 45%, transparent);
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.3); }
+.spinsLeft b { font-size: 1.5em; vertical-align: -1px; }
+/* When the bar is shown it sits flush on the CTA: square the CTA's top so they fuse. */
+.spinsLeft + .cta { border-top-left-radius: 0; border-top-right-radius: 0; }

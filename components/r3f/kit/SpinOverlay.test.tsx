@@ -9,6 +9,7 @@ import type { OverlayVars } from "./SpinOverlay";
 const copy: OverlayCopy = {
   logo: "B", heading: "h", ctaLabel: "SPIN", spinningLabel: "SPINNING…",
   retryLabel: "So close — try again!", nearMissLine: "Two of three!",
+  almostText: "Almost! Spin again",
   winTitle: "You won", winPrize: "WIN", winEmoji: "💰",
 };
 const vars: OverlayVars = { gold: "#f5c24b", accent: "#ffd56a", surface: "#15564a", text: "#eaf6ee", bannerBg: "#e2483d", bannerBorder: "#f5c24b" };
@@ -45,11 +46,11 @@ describe("SpinOverlay nearmiss CTA", () => {
 describe("SpinOverlay spins-left", () => {
   it("shows the spins-left count when idle", () => {
     renderAt("idle", 3);
-    expect(screen.getByTestId("spins-left")).toHaveTextContent("3 spins left to win");
+    expect(screen.getByTestId("spins-left")).toHaveTextContent("3 spins left");
   });
   it("uses the singular for one spin left", () => {
     renderAt("nearmiss", 1);
-    expect(screen.getByTestId("spins-left")).toHaveTextContent("1 spin left to win");
+    expect(screen.getByTestId("spins-left")).toHaveTextContent("1 spin left");
   });
   it("hides the count while spinning and on win", () => {
     renderAt("spinning", 2);
@@ -60,5 +61,21 @@ describe("SpinOverlay spins-left", () => {
   it("renders nothing when spinsLeft is not provided", () => {
     renderAt("idle", undefined);
     expect(screen.queryByTestId("spins-left")).toBeNull();
+  });
+});
+
+describe("SpinOverlay loss burst", () => {
+  it("shows the loss burst with the almost text on near-miss", () => {
+    renderAt("nearmiss", 1);
+    expect(screen.getByTestId("loss-burst")).toBeInTheDocument();
+    expect(screen.getByText("Almost! Spin again")).toBeInTheDocument();
+  });
+  it("does not show the loss burst on idle, spinning, or win", () => {
+    renderAt("idle", 2);
+    expect(screen.queryByTestId("loss-burst")).toBeNull();
+    renderAt("spinning", 2);
+    expect(screen.queryByTestId("loss-burst")).toBeNull();
+    renderAt("won", 0);
+    expect(screen.queryByTestId("loss-burst")).toBeNull();
   });
 });

@@ -5,6 +5,7 @@ import type { OverlayCopy, ConversionConfig } from "./types";
 import type { ClaimStep } from "./claimMachine";
 import { WinSheet } from "./WinSheet";
 import { WinBurst } from "./WinBurst";
+import { LossBurst } from "./LossBurst";
 import { SocialProof } from "./SocialProof";
 import { Countdown } from "./Countdown";
 import { TrustBar } from "./TrustBar";
@@ -58,7 +59,7 @@ export function SpinOverlay({
         </div>
         {spinsLeft != null && (status === "idle" || status === "nearmiss") && (
           <p className={css.spinsLeft} data-testid="spins-left">
-            🎯 {spinsLeft} {spinsLeft === 1 ? "spin" : "spins"} left to win
+            🎯 <b>{spinsLeft}</b> {spinsLeft === 1 ? "spin" : "spins"} left
           </p>
         )}
         <button data-pe data-testid="spin-button" className={css.cta} onClick={onSpin} disabled={status === "spinning" || status === "won"}>
@@ -71,6 +72,7 @@ export function SpinOverlay({
         <TrustBar text={config.trust} />
       </div>
 
+      {status === "nearmiss" && <LossBurst text={copy.almostText ?? ""} />}
       {status === "won" && <WinBurst />}
 
       <WinSheet
