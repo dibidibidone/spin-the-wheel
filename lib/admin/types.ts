@@ -20,6 +20,7 @@ export type EditableLanding = {
   winTitle: string;
   claimLabel: string;
   almostText: string;
+  winText: string;
   template: string;
   pwaName: string;
   pwaIconUrl: string | null;

@@ -12,6 +12,7 @@ const view: LandingView = {
   redirectUrl: "https://offer.example.com",
   redirectPrizeParam: null,
   winningPrizeLabel: "JACKPOT",
+  winText: "",
   metaTitle: "t",
   metaDescription: "d",
   template: "jackpot-vault",
@@ -35,5 +36,11 @@ describe("buildSceneConfig", () => {
   it("falls back to winTitle when there is no winning prize label", () => {
     const c = buildSceneConfig({ ...view, winningPrizeLabel: "" });
     expect(c.conversion.prize).toBe("You won!");
+  });
+
+  it("prefers winText over the winning prize label", () => {
+    const c = buildSceneConfig({ ...view, winText: "200 Free Spins" });
+    expect(c.conversion.prize).toBe("200 Free Spins");
+    expect(c.copy?.winPrize).toBe("200 Free Spins");
   });
 });

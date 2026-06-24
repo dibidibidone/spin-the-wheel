@@ -103,6 +103,10 @@ describe("parseLandingPatch — template + PWA", () => {
     expect(r.ok).toBe(true);
   });
 
+  it("accepts winText", () => {
+    expect(parseLandingPatch({ winText: "200 Free Spins" }).ok).toBe(true);
+  });
+
   it("rejects an unknown template", () => {
     const r = parseLandingPatch({ template: "roulette" });
     expect(r.ok).toBe(false);

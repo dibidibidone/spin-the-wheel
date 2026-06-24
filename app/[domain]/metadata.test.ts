@@ -14,7 +14,7 @@ const base: LandingView = {
   template: "classic-2d",
   pwaName: "",
   pwaIconUrl: null,
-  pwaUrl: "",
+  pwaUrl: "", winText: "",
 };
 
 describe("buildMetadata", () => {
@@ -40,7 +40,7 @@ const base2 = {
   assets: { logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null },
   segments: [], spin: { segmentCount: 8, spinsBeforeWin: 2, winningIndex: 7, behavior: "near-miss" as const },
   redirectUrl: "https://x.example.com", redirectPrizeParam: null, winningPrizeLabel: "JACKPOT",
-  metaTitle: "t", metaDescription: "d", pwaName: "Lucky App", pwaIconUrl: "https://cdn/i.png", pwaUrl: "",
+  metaTitle: "t", metaDescription: "d", pwaName: "Lucky App", pwaIconUrl: "https://cdn/i.png", pwaUrl: "", winText: "",
 };
 
 describe2("buildMetadata — PWA", () => {

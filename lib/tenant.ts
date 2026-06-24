@@ -11,6 +11,7 @@ type LandingRow = {
   spinsBeforeWin: number; redirectUrl: string; redirectPrizeParam: string | null;
   metaTitle: string | null; metaDescription: string | null;
   template: string; pwaName: string; pwaIconUrl: string | null; pwaUrl: string;
+  winText: string;
   winningPrizeId: string | null;
   winningPrize: PrizeRow | null;
   prizes: PrizeRow[];
@@ -37,6 +38,7 @@ export function toLandingView(landing: LandingRow): LandingView {
     redirectUrl: landing.redirectUrl,
     redirectPrizeParam: landing.redirectPrizeParam,
     winningPrizeLabel: landing.winningPrize?.label ?? "",
+    winText: landing.winText,
     metaTitle: landing.metaTitle ?? landing.heading,
     metaDescription: landing.metaDescription ?? landing.subtitle,
     template: landing.template,

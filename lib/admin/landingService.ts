@@ -23,28 +23,29 @@ type TemplatePreset = {
   claimLabel: string;
   winnerLabel: string;
   pwaName: string;
+  winText: string; // slot win-prize text ("" for wheels — their prize comes from the rows)
 };
 
 const TEMPLATE_PRESETS: Record<string, TemplatePreset> = {
   "classic-2d": {
     heading: "Spin the Wheel", subtitle: "and win bonuses",
-    winTitle: "You won {prize}!", claimLabel: "Claim", winnerLabel: "JACKPOT", pwaName: "",
+    winTitle: "You won {prize}!", claimLabel: "Claim", winnerLabel: "JACKPOT", pwaName: "", winText: "",
   },
   "jackpot-vault": {
     heading: "BOOM your luck", subtitle: "Spin the vault to win",
-    winTitle: "JACKPOT — you won!", claimLabel: "Claim jackpot →", winnerLabel: "1,000 Free Spins", pwaName: "Jackpot Vault",
+    winTitle: "JACKPOT — you won!", claimLabel: "Claim jackpot →", winnerLabel: "1,000 Free Spins", pwaName: "Jackpot Vault", winText: "",
   },
   "alchemy-lab": {
     heading: "Brew your fortune", subtitle: "Spin the alchemy wheel",
-    winTitle: "The potion paid out!", claimLabel: "Claim your bonus →", winnerLabel: "500 Free Spins", pwaName: "Alchemy Lab",
+    winTitle: "The potion paid out!", claimLabel: "Claim your bonus →", winnerLabel: "500 Free Spins", pwaName: "Alchemy Lab", winText: "",
   },
   "book-of-ra": {
     heading: "Unearth the Book", subtitle: "Spin to reveal riches",
-    winTitle: "Riches revealed!", claimLabel: "Claim your bonus →", winnerLabel: "200 Free Spins", pwaName: "Book of Ra",
+    winTitle: "Riches revealed!", claimLabel: "Claim your bonus →", winnerLabel: "200 Free Spins", pwaName: "Book of Ra", winText: "200 Free Spins",
   },
   "gates-of-olympus": {
     heading: "Summon the gods", subtitle: "Spin for divine wins",
-    winTitle: "The gods reward you!", claimLabel: "Claim your bonus →", winnerLabel: "500 Free Spins + ×500", pwaName: "Gates of Olympus",
+    winTitle: "The gods reward you!", claimLabel: "Claim your bonus →", winnerLabel: "500 Free Spins + ×500", pwaName: "Gates of Olympus", winText: "500 Free Spins + ×500",
   },
 };
 
@@ -98,6 +99,7 @@ export async function createLanding(input: CreateLandingInput): Promise<{ id: st
       winTitle: preset.winTitle,
       claimLabel: preset.claimLabel,
       pwaName: preset.pwaName,
+      winText: preset.winText,
       theme: boomzinoTheme,
       spinsBeforeWin: 3,
       redirectUrl: "https://example.com",
@@ -133,6 +135,7 @@ export async function getEditableLanding(id: string): Promise<EditableLanding | 
     winTitle: l.winTitle,
     claimLabel: l.claimLabel,
     almostText: l.almostText,
+    winText: l.winText,
     template: l.template,
     pwaName: l.pwaName,
     pwaIconUrl: l.pwaIconUrl,

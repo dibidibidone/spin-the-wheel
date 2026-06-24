@@ -78,8 +78,21 @@ describe("createLanding", () => {
     expect(created.data.template).toBe("jackpot-vault");
     expect(created.data.heading).toBe("BOOM your luck");
     expect(created.data.pwaName).toBe("Jackpot Vault");
+    expect(created.data.winText).toBe(""); // wheels leave winText blank (prize comes from the rows)
     const prizes = created.data.prizes.create;
     expect(prizes[prizes.length - 1].label).toBe("1,000 Free Spins"); // winner prize text from preset
+  });
+
+  it("sets winText from the preset for a slot template", async () => {
+    landing.findUnique.mockResolvedValue(null);
+    landing.create.mockResolvedValue(sixPrizeRow);
+    landing.update.mockResolvedValue({});
+
+    await createLanding({ name: "Book Promo", template: "book-of-ra" });
+
+    const created = landing.create.mock.calls[0][0];
+    expect(created.data.template).toBe("book-of-ra");
+    expect(created.data.winText).toBe("200 Free Spins");
   });
 });
 

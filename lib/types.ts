@@ -48,6 +48,7 @@ export type LandingView = {
   redirectUrl: string;
   redirectPrizeParam: string | null;
   winningPrizeLabel: string;
+  winText: string;
   metaTitle: string;
   metaDescription: string;
   template: string;

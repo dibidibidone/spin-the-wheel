@@ -3,7 +3,7 @@ import type { LandingSceneConfig } from "@/components/r3f/kit/sceneConfig";
 import type { LandingView } from "@/lib/types";
 
 export function buildSceneConfig(view: LandingView): LandingSceneConfig {
-  const prize = view.winningPrizeLabel || view.texts.winTitle;
+  const prize = view.winText || view.winningPrizeLabel || view.texts.winTitle;
   return {
     conversion: withConversionDefaults({
       prize,

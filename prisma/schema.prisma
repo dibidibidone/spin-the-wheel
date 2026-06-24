@@ -25,6 +25,7 @@ model Landing {
   pwaName            String   @default("")
   pwaIconUrl         String?
   pwaUrl             String   @default("")
+  winText            String   @default("")
 
   theme              Json
   logoUrl            String?

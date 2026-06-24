@@ -48,6 +48,7 @@ const patchSchema = z
     pwaName: z.string(),
     pwaIconUrl: url.nullable(),
     pwaUrl: z.union([url, z.literal("")]),
+    winText: z.string(),
   })
   .partial()
   .strict();
