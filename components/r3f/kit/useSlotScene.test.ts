@@ -66,4 +66,22 @@ describe("useSlotScene", () => {
     act(() => result.current.onSpin());        // spin 1 -> count 1
     expect(result.current.spinsLeft).toBe(1);
   });
+
+  it("keeps the in-flight controller when the theme object identity changes mid-spin", () => {
+    // Configured slot scenes rebuild `{ ...theme, winOnSpin }` fresh on every render, so the
+    // controller must NOT be tied to the theme object's identity — otherwise the re-render
+    // triggered by onSpin's setStatus("spinning") swaps in a fresh idle controller, orphaning
+    // the running spin so the reels hang on "SPINNING..." forever (never reaching near-miss).
+    const fresh = (): SlotTheme => ({ ...theme }); // same contents, new object — mimics the scene
+    const { result, rerender } = renderHook(
+      (p: { theme: SlotTheme }) => useSlotScene({ reduced: true, sound, theme: p.theme, conversion }),
+      { initialProps: { theme: fresh() } },
+    );
+    const first = result.current.controller;
+    act(() => result.current.onSpin());
+    expect(result.current.controller.status).toBe("spinning");
+    rerender({ theme: fresh() }); // the render that the setStatus("spinning") above schedules
+    expect(result.current.controller).toBe(first);            // same instance, not recreated
+    expect(result.current.controller.status).toBe("spinning"); // the in-flight spin survives
+  });
 });

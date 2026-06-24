@@ -19,6 +19,11 @@ export function useSlotScene({ reduced, sound, theme, conversion, onClaim, navig
   const haptics = useMemo(() => createHaptics({ reduced }), [reduced]);
   const go = navigate ?? ((url: string) => { if (typeof window !== "undefined") window.location.assign(url); });
 
+  // Key the controller on the meaningful slot fields, NOT the `theme` object's identity:
+  // configured scenes rebuild `{ ...theme, winOnSpin }` fresh on every render, so depending
+  // on `theme` would recreate the controller on the re-render that onSpin's setStatus triggers
+  // — orphaning the in-flight spin so the reels hang on "spinning". These fields are stable
+  // across those rebuilds (the spread preserves the inner arrays), so the controller survives.
   const controller = useMemo(
     () => createSlotController({
       reels: theme.reels,
@@ -29,7 +34,7 @@ export function useSlotScene({ reduced, sound, theme, conversion, onClaim, navig
       winOnSpin: theme.winOnSpin,
       durationMs: reduced ? 350 : theme.durationMs,
     }),
-    [theme, reduced]
+    [theme.reels, theme.rows, theme.symbols, theme.nearMissGrid, theme.winGrid, theme.winOnSpin, theme.durationMs, reduced]
   );
 
   useEffect(() => {
