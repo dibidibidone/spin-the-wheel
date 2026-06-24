@@ -9,11 +9,14 @@ vi.mock("@/lib/db", () => ({
       findUnique: vi.fn(async ({ where }: any) => db.domains.find((d) => d.id === where.id) ?? null),
       update: vi.fn(async ({ where, data }: any) => { const row = db.domains.find((d) => d.id === where.id); Object.assign(row, data); return row; }),
     },
-    landing: { update: vi.fn(async ({ where, data }: any) => { db.landings.push({ where, data }); return {}; }) },
+    landing: {
+      update: vi.fn(async ({ where, data }: any) => { db.landings.push({ where, data }); return {}; }),
+      findUnique: vi.fn(async ({ where }: any) => ({ id: where.id, primaryDomainId: db.domains.find((d) => d.landingId === where.id && d.status === "live")?.id ?? null })),
+    },
   },
 }));
 
-import { purchaseDomainForLanding, advanceDomain } from "./service";
+import { purchaseDomainForLanding, advanceDomain, flagDomain, retireDomain, rotateDomain } from "./service";
 import type { Providers, SslStatus } from "@/lib/providers/types";
 
 function fakeProviders(over: Partial<Providers> = {}): Providers {
@@ -91,5 +94,39 @@ describe("domain service", () => {
     const id = await purchaseDomainForLanding(p, "land-1", "x.com");
     expect(await advanceDomain(p, id)).toBe("failed");
     expect(db.domains[0].statusReason).toMatch(/balance too low/);
+  });
+});
+
+describe("rotation / retire / flag", () => {
+  it("flagDomain sets flagged + reason", async () => {
+    const p = fakeProviders();
+    const id = await purchaseDomainForLanding(p, "land-1", "x.com");
+    await flagDomain(id, "safe-browsing");
+    expect(db.domains[0]).toMatchObject({ status: "flagged", statusReason: "safe-browsing" });
+  });
+
+  it("retireDomain tears down the edge zone, detaches origin, and marks retired", async () => {
+    const p = fakeProviders();
+    const id = await purchaseDomainForLanding(p, "land-1", "x.com");
+    db.domains[0].edgeZoneId = "z1";
+    await retireDomain(p, id);
+    expect(p.edge.deleteZone).toHaveBeenCalledWith("z1");
+    expect(p.origin.detach).toHaveBeenCalledWith("x.com");
+    expect(db.domains[0].status).toBe("retired");
+    expect(db.domains[0].retiredAt).toBeInstanceOf(Date);
+  });
+
+  it("rotateDomain provisions a fresh live domain then retires the old primary", async () => {
+    const p = fakeProviders();
+    const oldId = await purchaseDomainForLanding(p, "land-1", "old.com");
+    for (let i = 0; i < 4; i++) await advanceDomain(p, oldId); // -> live (sets primaryDomainId)
+    db.domains[0].edgeZoneId = "zold";
+
+    const newId = await rotateDomain(p, "land-1", "fresh.com");
+
+    expect(db.domains.find((d) => d.id === newId)?.status).toBe("live");
+    expect(db.domains.find((d) => d.id === oldId)?.status).toBe("retired");
+    // primaryDomainId repointed to the new domain
+    expect(db.landings.at(-1)).toMatchObject({ where: { id: "land-1" }, data: { primaryDomainId: newId } });
   });
 });
