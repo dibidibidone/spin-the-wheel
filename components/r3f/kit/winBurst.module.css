@@ -28,4 +28,18 @@
 .h1 { background: var(--accent); }
 .h2 { background: #FFF7EB; }
 
+/* Falling gold coins — radial gradient disc with rim + highlight, flipping on its
+   vertical axis (rotateY) for a 3D coin-spin illusion. */
+.coin {
+  position: absolute; top: -8%; border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, #FFF6D0 0%, #FFD24A 40%, #E0A21E 72%, #9C6B0F 100%);
+  box-shadow: 0 0 9px rgba(245, 194, 75, 0.6), inset 0 0 3px rgba(255, 255, 255, 0.7), inset 0 -3px 5px rgba(120, 80, 10, 0.55);
+  animation-name: coinfall; animation-timing-function: ease-in; animation-fill-mode: both;
+}
+@keyframes coinfall {
+  0% { transform: translate(0, -14vh) rotateY(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translate(var(--drift), 114vh) rotateY(var(--spin)); opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) { .wrap { display: none; } }
