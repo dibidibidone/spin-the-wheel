@@ -3,6 +3,14 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { DomainsPanel } from "@/components/admin/DomainsPanel";
 
+vi.mock("@/lib/adminClient", () => ({
+  suggestDomains: vi.fn(),
+  buyDomain: vi.fn(),
+  rotateDomain: vi.fn(),
+  flagDomain: vi.fn(),
+  retryDomain: vi.fn(),
+}));
+
 function jsonRes(body: unknown, status = 200) {
   return { ok: status >= 200 && status < 300, status, json: async () => body };
 }
@@ -90,5 +98,20 @@ describe("DomainsPanel", () => {
     await waitFor(() =>
       expect(screen.queryByText("promo.boomzino.com")).not.toBeInTheDocument(),
     );
+  });
+
+  it("buys a suggested domain and shows its provisioning status", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ domains: [] }) })));
+    const { suggestDomains, buyDomain } = await import("@/lib/adminClient");
+    vi.mocked(suggestDomains).mockResolvedValue({ candidates: [{ name: "boomzino.click", available: true, priceUsd: 9 }] });
+    vi.mocked(buyDomain).mockResolvedValue({ domainId: "d1", status: "dns_pending" });
+
+    render(<DomainsPanel landingId="l1" />);
+    await userEvent.type(screen.getByPlaceholderText(/brand or keyword/i), "boomzino");
+    await userEvent.click(screen.getByRole("button", { name: /search/i }));
+    await userEvent.click(await screen.findByRole("button", { name: /buy & provision boomzino\.click/i }));
+
+    expect(buyDomain).toHaveBeenCalledWith("l1", "boomzino.click");
+    expect(await screen.findByText(/dns_pending/i)).toBeInTheDocument();
   });
 });
