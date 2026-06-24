@@ -19,7 +19,7 @@ function view(): LandingView {
     template: "classic-2d",
     pwaName: "",
     pwaIconUrl: null,
-    pwaUrl: "", winText: "",
+    winText: "",
   };
 }
 

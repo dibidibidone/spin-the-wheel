@@ -47,7 +47,7 @@ const patchSchema = z
     template: z.enum(TEMPLATE_VALUES),
     pwaName: z.string(),
     pwaIconUrl: url.nullable(),
-    pwaUrl: z.union([url, z.literal("")]),
+    redirectUrl: url,
     winText: z.string(),
   })
   .partial()

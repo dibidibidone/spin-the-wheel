@@ -13,7 +13,7 @@ function landing(): EditableLanding {
     id: "l1", slug: "promo", name: "Promo", status: "draft",
     heading: "Spin", subtitle: "win", backLabel: "Back", winTitle: "You won {prize}!",
     claimLabel: "Claim", almostText: "Almost!",
-    template: "classic-2d", pwaName: "App", pwaIconUrl: null, pwaUrl: "", winText: "",
+    template: "classic-2d", pwaName: "App", pwaIconUrl: null, winText: "",
     theme: { bg: "#0A1410", surface: "#13251A", accent: "#27C24C", gold: "#F5C24B", text: "#EAF6EE", muted: "#7FA88E" },
     logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
     spinsBeforeWin: 3, redirectUrl: "https://x.com", redirectPrizeParam: "bonus",
@@ -38,7 +38,6 @@ describe("SettingsTab", () => {
       template: "classic-2d",
       pwaName: "App",
       pwaIconUrl: null,
-      pwaUrl: ""
     });
   });
 });
@@ -50,7 +49,7 @@ describe("SettingsTab — template + PWA", () => {
       winTitle: "", claimLabel: "", almostText: "", theme: { bg: "#000000", surface: "#000000", accent: "#000000", gold: "#000000", text: "#000000", muted: "#000000" },
       logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
       spinsBeforeWin: 2, redirectUrl: "https://x.example.com", redirectPrizeParam: null, metaTitle: null, metaDescription: null,
-      winningPrizeId: null, prizes: [], template: "jackpot-vault", pwaName: "Lucky App", pwaIconUrl: null, pwaUrl: "https://offer.example.com", winText: "",
+      winningPrizeId: null, prizes: [], template: "jackpot-vault", pwaName: "Lucky App", pwaIconUrl: null, winText: "",
     };
     render(<SettingsTab landing={testLanding} />);
     expect((screen.getByLabelText("Template") as HTMLSelectElement).value).toBe("jackpot-vault");
@@ -61,11 +60,10 @@ describe("SettingsTab — template + PWA", () => {
       winTitle: "", claimLabel: "", almostText: "", theme: { bg: "#000000", surface: "#000000", accent: "#000000", gold: "#000000", text: "#000000", muted: "#000000" },
       logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
       spinsBeforeWin: 2, redirectUrl: "https://x.example.com", redirectPrizeParam: null, metaTitle: null, metaDescription: null,
-      winningPrizeId: null, prizes: [], template: "jackpot-vault", pwaName: "Lucky App", pwaIconUrl: null, pwaUrl: "https://offer.example.com", winText: "",
+      winningPrizeId: null, prizes: [], template: "jackpot-vault", pwaName: "Lucky App", pwaIconUrl: null, winText: "",
     };
     render(<SettingsTab landing={testLanding} />);
     expect((screen.getByLabelText("App name") as HTMLInputElement).value).toBe("Lucky App");
-    expect((screen.getByLabelText("App link") as HTMLInputElement).value).toBe("https://offer.example.com");
   });
 
   it("hides the PWA group for the classic-2d template", () => {

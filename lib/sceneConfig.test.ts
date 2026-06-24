@@ -18,7 +18,6 @@ const view: LandingView = {
   template: "jackpot-vault",
   pwaName: "Lucky App",
   pwaIconUrl: "https://cdn.example.com/icon.png",
-  pwaUrl: "https://offer.example.com/go",
 };
 
 describe("buildSceneConfig", () => {

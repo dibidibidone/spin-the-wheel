@@ -6,9 +6,9 @@ const view = {
   theme: { bg: "#070D0B", surface: "#111", accent: "#222", gold: "#F5C24B", text: "#fff", muted: "#888" },
   assets: { logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null },
   segments: [], spin: { segmentCount: 8, spinsBeforeWin: 2, winningIndex: 7, behavior: "near-miss" as const },
-  redirectUrl: "https://fallback.example.com/", redirectPrizeParam: null, winningPrizeLabel: "JACKPOT",
+  redirectUrl: "https://offer.example.com/go", redirectPrizeParam: null, winningPrizeLabel: "JACKPOT", winText: "",
   metaTitle: "t", metaDescription: "d",
-  template: "jackpot-vault", pwaName: "Lucky App", pwaIconUrl: "https://cdn.example.com/i.png", pwaUrl: "https://offer.example.com/go",
+  template: "jackpot-vault", pwaName: "Lucky App", pwaIconUrl: "https://cdn.example.com/i.png",
 };
 
 vi.mock("@/lib/tenant", () => ({ getLandingByHost: vi.fn() }));
@@ -39,16 +39,16 @@ describe("GET /manifest", () => {
 });
 
 describe("GET /go", () => {
-  it("redirects to pwaUrl", async () => {
+  it("redirects to the landing's redirectUrl (the single PWA link)", async () => {
     vi.mocked(getLandingByHost).mockResolvedValue(view as never);
     const res = await goGET(new Request("http://x/go"), ctx("lucky.example.com"));
     expect(res.status).toBe(302);
     expect(res.headers.get("location")).toBe("https://offer.example.com/go");
   });
 
-  it("falls back to redirectUrl when pwaUrl is blank", async () => {
-    vi.mocked(getLandingByHost).mockResolvedValue({ ...view, pwaUrl: "" } as never);
-    const res = await goGET(new Request("http://x/go"), ctx("lucky.example.com"));
-    expect(res.headers.get("location")).toBe("https://fallback.example.com/");
+  it("404s for an unknown host", async () => {
+    vi.mocked(getLandingByHost).mockResolvedValue(null);
+    const res = await goGET(new Request("http://x/go"), ctx("nope.example.com"));
+    expect(res.status).toBe(404);
   });
 });

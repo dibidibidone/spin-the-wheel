@@ -14,7 +14,6 @@ export function SettingsTab({ landing }: { landing: EditableLanding }) {
   const [template, setTemplate] = useState(landing.template);
   const [pwaName, setPwaName] = useState(landing.pwaName);
   const [pwaIconUrl, setPwaIconUrl] = useState<string | null>(landing.pwaIconUrl);
-  const [pwaUrl, setPwaUrl] = useState(landing.pwaUrl);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -34,7 +33,7 @@ export function SettingsTab({ landing }: { landing: EditableLanding }) {
     setBusy(true);
     setMsg("");
     try {
-      await patchLanding(landing.id, { name, slug, status, template, pwaName, pwaIconUrl, pwaUrl });
+      await patchLanding(landing.id, { name, slug, status, template, pwaName, pwaIconUrl });
       setMsg("Saved");
     } catch (e) {
       setMsg((e as Error).message);
@@ -65,10 +64,6 @@ export function SettingsTab({ landing }: { landing: EditableLanding }) {
         <fieldset className="pwa-group">
           <legend>Download app (PWA)</legend>
           <Field label="App name" value={pwaName} onChange={setPwaName} />
-          <label className="field">
-            <span>App link</span>
-            <input aria-label="App link" type="url" value={pwaUrl} onChange={(e) => setPwaUrl(e.target.value)} placeholder="https://offer.example.com (defaults to Redirect URL)" />
-          </label>
           <label className="field">
             <span>App icon</span>
             <input type="file" accept="image/*" onChange={onIcon} />

@@ -88,19 +88,18 @@ describe("parseCreateLanding", () => {
 });
 
 describe("parseLandingPatch — template + PWA", () => {
-  it("accepts a valid template and PWA fields", () => {
+  it("accepts a valid template, PWA fields and the app link (redirectUrl)", () => {
     const r = parseLandingPatch({
       template: "jackpot-vault",
       pwaName: "Lucky App",
       pwaIconUrl: "https://cdn.example.com/icon.png",
-      pwaUrl: "https://offer.example.com/go",
+      redirectUrl: "https://offer.example.com/go",
     });
     expect(r.ok).toBe(true);
   });
 
-  it("accepts a blank pwaUrl (falls back to redirectUrl downstream)", () => {
-    const r = parseLandingPatch({ pwaUrl: "" });
-    expect(r.ok).toBe(true);
+  it("rejects the removed pwaUrl field", () => {
+    expect(parseLandingPatch({ pwaUrl: "https://x.example.com" }).ok).toBe(false);
   });
 
   it("accepts winText", () => {
