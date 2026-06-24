@@ -38,6 +38,23 @@ describe("cloudflare edge", () => {
     expect(create.body).toMatchObject({ type: "A", name: "boomzino.click", content: "76.76.21.21", proxied: false });
   });
 
+  it("upsertRecords updates an existing record via PUT", async () => {
+    const existing = [{ id: "rec-1", name: "boomzino.click", type: "A" }];
+    const calls = mockSequence([ok(existing), ok({ id: "rec-1" })]);
+    const edge = createCloudflareEdge(config);
+    await edge.upsertRecords("zone-1", [{ type: "A", name: "boomzino.click", content: "1.2.3.4", proxied: false }]);
+    expect(calls[1].method).toBe("PUT");
+    expect(calls[1].url).toContain("/dns_records/rec-1");
+  });
+
+  it("deleteZone issues DELETE on the zone", async () => {
+    const calls = mockSequence([ok({ id: "zone-1" })]);
+    const edge = createCloudflareEdge(config);
+    await edge.deleteZone("zone-1");
+    expect(calls[0].method).toBe("DELETE");
+    expect(calls[0].url).toContain("/zones/zone-1");
+  });
+
   it("ensureSsl maps the universal cert status to active/pending", async () => {
     mockSequence([ok({ certificate_authority: "google", status: "active" })]);
     const edge = createCloudflareEdge(config);

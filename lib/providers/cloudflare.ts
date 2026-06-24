@@ -48,6 +48,7 @@ export function createCloudflareEdge(config: CloudflareConfig): EdgeDns {
     },
 
     async ensureSsl(zoneId): Promise<SslStatus> {
+      // Tolerate a not-yet-propagated zone: treat an SSL-settings failure as "not ready yet".
       const r = await call<{ status?: string }>(`/zones/${zoneId}/ssl/universal/settings`, { method: "GET" }).catch(() => ({ status: undefined }));
       if (r.status === "active") return "active";
       return r.status ? "pending" : "none";
