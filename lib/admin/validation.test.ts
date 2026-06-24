@@ -38,29 +38,17 @@ describe("parseWheelInput", () => {
     { label: "B", icon: "👑", color: "#F5C24B", weight: 1 },
   ];
 
-  it("accepts a valid wheel payload", () => {
-    const r = parseWheelInput({ spinsBeforeWin: 3, winningIndex: 1, redirectUrl: "https://x.com", redirectPrizeParam: "bonus", prizes });
+  it("accepts a minimal wheel payload (no URL — that lives in Settings now)", () => {
+    const r = parseWheelInput({ spinsBeforeWin: 3, winningIndex: 1, prizes });
     expect(r.ok).toBe(true);
   });
 
   it("rejects winningIndex out of range", () => {
-    expect(parseWheelInput({ spinsBeforeWin: 3, winningIndex: 2, redirectUrl: "https://x.com", redirectPrizeParam: null, prizes }).ok).toBe(false);
+    expect(parseWheelInput({ spinsBeforeWin: 3, winningIndex: 2, prizes }).ok).toBe(false);
   });
 
   it("rejects fewer than two prizes", () => {
-    expect(parseWheelInput({ spinsBeforeWin: 1, winningIndex: 0, redirectUrl: "https://x.com", redirectPrizeParam: null, prizes: [prizes[0]] }).ok).toBe(false);
-  });
-
-  it("rejects a non-URL redirect", () => {
-    expect(parseWheelInput({ spinsBeforeWin: 1, winningIndex: 0, redirectUrl: "not-a-url", redirectPrizeParam: null, prizes }).ok).toBe(false);
-  });
-
-  it("rejects a javascript: scheme redirectUrl", () => {
-    expect(parseWheelInput({ spinsBeforeWin: 3, winningIndex: 1, redirectUrl: "javascript:alert(1)", redirectPrizeParam: null, prizes }).ok).toBe(false);
-  });
-
-  it("accepts a valid https redirectUrl", () => {
-    expect(parseWheelInput({ spinsBeforeWin: 3, winningIndex: 1, redirectUrl: "https://example.com/claim", redirectPrizeParam: null, prizes }).ok).toBe(true);
+    expect(parseWheelInput({ spinsBeforeWin: 1, winningIndex: 0, prizes: [prizes[0]] }).ok).toBe(false);
   });
 });
 
@@ -104,6 +92,18 @@ describe("parseLandingPatch — template + PWA", () => {
 
   it("accepts winText", () => {
     expect(parseLandingPatch({ winText: "200 Free Spins" }).ok).toBe(true);
+  });
+
+  it("accepts spinsBeforeWin (slots edit it in Settings)", () => {
+    expect(parseLandingPatch({ spinsBeforeWin: 2 }).ok).toBe(true);
+  });
+
+  it("accepts a valid https app link (redirectUrl)", () => {
+    expect(parseLandingPatch({ redirectUrl: "https://example.com/claim" }).ok).toBe(true);
+  });
+
+  it("rejects a javascript: scheme app link (open-redirect guard)", () => {
+    expect(parseLandingPatch({ redirectUrl: "javascript:alert(1)" }).ok).toBe(false);
   });
 
   it("rejects an unknown template", () => {

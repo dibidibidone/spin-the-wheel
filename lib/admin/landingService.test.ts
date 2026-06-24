@@ -143,7 +143,7 @@ describe("saveWheel", () => {
     $transaction.mockImplementation((cb: (t: typeof tx) => unknown) => cb(tx));
 
     await saveWheel("l1", {
-      spinsBeforeWin: 2, winningIndex: 1, redirectUrl: "https://x.com", redirectPrizeParam: null,
+      spinsBeforeWin: 2, winningIndex: 1,
       prizes: [
         { label: "A", icon: "", color: "#1E7A3A", weight: 1 },
         { label: "B", icon: "👑", color: "#F5C24B", weight: 1 },

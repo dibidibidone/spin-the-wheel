@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import type { EditableLanding } from "@/lib/admin/types";
 
 const patchLanding = vi.fn();
-vi.mock("@/lib/adminClient", () => ({ patchLanding: (...a: unknown[]) => patchLanding(...a) }));
+vi.mock("@/lib/adminClient", () => ({ patchLanding: (...a: unknown[]) => patchLanding(...a), uploadFile: vi.fn() }));
 
 import { SettingsTab } from "@/components/admin/SettingsTab";
 
@@ -12,8 +12,8 @@ function landing(): EditableLanding {
   return {
     id: "l1", slug: "promo", name: "Promo", status: "draft",
     heading: "Spin", subtitle: "win", backLabel: "Back", winTitle: "You won {prize}!",
-    claimLabel: "Claim", almostText: "Almost!",
-    template: "classic-2d", pwaName: "App", pwaIconUrl: null, winText: "",
+    claimLabel: "Claim", almostText: "Almost!", winText: "",
+    template: "classic-2d", pwaName: "App", pwaIconUrl: null,
     theme: { bg: "#0A1410", surface: "#13251A", accent: "#27C24C", gold: "#F5C24B", text: "#EAF6EE", muted: "#7FA88E" },
     logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
     spinsBeforeWin: 3, redirectUrl: "https://x.com", redirectPrizeParam: "bonus",
@@ -24,7 +24,7 @@ function landing(): EditableLanding {
 beforeEach(() => patchLanding.mockReset());
 
 describe("SettingsTab", () => {
-  it("publishes the landing", async () => {
+  it("publishes the landing with the logo + app link payload", async () => {
     patchLanding.mockResolvedValue({ ok: true });
     render(<SettingsTab landing={landing()} />);
 
@@ -36,46 +36,39 @@ describe("SettingsTab", () => {
       slug: "promo",
       status: "published",
       template: "classic-2d",
+      logoUrl: null,
+      redirectUrl: "https://x.com",
       pwaName: "App",
       pwaIconUrl: null,
     });
   });
 });
 
-describe("SettingsTab — template + PWA", () => {
+describe("SettingsTab — per-kind fields", () => {
   it("shows the template select with the landing's value", () => {
-    const testLanding: EditableLanding = {
-      id: "1", slug: "demo", name: "Demo", status: "draft", heading: "", subtitle: "", backLabel: "",
-      winTitle: "", claimLabel: "", almostText: "", theme: { bg: "#000000", surface: "#000000", accent: "#000000", gold: "#000000", text: "#000000", muted: "#000000" },
-      logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
-      spinsBeforeWin: 2, redirectUrl: "https://x.example.com", redirectPrizeParam: null, metaTitle: null, metaDescription: null,
-      winningPrizeId: null, prizes: [], template: "jackpot-vault", pwaName: "Lucky App", pwaIconUrl: null, winText: "",
-    };
-    render(<SettingsTab landing={testLanding} />);
+    render(<SettingsTab landing={{ ...landing(), template: "jackpot-vault" }} />);
     expect((screen.getByLabelText("Template") as HTMLSelectElement).value).toBe("jackpot-vault");
   });
-  it("shows the PWA app fields", () => {
-    const testLanding: EditableLanding = {
-      id: "1", slug: "demo", name: "Demo", status: "draft", heading: "", subtitle: "", backLabel: "",
-      winTitle: "", claimLabel: "", almostText: "", theme: { bg: "#000000", surface: "#000000", accent: "#000000", gold: "#000000", text: "#000000", muted: "#000000" },
-      logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
-      spinsBeforeWin: 2, redirectUrl: "https://x.example.com", redirectPrizeParam: null, metaTitle: null, metaDescription: null,
-      winningPrizeId: null, prizes: [], template: "jackpot-vault", pwaName: "Lucky App", pwaIconUrl: null, winText: "",
-    };
-    render(<SettingsTab landing={testLanding} />);
-    expect((screen.getByLabelText("App name") as HTMLInputElement).value).toBe("Lucky App");
-  });
 
-  it("hides the PWA group for the classic-2d template", () => {
-    render(<SettingsTab landing={landing()} />); // landing() is classic-2d
-    expect(screen.queryByLabelText("App name")).toBeNull();
-    expect(screen.queryByLabelText("App link")).toBeNull();
-  });
-
-  it("reveals the PWA group after switching to a 3D template", async () => {
+  it("shows the App link + casino logo + PWA fields for a wheel (no slot fields)", () => {
     render(<SettingsTab landing={landing()} />);
-    expect(screen.queryByLabelText("App name")).toBeNull();
-    await userEvent.selectOptions(screen.getByLabelText("Template"), "jackpot-vault");
-    expect(screen.getByLabelText("App name")).toBeTruthy();
+    expect(screen.getByLabelText("App link")).toBeInTheDocument();
+    expect(screen.getByText("Casino logo")).toBeInTheDocument();
+    expect(screen.getByLabelText("App name")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Spins before win")).toBeNull(); // wheels edit spins in the Wheel tab
+    expect(screen.queryByLabelText("Win text")).toBeNull();
+  });
+
+  it("shows Win text + Spins for a slot", () => {
+    render(<SettingsTab landing={{ ...landing(), template: "book-of-ra", winText: "200 Free Spins" }} />);
+    expect((screen.getByLabelText("Win text") as HTMLInputElement).value).toBe("200 Free Spins");
+    expect(screen.getByLabelText("Spins before win")).toBeInTheDocument();
+  });
+
+  it("reveals the slot fields after switching to a slot template", async () => {
+    render(<SettingsTab landing={landing()} />);
+    expect(screen.queryByLabelText("Win text")).toBeNull();
+    await userEvent.selectOptions(screen.getByLabelText("Template"), "book-of-ra");
+    expect(screen.getByLabelText("Win text")).toBeInTheDocument();
   });
 });

@@ -177,8 +177,6 @@ export async function saveWheel(id: string, input: WheelInput): Promise<void> {
       data: {
         winningPrizeId: winner.id,
         spinsBeforeWin: input.spinsBeforeWin,
-        redirectUrl: input.redirectUrl,
-        redirectPrizeParam: input.redirectPrizeParam,
       },
     });
   });

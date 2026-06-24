@@ -14,8 +14,6 @@ export function WheelTab({ landing }: { landing: EditableLanding }) {
     Math.max(0, landing.prizes.findIndex((p) => p.id === landing.winningPrizeId)),
   );
   const [spinsBeforeWin, setSpins] = useState(landing.spinsBeforeWin);
-  const [redirectUrl, setRedirectUrl] = useState(landing.redirectUrl);
-  const [prizeParam, setPrizeParam] = useState(landing.redirectPrizeParam ?? "");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -47,8 +45,6 @@ export function WheelTab({ landing }: { landing: EditableLanding }) {
       await putWheel(landing.id, {
         spinsBeforeWin: Number(spinsBeforeWin),
         winningIndex,
-        redirectUrl,
-        redirectPrizeParam: prizeParam.trim() || null,
         prizes: rows.map((r) => ({ label: r.label, icon: r.icon, color: r.color, weight: Number(r.weight) })),
       });
       setMsg("Saved");
@@ -59,17 +55,8 @@ export function WheelTab({ landing }: { landing: EditableLanding }) {
     }
   }
 
-  const is3d = landing.template !== "classic-2d";
-
   return (
     <div className="tab-panel">
-      {is3d && (
-        <p className="tab-note">
-          For this 3D template the wheel/slot face is decorative — players don’t read these segment labels.
-          What matters here is the <strong>winning prize’s label</strong> (the “you won …” text) and
-          <strong> Spins before win</strong>.
-        </p>
-      )}
       <div className="prize-list">
         {rows.map((r, i) => (
           <div className="prize-row" data-testid="prize-row" key={i}>
@@ -90,14 +77,6 @@ export function WheelTab({ landing }: { landing: EditableLanding }) {
         <label className="field">
           <span>Spins before win (N)</span>
           <input type="number" min={1} value={spinsBeforeWin} onChange={(e) => setSpins(Number(e.target.value))} />
-        </label>
-        <label className="field">
-          <span>Redirect URL</span>
-          <input type="url" value={redirectUrl} onChange={(e) => setRedirectUrl(e.target.value)} />
-        </label>
-        <label className="field">
-          <span>Prize query param (optional)</span>
-          <input value={prizeParam} onChange={(e) => setPrizeParam(e.target.value)} />
         </label>
       </div>
 

@@ -49,6 +49,7 @@ const patchSchema = z
     pwaIconUrl: url.nullable(),
     redirectUrl: url,
     winText: z.string(),
+    spinsBeforeWin: z.number().int().min(1),
   })
   .partial()
   .strict();
@@ -64,8 +65,6 @@ const wheelSchema = z
   .object({
     spinsBeforeWin: z.number().int().min(1),
     winningIndex: z.number().int().min(0),
-    redirectUrl: url,
-    redirectPrizeParam: z.string().min(1).nullable(),
     prizes: z.array(wheelPrizeSchema).min(2),
   })
   .refine((v) => v.winningIndex < v.prizes.length, {

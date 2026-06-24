@@ -38,13 +38,21 @@ describe("WheelTab", () => {
     expect(putWheel).toHaveBeenCalledWith("l1", expect.objectContaining({
       spinsBeforeWin: 3,
       winningIndex: 1,
-      redirectUrl: "https://x.com",
-      redirectPrizeParam: "bonus",
       prizes: [
         expect.objectContaining({ label: "€5" }),
         expect.objectContaining({ label: "JACKPOT" }),
       ],
     }));
+    // the URL moved to Settings — the wheel payload no longer carries it
+    const payload = putWheel.mock.calls[0][1] as Record<string, unknown>;
+    expect(payload.redirectUrl).toBeUndefined();
+    expect(payload.redirectPrizeParam).toBeUndefined();
+  });
+
+  it("no longer renders the Redirect URL / prize-param inputs", () => {
+    render(<WheelTab landing={landing()} />);
+    expect(screen.queryByText("Redirect URL")).toBeNull();
+    expect(screen.queryByText("Prize query param (optional)")).toBeNull();
   });
 
   it("adds a prize row", async () => {
