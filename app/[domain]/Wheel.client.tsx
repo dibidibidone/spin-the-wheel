@@ -30,6 +30,7 @@ export function WheelClient({
   const onClaim = () => navigate("/go");
 
   return (
+    <>
     <div className={`wheel-stage${status === "almost" ? " shake" : ""}`}>
       <div className="wheel-pointer">
         <Pointer />
@@ -63,8 +64,6 @@ export function WheelClient({
         <p className="almost-text" data-testid="almost-text">{landing.texts.almostText}</p>
       )}
 
-      {status === "almost" && <LossBurst text={landing.texts.almostText} />}
-
       <WinModal
         open={status === "won"}
         title={winTitle}
@@ -74,5 +73,12 @@ export function WheelClient({
       />
       <IosInstallHint open={pwa.iosHintOpen} appName={landing.pwaName} iconUrl={landing.pwaIconUrl} onClose={pwa.dismissIosHint} />
     </div>
+
+      {/* Rendered OUTSIDE .wheel-stage: that element gets the `.shake` transform on a
+          near-miss, which would make it the containing block for this position:fixed flash
+          and clip it to the 360x300 stage. As a sibling under the untransformed .landing it
+          fills the viewport (matching the 3D/slot landings, whose roots are full-viewport). */}
+      {status === "almost" && <LossBurst text={landing.texts.almostText} />}
+    </>
   );
 }

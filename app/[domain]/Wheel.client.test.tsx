@@ -71,6 +71,18 @@ describe("WheelClient", () => {
     expect(screen.getByTestId("loss-burst")).toBeInTheDocument();
   });
 
+  it("renders the loss burst OUTSIDE the shaking wheel-stage so its fixed flash fills the viewport", async () => {
+    // .wheel-stage gets the `.shake` transform on a near-miss, which would make it the
+    // containing block for a position:fixed descendant and clip the full-screen flash to
+    // the 360x300 stage box. The burst must live outside the transformed stage.
+    const { container } = render(<WheelClient landing={view()} navigate={() => {}} />);
+    await userEvent.click(screen.getByTestId("spin-button"));
+    fireTransitionEnd(); // spin 1 -> almost
+    const stage = container.querySelector(".wheel-stage");
+    expect(stage).not.toBeNull();
+    expect(stage!.contains(screen.getByTestId("loss-burst"))).toBe(false);
+  });
+
   it("prompts install on the first spin and opens the PWA via /go on claim", async () => {
     const navigate = vi.fn();
     render(<WheelClient landing={view()} navigate={navigate} />);
