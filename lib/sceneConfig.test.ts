@@ -29,6 +29,10 @@ describe("buildSceneConfig", () => {
     expect(c.winningIndex).toBe(7);
     expect(c.spinsBeforeWin).toBe(2);
     expect(c.copy?.winPrize).toBe("JACKPOT");
+    expect(c.copy?.heading).toBe("H");
+    expect(c.copy?.subtitle).toBe("S");
+    expect(c.copy?.winTitle).toBe("You won!");
+    expect(c.copy?.nearMissLine).toBe("Almost");
     expect(c.pwa).toEqual({ name: "Lucky App", iconUrl: "https://cdn.example.com/icon.png", openUrl: "/go" });
   });
 
