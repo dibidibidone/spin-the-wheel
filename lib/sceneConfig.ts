@@ -16,6 +16,7 @@ export function buildSceneConfig(view: LandingView): LandingSceneConfig {
       winTitle: view.texts.winTitle,
       winPrize: prize,
       nearMissLine: view.texts.almostText,
+      almostText: view.texts.almostText,
     },
     winningIndex: view.spin.winningIndex,
     spinsBeforeWin: view.spin.spinsBeforeWin,

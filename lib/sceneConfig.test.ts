@@ -33,6 +33,7 @@ describe("buildSceneConfig", () => {
     expect(c.copy?.subtitle).toBe("S");
     expect(c.copy?.winTitle).toBe("You won!");
     expect(c.copy?.nearMissLine).toBe("Almost");
+    expect(c.copy?.almostText).toBe("Almost");
     expect(c.pwa).toEqual({ name: "Lucky App", iconUrl: "https://cdn.example.com/icon.png", openUrl: "/go" });
   });
 

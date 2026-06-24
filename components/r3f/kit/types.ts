@@ -23,6 +23,7 @@ export type OverlayCopy = {
   spinningLabel: string;
   retryLabel?: string;     // shown on the CTA during a near-miss
   nearMissLine?: string;   // short sub-line under the CTA during a near-miss
+  almostText?: string;     // the "almost!" line popped by LossBurst on a near-miss
   winTitle: string;
   winPrize: string;
   winEmoji: string;
