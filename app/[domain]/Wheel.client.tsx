@@ -1,10 +1,12 @@
 "use client";
 
+import { useRef } from "react";
 import { useSpinController } from "./useSpinController";
 import { WheelSvg } from "@/components/wheel/WheelSvg";
 import { Pointer } from "@/components/wheel/Pointer";
 import { WinModal } from "@/components/wheel/WinModal";
-import { buildRedirectUrl } from "@/lib/redirect";
+import { usePwaInstall } from "@/components/r3f/kit/usePwaInstall";
+import { IosInstallHint } from "@/components/r3f/kit/IosInstallHint";
 import type { LandingView } from "@/lib/types";
 
 export function WheelClient({
@@ -15,12 +17,16 @@ export function WheelClient({
   navigate?: (url: string) => void;
 }) {
   const { rotation, status, spin, onAnimationComplete } = useSpinController(landing.spin);
+  const pwa = usePwaInstall();
+  const prompted = useRef(false);
 
   const winTitle = landing.texts.winTitle.replace("{prize}", landing.winningPrizeLabel);
 
-  const onClaim = () => {
-    navigate(buildRedirectUrl(landing.redirectUrl, landing.redirectPrizeParam, landing.winningPrizeLabel));
+  const onSpin = () => {
+    if (!prompted.current) { prompted.current = true; pwa.promptInstall(); }
+    spin();
   };
+  const onClaim = () => navigate("/go");
 
   return (
     <div className="wheel-stage">
@@ -39,7 +45,7 @@ export function WheelClient({
       <button
         className="spin-button"
         data-testid="spin-button"
-        onClick={spin}
+        onClick={onSpin}
         disabled={status === "spinning" || status === "won"}
         aria-label="Spin the wheel"
       >
@@ -57,6 +63,7 @@ export function WheelClient({
         claimLabel={landing.texts.claimLabel}
         onClaim={onClaim}
       />
+      <IosInstallHint open={pwa.iosHintOpen} appName={landing.pwaName} iconUrl={landing.pwaIconUrl} onClose={pwa.dismissIosHint} />
     </div>
   );
 }

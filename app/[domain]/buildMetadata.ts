@@ -9,10 +9,9 @@ export function buildMetadata(view: LandingView): Metadata {
   if (view.pwaIconUrl) icons.apple = view.pwaIconUrl;
   if (icons.icon || icons.apple) meta.icons = icons;
 
-  if (view.template !== "classic-2d") {
-    meta.manifest = "/manifest";
-    meta.appleWebApp = { capable: true, title: view.pwaName || view.texts.heading };
-  }
+  // Every template is a PWA-download landing now (2D wheel included).
+  meta.manifest = "/manifest";
+  meta.appleWebApp = { capable: true, title: view.pwaName || view.texts.heading };
 
   return meta;
 }

@@ -49,8 +49,8 @@ describe2("buildMetadata — PWA", () => {
     expect2(m.manifest).toBe("/manifest");
     expect2((m.appleWebApp as { title?: string }).title).toBe("Lucky App");
   });
-  it2("does not link a manifest for classic-2d", () => {
+  it2("links the manifest for classic-2d too (it's a PWA wheel now)", () => {
     const m = bm({ ...base2, template: "classic-2d" } as never);
-    expect2(m.manifest).toBeUndefined();
+    expect2(m.manifest).toBe("/manifest");
   });
 });

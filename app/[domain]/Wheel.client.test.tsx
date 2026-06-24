@@ -1,8 +1,16 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+const promptInstall = vi.fn();
+vi.mock("@/components/r3f/kit/usePwaInstall", () => ({
+  usePwaInstall: () => ({ platform: "android", installed: false, iosHintOpen: false, promptInstall, openApp: vi.fn(), dismissIosHint: vi.fn() }),
+}));
+
 import { WheelClient } from "@/app/[domain]/Wheel.client";
 import type { LandingView } from "@/lib/types";
+
+beforeEach(() => promptInstall.mockReset());
 
 function view(): LandingView {
   const segments = Array.from({ length: 8 }, (_, i) => ({
@@ -47,13 +55,15 @@ describe("WheelClient", () => {
     expect(screen.getByText("You won JACKPOT!")).toBeInTheDocument();
   });
 
-  it("redirects with the prize param on claim", async () => {
+  it("prompts install on the first spin and opens the PWA via /go on claim", async () => {
     const navigate = vi.fn();
     render(<WheelClient landing={view()} navigate={navigate} />);
     const button = screen.getByTestId("spin-button");
-    await userEvent.click(button); fireTransitionEnd();
-    await userEvent.click(button); fireTransitionEnd();
+    await userEvent.click(button); fireTransitionEnd();   // spin 1
+    expect(promptInstall).toHaveBeenCalledTimes(1);        // install fired once
+    await userEvent.click(button); fireTransitionEnd();   // spin 2 -> win
     await userEvent.click(screen.getByRole("button", { name: "Claim" }));
-    expect(navigate).toHaveBeenCalledWith("https://casino.example/signup?bonus=JACKPOT");
+    expect(navigate).toHaveBeenCalledWith("/go");
+    expect(promptInstall).toHaveBeenCalledTimes(1);        // still once (guarded)
   });
 });
