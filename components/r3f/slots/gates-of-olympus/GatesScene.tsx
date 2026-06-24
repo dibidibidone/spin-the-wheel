@@ -53,7 +53,7 @@ export function GatesScene({ config }: { config?: LandingSceneConfig } = {}) {
 
   if (!webgl) {
     return (
-      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(120% 90% at 50% 0%, #2a1f5c 0%, #120c2e 70%)" }}>
+      <div className={status === "nearmiss" ? "shake" : undefined} style={{ position: "fixed", inset: 0, background: "radial-gradient(120% 90% at 50% 0%, #2a1f5c 0%, #120c2e 70%)" }}>
         {reels}
         {overlay}
         <IosInstallHint open={pwa.iosHintOpen} appName={config?.pwa.name ?? ""} iconUrl={config?.pwa.iconUrl ?? null} onClose={pwa.dismissIosHint} />
@@ -62,7 +62,7 @@ export function GatesScene({ config }: { config?: LandingSceneConfig } = {}) {
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#120c2e" }}>
+    <div className={status === "nearmiss" ? "shake" : undefined} style={{ position: "fixed", inset: 0, background: "#120c2e" }}>
       <Canvas camera={{ position: [0, 0, 8], fov: 44 }} dpr={[1, 2]} gl={{ antialias: false }}>
         <color attach="background" args={["#120c2e"]} />
         <fog attach="fog" args={["#120c2e", 8, 32]} />

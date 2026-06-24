@@ -55,7 +55,7 @@ export function BookOfRaScene({ config }: { config?: LandingSceneConfig } = {}) 
 
   if (!webgl) {
     return (
-      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(120% 90% at 50% 0%, #4a2f10 0%, #1a0f04 70%)" }}>
+      <div className={status === "nearmiss" ? "shake" : undefined} style={{ position: "fixed", inset: 0, background: "radial-gradient(120% 90% at 50% 0%, #4a2f10 0%, #1a0f04 70%)" }}>
         {reels}
         {overlay}
         <IosInstallHint open={pwa.iosHintOpen} appName={config?.pwa.name ?? ""} iconUrl={config?.pwa.iconUrl ?? null} onClose={pwa.dismissIosHint} />
@@ -64,7 +64,7 @@ export function BookOfRaScene({ config }: { config?: LandingSceneConfig } = {}) 
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#1a0f04" }}>
+    <div className={status === "nearmiss" ? "shake" : undefined} style={{ position: "fixed", inset: 0, background: "#1a0f04" }}>
       <Canvas camera={{ position: [0, 0, 7], fov: 42 }} dpr={[1, 2]} gl={{ antialias: false }}>
         <color attach="background" args={["#1a0f04"]} />
         <fog attach="fog" args={["#1a0f04", 6, 28]} />
