@@ -59,8 +59,11 @@ describe("addDomain", () => {
     domain.create.mockResolvedValue({
       id: "d1",
       hostname: "promo.boomzino.com",
+      status: "attaching",
       verified: false,
       vercelStatus: "pending",
+      sslStatus: null,
+      statusReason: null,
     });
 
     const view = await addDomain("L1", "  HTTPS://Promo.Boomzino.com/win  ", config);
@@ -72,13 +75,17 @@ describe("addDomain", () => {
         hostname: "promo.boomzino.com",
         verified: false,
         vercelStatus: "pending",
+        status: "attaching",
       },
     });
     expect(view).toEqual({
       id: "d1",
       hostname: "promo.boomzino.com",
+      status: "attaching",
       verified: false,
       vercelStatus: "pending",
+      sslStatus: null,
+      statusReason: null,
       dns: { type: "CNAME", name: "promo", value: "cname.vercel-dns.com" },
     });
   });
@@ -96,8 +103,11 @@ describe("refreshDomain", () => {
     domain.update.mockResolvedValue({
       id: "d1",
       hostname: "promo.boomzino.com",
+      status: "live",
       verified: true,
       vercelStatus: "verified",
+      sslStatus: null,
+      statusReason: null,
     });
 
     const view = await refreshDomain("d1", config);

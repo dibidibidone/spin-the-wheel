@@ -11,8 +11,11 @@ import { dnsInstructionsFor, normalizeHostname, isValidHostname, type DnsRecord 
 export type DomainView = {
   id: string;
   hostname: string;
+  status: string;
   verified: boolean;
   vercelStatus: string | null;
+  sslStatus: string | null;
+  statusReason: string | null;
   dns: DnsRecord;
 };
 
@@ -23,14 +26,12 @@ export class InvalidHostnameError extends Error {
   }
 }
 
-type DomainRow = { id: string; hostname: string; verified: boolean; vercelStatus: string | null };
+type DomainRow = { id: string; hostname: string; status: string; verified: boolean; vercelStatus: string | null; sslStatus: string | null; statusReason: string | null };
 
 function toView(row: DomainRow): DomainView {
   return {
-    id: row.id,
-    hostname: row.hostname,
-    verified: row.verified,
-    vercelStatus: row.vercelStatus,
+    id: row.id, hostname: row.hostname, status: row.status, verified: row.verified,
+    vercelStatus: row.vercelStatus, sslStatus: row.sslStatus, statusReason: row.statusReason,
     dns: dnsInstructionsFor(row.hostname),
   };
 }
@@ -58,6 +59,7 @@ export async function addDomain(
       hostname,
       verified: result.verified,
       vercelStatus: result.verified ? "verified" : "pending",
+      status: result.verified ? "live" : "attaching",
     },
   });
   return toView(row);
