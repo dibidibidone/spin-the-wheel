@@ -50,8 +50,16 @@ export async function rotateDomain(landingId: string, hostname: string): Promise
   return res.json();
 }
 export async function flagDomain(id: string, reason: string): Promise<void> {
-  await fetch(`/api/admin/domains/${id}/flag`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason }) });
+  const res = await fetch(`/api/admin/domains/${id}/flag`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason }) });
+  if (!res.ok) {
+    const data = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(data.error ?? `flagDomain failed (${res.status})`);
+  }
 }
 export async function retryDomain(id: string): Promise<void> {
-  await fetch(`/api/admin/domains/${id}/retry`, { method: "POST" });
+  const res = await fetch(`/api/admin/domains/${id}/retry`, { method: "POST" });
+  if (!res.ok) {
+    const data = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(data.error ?? `retryDomain failed (${res.status})`);
+  }
 }

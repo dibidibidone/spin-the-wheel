@@ -46,7 +46,7 @@ describe("toLandingView", () => {
 
 describe("getLandingByHost", () => {
   it("lowercases the host and returns the mapped view when published", async () => {
-    findUnique.mockResolvedValue({ landing: fakeLanding() });
+    findUnique.mockResolvedValue({ status: "live", landing: fakeLanding() });
     const view = await getLandingByHost("LOCALHOST:3000");
     expect(findUnique).toHaveBeenCalledWith(expect.objectContaining({ where: { hostname: "localhost:3000" } }));
     expect(view?.slug).toBe("demo");
@@ -58,7 +58,29 @@ describe("getLandingByHost", () => {
   });
 
   it("returns null for an unpublished landing", async () => {
-    findUnique.mockResolvedValue({ landing: fakeLanding({ status: "draft" }) });
+    findUnique.mockResolvedValue({ status: "live", landing: fakeLanding({ status: "draft" }) });
     expect(await getLandingByHost("draft.com")).toBeNull();
+  });
+
+  it("returns null for a retired domain (even if the landing is published)", async () => {
+    findUnique.mockResolvedValue({ status: "retired", landing: fakeLanding() });
+    expect(await getLandingByHost("retired.com")).toBeNull();
+  });
+
+  it("returns null for a failed domain", async () => {
+    findUnique.mockResolvedValue({ status: "failed", landing: fakeLanding() });
+    expect(await getLandingByHost("failed.com")).toBeNull();
+  });
+
+  it("still resolves for a live domain", async () => {
+    findUnique.mockResolvedValue({ status: "live", landing: fakeLanding() });
+    const view = await getLandingByHost("live.com");
+    expect(view?.slug).toBe("demo");
+  });
+
+  it("still resolves for a purchasing domain (pre-existing rows default to purchasing)", async () => {
+    findUnique.mockResolvedValue({ status: "purchasing", landing: fakeLanding() });
+    const view = await getLandingByHost("purchasing.com");
+    expect(view?.slug).toBe("demo");
   });
 });

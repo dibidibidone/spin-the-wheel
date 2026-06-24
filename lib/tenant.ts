@@ -53,7 +53,11 @@ export async function getLandingByHost(host: string): Promise<LandingView | null
     where: { hostname },
     include: { landing: { include: { prizes: true, winningPrize: true } } },
   });
-  const landing = domain?.landing as LandingRow | undefined;
+  if (!domain) return null;
+  // Exclude dead domain states so rotated-away / failed domains stop serving.
+  // We use an EXCLUDE gate (not require-"live") because pre-existing rows default to "purchasing".
+  if (domain.status === "retired" || domain.status === "failed") return null;
+  const landing = domain.landing as unknown as LandingRow | undefined;
   if (!landing || landing.status !== "published" || !landing.winningPrize) return null;
   return toLandingView(landing);
 }

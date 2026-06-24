@@ -15,7 +15,7 @@ async function main() {
       ...landingFields,
       theme,
       prizes: { create: prizes },
-      domains: { create: { hostname, verified: true } },
+      domains: { create: { hostname, verified: true, status: "live" } },
     },
     include: { prizes: true },
   });
@@ -49,7 +49,7 @@ async function main() {
       pwaName: "Boomzino App",
       pwaIconUrl: "https://example.com/icon.png",
       prizes: { create: prizes },
-      domains: { create: { hostname: pwaHost, verified: true } },
+      domains: { create: { hostname: pwaHost, verified: true, status: "live" } },
     },
     include: { prizes: true },
   });
@@ -79,7 +79,7 @@ async function main() {
       pwaIconUrl: "https://example.com/slot-icon.png",
       winText: "200 Free Spins",
       prizes: { create: prizes },
-      domains: { create: { hostname: slotHost, verified: true } },
+      domains: { create: { hostname: slotHost, verified: true, status: "live" } },
     },
     include: { prizes: true },
   });

@@ -59,7 +59,6 @@ export function createNamecheapRegistrar(config: NamecheapConfig): Registrar {
     },
 
     async register(name): Promise<RegisterResult> {
-      const { sld, tld } = splitDomain(name);
       const r = config.registrant;
       const contact = {
         RegistrantFirstName: r.firstName, RegistrantLastName: r.lastName,
@@ -79,7 +78,6 @@ export function createNamecheapRegistrar(config: NamecheapConfig): Registrar {
       }
       const expiresAt = new Date();
       expiresAt.setUTCFullYear(expiresAt.getUTCFullYear() + 1);
-      void sld; void tld; // (split kept for future per-TLD handling)
       return { orderId, expiresAt };
     },
 

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const { domain, attachDomain, verifyDomain, vercelRemove } = vi.hoisted(() => {
+const { domain, landing, attachDomain, verifyDomain, vercelRemove } = vi.hoisted(() => {
   const domain = {
     findMany: vi.fn(),
     findUnique: vi.fn(),
@@ -8,13 +8,17 @@ const { domain, attachDomain, verifyDomain, vercelRemove } = vi.hoisted(() => {
     update: vi.fn(),
     delete: vi.fn(),
   };
+  const landing = {
+    findUnique: vi.fn(),
+    update: vi.fn(),
+  };
   const attachDomain = vi.fn();
   const verifyDomain = vi.fn();
   const vercelRemove = vi.fn();
-  return { domain, attachDomain, verifyDomain, vercelRemove };
+  return { domain, landing, attachDomain, verifyDomain, vercelRemove };
 });
 
-vi.mock("@/lib/db", () => ({ prisma: { domain } }));
+vi.mock("@/lib/db", () => ({ prisma: { domain, landing } }));
 
 vi.mock("@/lib/vercel", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/vercel")>();
@@ -34,6 +38,7 @@ const config = { token: "t", projectId: "p" };
 
 beforeEach(() => {
   Object.values(domain).forEach((fn) => fn.mockReset());
+  Object.values(landing).forEach((fn) => fn.mockReset());
   attachDomain.mockReset();
   verifyDomain.mockReset();
   vercelRemove.mockReset();
@@ -123,8 +128,10 @@ describe("refreshDomain", () => {
 
 describe("removeDomain", () => {
   it("removes from Vercel then deletes the row", async () => {
-    domain.findUnique.mockResolvedValue({ id: "d1", hostname: "promo.boomzino.com" });
+    domain.findUnique.mockResolvedValue({ id: "d1", hostname: "promo.boomzino.com", landingId: "L1" });
     vercelRemove.mockResolvedValue(undefined);
+    landing.findUnique.mockResolvedValue({ primaryDomainId: null });
+    landing.update.mockResolvedValue({});
 
     await removeDomain("d1", config);
 
@@ -133,8 +140,10 @@ describe("removeDomain", () => {
   });
 
   it("still deletes the row when Vercel returns 404", async () => {
-    domain.findUnique.mockResolvedValue({ id: "d1", hostname: "promo.boomzino.com" });
+    domain.findUnique.mockResolvedValue({ id: "d1", hostname: "promo.boomzino.com", landingId: "L1" });
     vercelRemove.mockRejectedValue(new VercelApiError(404, "not_found", "gone"));
+    landing.findUnique.mockResolvedValue({ primaryDomainId: null });
+    landing.update.mockResolvedValue({});
 
     await removeDomain("d1", config);
 
@@ -146,5 +155,30 @@ describe("removeDomain", () => {
     await removeDomain("missing", config);
     expect(vercelRemove).not.toHaveBeenCalled();
     expect(domain.delete).not.toHaveBeenCalled();
+  });
+
+  // Fix 3: removeDomain must clear primaryDomainId when the removed domain IS the primary
+  it("clears landing.primaryDomainId when the removed domain is the current primary", async () => {
+    domain.findUnique.mockResolvedValue({ id: "d1", hostname: "promo.boomzino.com", landingId: "L2" });
+    vercelRemove.mockResolvedValue(undefined);
+    landing.findUnique.mockResolvedValue({ primaryDomainId: "d1" });
+    landing.update.mockResolvedValue({});
+
+    await removeDomain("d1", config);
+
+    expect(landing.update).toHaveBeenCalledWith({ where: { id: "L2" }, data: { primaryDomainId: null } });
+    expect(domain.delete).toHaveBeenCalledWith({ where: { id: "d1" } });
+  });
+
+  it("does NOT update landing.primaryDomainId when the removed domain is not the primary", async () => {
+    domain.findUnique.mockResolvedValue({ id: "d1", hostname: "promo.boomzino.com", landingId: "L3" });
+    vercelRemove.mockResolvedValue(undefined);
+    landing.findUnique.mockResolvedValue({ primaryDomainId: "d-other" });
+    landing.update.mockResolvedValue({});
+
+    await removeDomain("d1", config);
+
+    expect(landing.update).not.toHaveBeenCalled();
+    expect(domain.delete).toHaveBeenCalledWith({ where: { id: "d1" } });
   });
 });

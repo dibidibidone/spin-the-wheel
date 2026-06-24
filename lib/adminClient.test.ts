@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { patchLanding, uploadFile } from "@/lib/adminClient";
+import { patchLanding, uploadFile, flagDomain, retryDomain } from "@/lib/adminClient";
 
 beforeEach(() => vi.restoreAllMocks());
 
@@ -33,5 +33,35 @@ describe("uploadFile", () => {
     expect(url).toBe("/api/admin/upload");
     expect(init.method).toBe("POST");
     expect(init.body).toBeInstanceOf(FormData);
+  });
+});
+
+// Fix 5: flagDomain and retryDomain must surface errors (they previously swallowed non-ok responses)
+describe("flagDomain", () => {
+  it("resolves silently on success (2xx)", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(null, { status: 200 })));
+    await expect(flagDomain("d1", "spam")).resolves.toBeUndefined();
+  });
+
+  it("throws on a non-ok response", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: "not found" }), { status: 404 })));
+    await expect(flagDomain("d1", "spam")).rejects.toThrow("not found");
+  });
+
+  it("throws a generic message when the error body is empty", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("", { status: 500 })));
+    await expect(flagDomain("d1", "spam")).rejects.toThrow("flagDomain failed (500)");
+  });
+});
+
+describe("retryDomain", () => {
+  it("resolves silently on success (2xx)", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(null, { status: 200 })));
+    await expect(retryDomain("d1")).resolves.toBeUndefined();
+  });
+
+  it("throws on a non-ok response", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: "unauthorized" }), { status: 401 })));
+    await expect(retryDomain("d1")).rejects.toThrow("unauthorized");
   });
 });

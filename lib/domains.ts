@@ -26,7 +26,7 @@ export class InvalidHostnameError extends Error {
   }
 }
 
-type DomainRow = { id: string; hostname: string; status: string; verified: boolean; vercelStatus: string | null; sslStatus: string | null; statusReason: string | null };
+type DomainRow = { id: string; hostname: string; landingId: string; status: string; verified: boolean; vercelStatus: string | null; sslStatus: string | null; statusReason: string | null };
 
 function toView(row: DomainRow): DomainView {
   return {
@@ -87,5 +87,12 @@ export async function removeDomain(domainId: string, config: VercelConfig): Prom
     // A domain already gone from Vercel should not block local cleanup.
     if (!(err instanceof VercelApiError) || err.status !== 404) throw err;
   }
+
+  // Clear the landing's primaryDomainId if this domain is the current primary.
+  const landing = await prisma.landing.findUnique({ where: { id: existing.landingId }, select: { primaryDomainId: true } });
+  if (landing?.primaryDomainId === domainId) {
+    await prisma.landing.update({ where: { id: existing.landingId }, data: { primaryDomainId: null } });
+  }
+
   await prisma.domain.delete({ where: { id: domainId } });
 }

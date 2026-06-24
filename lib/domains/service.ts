@@ -44,7 +44,12 @@ export async function advanceDomain(providers: Providers, domainId: string): Pro
         const att = await providers.origin.verify(d.hostname);
         if (ssl === "active" && att.verified) {
           const out = await persist(domainId, { status: "live", sslStatus: ssl, verified: true, vercelStatus: "verified", lastCheckedAt: new Date() });
-          await prisma.landing.update({ where: { id: d.landingId }, data: { primaryDomainId: domainId } });
+          // Only set the primary pointer if the landing has none yet — a second "buy" must
+          // not steal the pointer from an already-established primary domain.
+          const existingLanding = await prisma.landing.findUnique({ where: { id: d.landingId }, select: { primaryDomainId: true } });
+          if (!existingLanding?.primaryDomainId) {
+            await prisma.landing.update({ where: { id: d.landingId }, data: { primaryDomainId: domainId } });
+          }
           return out;
         }
         return persist(domainId, { status: "ssl_pending", sslStatus: ssl, verified: att.verified, lastCheckedAt: new Date() });
@@ -71,9 +76,32 @@ export async function retireDomain(providers: Providers, domainId: string): Prom
   const d = await prisma.domain.findUnique({ where: { id: domainId } });
   if (!d) return;
   await prisma.domain.update({ where: { id: domainId }, data: { status: "retiring" } });
-  if (d.edgeZoneId) await providers.edge.deleteZone(d.edgeZoneId).catch(() => {});
-  await providers.origin.detach(d.hostname).catch(() => {});
+
+  // If this domain is the landing's primary, clear the pointer before tearing down.
+  const landingRow = await prisma.landing.findUnique({ where: { id: d.landingId }, select: { primaryDomainId: true } });
+  if (landingRow?.primaryDomainId === domainId) {
+    await prisma.landing.update({ where: { id: d.landingId }, data: { primaryDomainId: null } });
+  }
+
+  if (d.edgeZoneId) {
+    await providers.edge.deleteZone(d.edgeZoneId).catch((err: unknown) => {
+      if (!isAlreadyGone(err)) {
+        const reason = err instanceof Error ? err.message : String(err);
+        return prisma.domain.update({ where: { id: domainId }, data: { statusReason: reason } });
+      }
+    });
+  }
+  await providers.origin.detach(d.hostname).catch((err: unknown) => {
+    if (!isAlreadyGone(err)) {
+      const reason = err instanceof Error ? err.message : String(err);
+      return prisma.domain.update({ where: { id: domainId }, data: { statusReason: reason } });
+    }
+  });
   await prisma.domain.update({ where: { id: domainId }, data: { status: "retired", retiredAt: new Date() } });
+}
+
+function isAlreadyGone(err: unknown): boolean {
+  return (typeof err === "object" && err !== null && "status" in err && (err as { status: number }).status === 404);
 }
 
 // Zero-downtime swap: the old domain keeps serving until the new one is fully live.
@@ -87,9 +115,15 @@ export async function rotateDomain(providers: Providers, landingId: string, newH
   const fresh = await prisma.domain.findUnique({ where: { id: newId } });
   if (fresh?.status !== "live") throw new Error(`Rotation failed: new domain ${newHostname} is ${fresh?.status}`);
 
-  const landing = await prisma.landing.findUnique({ where: { id: landingId } });
-  const oldPrimaryId = landing?.primaryDomainId ?? null;
-  await prisma.landing.update({ where: { id: landingId }, data: { primaryDomainId: newId } });
+  // Atomic read+write of the primary pointer to close the TOCTOU window.
+  // Network calls (retireDomain) happen OUTSIDE the transaction.
+  const oldPrimaryId = await prisma.$transaction(async (tx) => {
+    const landing = await tx.landing.findUnique({ where: { id: landingId }, select: { primaryDomainId: true } });
+    const old = landing?.primaryDomainId ?? null;
+    await tx.landing.update({ where: { id: landingId }, data: { primaryDomainId: newId } });
+    return old;
+  });
+
   if (oldPrimaryId && oldPrimaryId !== newId) await retireDomain(providers, oldPrimaryId);
   return newId;
 }
