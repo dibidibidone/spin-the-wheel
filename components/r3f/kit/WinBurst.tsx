@@ -20,19 +20,19 @@ export function WinBurst() {
   );
 
   const coins = useMemo(
-    () => Array.from({ length: 20 }, () => ({
+    () => Array.from({ length: 30 }, () => ({
       left: Math.random() * 100,
-      delay: Math.random() * 0.9,
-      dur: 1.9 + Math.random() * 1.6,
-      size: 16 + Math.random() * 16,
-      drift: (Math.random() * 2 - 1) * 70,
-      spin: 720 + Math.random() * 720,
+      delay: Math.random() * 1.8,
+      dur: 2.8 + Math.random() * 2,
+      size: 26 + Math.random() * 28,
+      drift: (Math.random() * 2 - 1) * 80,
+      spin: 720 + Math.random() * 900,
     })),
     []
   );
 
   return (
-    <div className={css.wrap} aria-hidden>
+    <div className={css.wrap} data-testid="win-burst" aria-hidden>
       <div className={css.flash} />
       {coins.map((c, i) => (
         <span
