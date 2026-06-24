@@ -18,8 +18,11 @@ import type { LandingSceneConfig } from "../kit/sceneConfig";
 import { usePwaInstall } from "../kit/usePwaInstall";
 import { IosInstallHint } from "../kit/IosInstallHint";
 
-function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
-  const wheel = <Wheel3D rotationRef={rotationRef} theme={jackpotWheel} />;
+function WheelRig({ rotationRef, reduced, segments, winningIndex }: {
+  rotationRef: React.MutableRefObject<number>; reduced: boolean;
+  segments: { label: string; color: string }[]; winningIndex: number;
+}) {
+  const wheel = <Wheel3D rotationRef={rotationRef} theme={jackpotWheel} segments={segments} winningIndex={winningIndex} />;
   return reduced ? <>{wheel}</> : <Float speed={2} rotationIntensity={0.15} floatIntensity={0.4}>{wheel}</Float>;
 }
 
@@ -28,6 +31,8 @@ export function JackpotVaultScene({ config }: { config?: LandingSceneConfig } = 
   const sound = useMemo(() => createSound(jackpotSound), []);
   const conversion = config?.conversion ?? jackpotConversion;
   const copy = config?.copy ? { ...jackpotCopy, ...config.copy } : jackpotCopy;
+  const segments = config?.segments ?? jackpotWheel.labels.map((label, i) => ({ label, color: jackpotWheel.segmentColors[i] }));
+  const winningIndex = config?.winningIndex ?? jackpotWheel.jackpotIndex;
   const pwa = usePwaInstall();
   const prompted = useRef(false);
   const handleSpinStart = config ? () => { if (!prompted.current) { prompted.current = true; pwa.promptInstall(); } } : undefined;
@@ -35,8 +40,9 @@ export function JackpotVaultScene({ config }: { config?: LandingSceneConfig } = 
   const { rotationRef, status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } =
     useSpinScene({
       reduced, sound, conversion,
-      winningIndex: config?.winningIndex ?? 7,
+      winningIndex,
       winOnSpin: config?.spinsBeforeWin ?? 1,
+      segmentCount: segments.length,
       navigate: config ? pwa.openApp : undefined,
       onSpinStart: handleSpinStart,
     });
@@ -70,7 +76,7 @@ export function JackpotVaultScene({ config }: { config?: LandingSceneConfig } = 
         <SpinDriver controller={controller} rotationRef={rotationRef} onStatus={onStatus} />
         <Parallax reduced={reduced}>
           <NeonSign />
-          <WheelRig rotationRef={rotationRef} reduced={reduced} />
+          <WheelRig rotationRef={rotationRef} reduced={reduced} segments={segments} winningIndex={winningIndex} />
           {!reduced && <Sparkles count={60} scale={[10, 8, 4]} size={3} speed={0.3} color="#FFD56A" />}
         </Parallax>
 
@@ -80,7 +86,7 @@ export function JackpotVaultScene({ config }: { config?: LandingSceneConfig } = 
       </Canvas>
 
       <SpinOverlay
-        copy={copy} vars={jackpotOverlayVars} config={conversion}
+        copy={copy} vars={jackpotOverlayVars} config={conversion} logoSrc={config?.logoSrc ?? undefined}
         status={status} claimStep={claimStep} muted={muted} reduced={reduced}
         onSpin={onSpin} onToggleSound={onToggleSound}
         onClaimOpen={onClaimOpen} onClaimSubmit={onClaimSubmit} onDismiss={onDismiss}

@@ -43,12 +43,17 @@ function makeLabelTexture(labels: string[], color: string): THREE.CanvasTexture 
   return tex;
 }
 
-export function Wheel3D({ rotationRef, theme }: { rotationRef: MutableRefObject<number>; theme: WheelTheme }) {
+export function Wheel3D({ rotationRef, theme, segments, winningIndex }: {
+  rotationRef: MutableRefObject<number>;
+  theme: WheelTheme;
+  segments: { label: string; color: string }[];
+  winningIndex: number;
+}) {
   const group = useRef<THREE.Group>(null!);
-  const n = theme.labels.length;
+  const n = segments.length;
   const R = theme.radius;
-  const labelTex = useMemo(() => makeLabelTexture(theme.labels, theme.labelColor), [theme.labels, theme.labelColor]);
-  const goldSet = useMemo(() => new Set(theme.goldIndices), [theme.goldIndices]);
+  const labels = useMemo(() => segments.map((s) => s.label), [segments]);
+  const labelTex = useMemo(() => makeLabelTexture(labels, theme.labelColor), [labels, theme.labelColor]);
 
   const wedges = useMemo(
     () => Array.from({ length: n }, (_, i) => {
@@ -58,9 +63,9 @@ export function Wheel3D({ rotationRef, theme }: { rotationRef: MutableRefObject<
       const geom = new THREE.ExtrudeGeometry(shape, {
         depth: 0.35, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.05, bevelSegments: 2,
       });
-      return { geom, color: theme.segmentColors[i], jackpot: i === theme.jackpotIndex, gold: goldSet.has(i) };
+      return { geom, color: segments[i].color, jackpot: i === winningIndex };
     }),
-    [n, R, theme.segmentColors, theme.jackpotIndex, goldSet]
+    [n, R, segments, winningIndex]
   );
 
   const bulbs = useMemo(
@@ -85,11 +90,11 @@ export function Wheel3D({ rotationRef, theme }: { rotationRef: MutableRefObject<
         {wedges.map((w, i) => (
           <mesh key={i} geometry={w.geom} castShadow>
             <meshStandardMaterial
-              color={w.gold ? theme.goldColor : w.color}
-              metalness={w.jackpot ? 0.95 : w.gold ? 0.6 : 0.4}
-              roughness={w.gold ? 0.28 : 0.3}
-              emissive={w.jackpot ? "#E2483D" : w.gold ? "#8a6200" : "#08221c"}
-              emissiveIntensity={w.jackpot ? 1.4 : w.gold ? 1.15 : 0.6}
+              color={w.color}
+              metalness={w.jackpot ? 0.95 : 0.4}
+              roughness={w.jackpot ? 0.28 : 0.3}
+              emissive={w.jackpot ? "#E2483D" : "#08221c"}
+              emissiveIntensity={w.jackpot ? 1.4 : 0.6}
             />
           </mesh>
         ))}

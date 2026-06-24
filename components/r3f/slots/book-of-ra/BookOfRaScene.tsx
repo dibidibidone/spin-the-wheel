@@ -45,7 +45,7 @@ export function BookOfRaScene({ config }: { config?: LandingSceneConfig } = {}) 
 
   const overlay = (
     <SpinOverlay
-      copy={copy} vars={bookOfRaOverlayVars} config={conversion}
+      copy={copy} vars={bookOfRaOverlayVars} config={conversion} logoSrc={config?.logoSrc ?? undefined}
       status={status} claimStep={claimStep} muted={muted} reduced={reduced}
       onSpin={onSpin} onToggleSound={onToggleSound}
       onClaimOpen={onClaimOpen} onClaimSubmit={onClaimSubmit} onDismiss={onDismiss}

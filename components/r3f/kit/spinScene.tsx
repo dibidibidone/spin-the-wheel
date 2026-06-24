@@ -54,12 +54,13 @@ export function Parallax({ children, reduced }: { children: ReactNode; reduced: 
   return <group ref={g}>{children}</group>;
 }
 
-export function useSpinScene({ reduced, sound, conversion, winningIndex = 7, winOnSpin = 1, onClaim, navigate, onSpinStart }: {
+export function useSpinScene({ reduced, sound, conversion, winningIndex = 7, winOnSpin = 1, segmentCount, onClaim, navigate, onSpinStart }: {
   reduced: boolean;
   sound: SoundInstance;
   conversion: ConversionConfig;
   winningIndex?: number;
   winOnSpin?: number;
+  segmentCount?: number;
   onClaim?: (p: { field: ConversionConfig["registerField"]; value: string; prize: string }) => void | Promise<void>;
   navigate?: (url: string) => void;
   onSpinStart?: () => void;
@@ -72,8 +73,8 @@ export function useSpinScene({ reduced, sound, conversion, winningIndex = 7, win
   const go = navigate ?? ((url: string) => { if (typeof window !== "undefined") window.location.assign(url); });
 
   const controller = useMemo(
-    () => createSpinController({ winningIndex, winOnSpin, durationMs: reduced ? 250 : 4500, turns: reduced ? 0 : 6 }),
-    [reduced, winningIndex, winOnSpin]
+    () => createSpinController({ winningIndex, winOnSpin, segments: segmentCount ?? 8, durationMs: reduced ? 250 : 4500, turns: reduced ? 0 : 6 }),
+    [reduced, winningIndex, winOnSpin, segmentCount]
   );
 
   useEffect(() => {

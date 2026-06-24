@@ -42,4 +42,22 @@ describe("buildSceneConfig", () => {
     expect(c.conversion.prize).toBe("200 Free Spins");
     expect(c.copy?.winPrize).toBe("200 Free Spins");
   });
+
+  it("maps prizes to wheel segments + carries the logo + segment count", () => {
+    const withSegs = {
+      ...view,
+      assets: { ...view.assets, logoUrl: "https://cdn.example.com/logo.svg" },
+      segments: [
+        { id: "p0", order: 0, label: "€5", icon: "", color: "#1E7A3A" },
+        { id: "p1", order: 1, label: "JACKPOT", icon: "", color: "#F5C24B" },
+      ],
+    };
+    const c = buildSceneConfig(withSegs);
+    expect(c.segments).toEqual([
+      { label: "€5", color: "#1E7A3A" },
+      { label: "JACKPOT", color: "#F5C24B" },
+    ]);
+    expect(c.segmentCount).toBe(2);
+    expect(c.logoSrc).toBe("https://cdn.example.com/logo.svg");
+  });
 });

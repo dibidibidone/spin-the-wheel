@@ -7,11 +7,12 @@ import { SocialProof } from "./SocialProof";
 import { TrustBar } from "./TrustBar";
 import css from "./winSheet.module.css";
 
-export function WinSheet({ step, copy, config, reduced, onOpen, onSubmit, onDismiss }: {
+export function WinSheet({ step, copy, config, reduced, logoSrc, onOpen, onSubmit, onDismiss }: {
   step: ClaimStep;
   copy: OverlayCopy;
   config: ConversionConfig;
   reduced: boolean;
+  logoSrc?: string;
   onOpen: () => void;
   onSubmit: (value: string) => void;
   onDismiss: () => void;
@@ -26,7 +27,7 @@ export function WinSheet({ step, copy, config, reduced, onOpen, onSubmit, onDism
       onClick={(e) => { if (e.target === e.currentTarget) onDismiss(); }}>
       <div className={`${css.sheet}${reduced ? " " + css.noanim : ""}`} data-pe>
         <div className={css.grab} aria-hidden />
-        <img className={css.logo} src="/boomzino-logo.svg" alt={copy.logo} />
+        <img className={css.logo} src={logoSrc ?? "/boomzino-logo.svg"} alt={copy.logo} />
         <div className={css.eyebrow}>{copy.winEmoji} {copy.winTitle}</div>
         <div className={css.prize}>{config.prize}</div>
         <div className={css.rule} aria-hidden />

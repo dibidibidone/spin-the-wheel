@@ -46,4 +46,16 @@ describe("WinSheet", () => {
     expect(screen.getByTestId("claim-field")).toBeDisabled();
     expect(screen.getByTestId("claim-submit")).toBeDisabled();
   });
+
+  it("uses the provided logoSrc for the casino logo", () => {
+    render(<WinSheet step="reveal" copy={copy} config={config} reduced logoSrc="https://cdn.example.com/casino.svg" onOpen={() => {}} onSubmit={() => {}} onDismiss={() => {}} />);
+    const img = document.querySelector("img") as HTMLImageElement;
+    expect(img.getAttribute("src")).toBe("https://cdn.example.com/casino.svg");
+  });
+
+  it("falls back to the default logo when logoSrc is omitted", () => {
+    render(<WinSheet step="reveal" copy={copy} config={config} reduced onOpen={() => {}} onSubmit={() => {}} onDismiss={() => {}} />);
+    const img = document.querySelector("img") as HTMLImageElement;
+    expect(img.getAttribute("src")).toBe("/boomzino-logo.svg");
+  });
 });

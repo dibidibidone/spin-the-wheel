@@ -14,7 +14,7 @@ export type OverlayVars = {
 };
 
 export function SpinOverlay({
-  copy, vars, config, status, claimStep, muted, reduced,
+  copy, vars, config, status, claimStep, muted, reduced, logoSrc,
   onSpin, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss,
 }: {
   copy: OverlayCopy;
@@ -24,6 +24,7 @@ export function SpinOverlay({
   claimStep: ClaimStep;
   muted: boolean;
   reduced: boolean;
+  logoSrc?: string;
   onSpin: () => void;
   onToggleSound: () => void;
   onClaimOpen: () => void;
@@ -38,7 +39,7 @@ export function SpinOverlay({
   return (
     <div className={css.overlay} style={style}>
       <div className={css.top}>
-        <img className={css.logo} src="/boomzino-logo.svg" alt={copy.logo} />
+        <img className={css.logo} src={logoSrc ?? "/boomzino-logo.svg"} alt={copy.logo} />
         <button data-pe data-testid="sound-toggle" className={css.sound} onClick={onToggleSound} aria-label="Toggle sound">
           {muted ? "🔇" : "🔊"}
         </button>
@@ -67,7 +68,7 @@ export function SpinOverlay({
       {status === "won" && <WinBurst />}
 
       <WinSheet
-        step={claimStep} copy={copy} config={config} reduced={reduced}
+        step={claimStep} copy={copy} config={config} reduced={reduced} logoSrc={logoSrc}
         onOpen={onClaimOpen} onSubmit={onClaimSubmit} onDismiss={onDismiss}
       />
     </div>

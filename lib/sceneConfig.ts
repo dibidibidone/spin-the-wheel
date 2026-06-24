@@ -13,6 +13,9 @@ export function buildSceneConfig(view: LandingView): LandingSceneConfig {
     copy: { winTitle: view.texts.winTitle, winPrize: prize },
     winningIndex: view.spin.winningIndex,
     spinsBeforeWin: view.spin.spinsBeforeWin,
+    segments: view.segments.map((s) => ({ label: s.label, color: s.color })),
+    segmentCount: view.segments.length,
+    logoSrc: view.assets.logoUrl,
     pwa: { name: view.pwaName, iconUrl: view.pwaIconUrl, openUrl: "/go" },
   };
 }

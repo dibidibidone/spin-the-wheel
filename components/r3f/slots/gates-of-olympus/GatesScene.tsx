@@ -43,7 +43,7 @@ export function GatesScene({ config }: { config?: LandingSceneConfig } = {}) {
 
   const overlay = (
     <SpinOverlay
-      copy={copy} vars={gatesOverlayVars} config={conversion}
+      copy={copy} vars={gatesOverlayVars} config={conversion} logoSrc={config?.logoSrc ?? undefined}
       status={status} claimStep={claimStep} muted={muted} reduced={reduced}
       onSpin={onSpin} onToggleSound={onToggleSound}
       onClaimOpen={onClaimOpen} onClaimSubmit={onClaimSubmit} onDismiss={onDismiss}

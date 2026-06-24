@@ -11,5 +11,8 @@ export type LandingSceneConfig = {
   copy?: Partial<OverlayCopy>;
   winningIndex?: number;  // wheel templates: which segment lands up
   spinsBeforeWin?: number; // wheel + slot templates: win on this spin
+  segments?: { label: string; color: string }[]; // wheel templates: the DB prize face
+  segmentCount?: number;
+  logoSrc?: string | null; // casino logo shown on the page (null → default)
   pwa: PwaConfig;
 };

@@ -20,8 +20,11 @@ import type { LandingSceneConfig } from "../kit/sceneConfig";
 import { usePwaInstall } from "../kit/usePwaInstall";
 import { IosInstallHint } from "../kit/IosInstallHint";
 
-function WheelRig({ rotationRef, reduced }: { rotationRef: React.MutableRefObject<number>; reduced: boolean }) {
-  const wheel = <Wheel3D rotationRef={rotationRef} theme={alchemyWheel} />;
+function WheelRig({ rotationRef, reduced, segments, winningIndex }: {
+  rotationRef: React.MutableRefObject<number>; reduced: boolean;
+  segments: { label: string; color: string }[]; winningIndex: number;
+}) {
+  const wheel = <Wheel3D rotationRef={rotationRef} theme={alchemyWheel} segments={segments} winningIndex={winningIndex} />;
   return reduced ? <>{wheel}</> : <Float speed={2} rotationIntensity={0.12} floatIntensity={0.3}>{wheel}</Float>;
 }
 
@@ -30,6 +33,8 @@ export function AlchemyLabScene({ config }: { config?: LandingSceneConfig } = {}
   const sound = useMemo(() => createSound(alchemySound), []);
   const conversion = config?.conversion ?? alchemyConversion;
   const copy = config?.copy ? { ...alchemyCopy, ...config.copy } : alchemyCopy;
+  const segments = config?.segments ?? alchemyWheel.labels.map((label, i) => ({ label, color: alchemyWheel.segmentColors[i] }));
+  const winningIndex = config?.winningIndex ?? alchemyWheel.jackpotIndex;
   const pwa = usePwaInstall();
   const prompted = useRef(false);
   const handleSpinStart = config ? () => { if (!prompted.current) { prompted.current = true; pwa.promptInstall(); } } : undefined;
@@ -37,8 +42,9 @@ export function AlchemyLabScene({ config }: { config?: LandingSceneConfig } = {}
   const { rotationRef, status, muted, claimStep, controller, onSpin, onStatus, onToggleSound, onClaimOpen, onClaimSubmit, onDismiss } =
     useSpinScene({
       reduced, sound, conversion,
-      winningIndex: config?.winningIndex ?? 7,
+      winningIndex,
       winOnSpin: config?.spinsBeforeWin ?? 1,
+      segmentCount: segments.length,
       navigate: config ? pwa.openApp : undefined,
       onSpinStart: handleSpinStart,
     });
@@ -75,7 +81,7 @@ export function AlchemyLabScene({ config }: { config?: LandingSceneConfig } = {}
           <LabBackdrop reduced={reduced} />
           <PotionBottle position={[-2.9, -0.6, 0.6]} phase={0} />
           <PotionBottle position={[2.9, -0.6, 0.6]} phase={1.5} />
-          <WheelRig rotationRef={rotationRef} reduced={reduced} />
+          <WheelRig rotationRef={rotationRef} reduced={reduced} segments={segments} winningIndex={winningIndex} />
           <Cauldron erupting={won} />
           {!reduced && <Sparkles count={60} scale={[11, 8, 5]} size={2.6} speed={0.25} color="#8BFF5A" />}
         </Parallax>
@@ -86,7 +92,7 @@ export function AlchemyLabScene({ config }: { config?: LandingSceneConfig } = {}
       </Canvas>
 
       <SpinOverlay
-        copy={copy} vars={alchemyOverlayVars} config={conversion}
+        copy={copy} vars={alchemyOverlayVars} config={conversion} logoSrc={config?.logoSrc ?? undefined}
         status={status} claimStep={claimStep} muted={muted} reduced={reduced}
         onSpin={onSpin} onToggleSound={onToggleSound}
         onClaimOpen={onClaimOpen} onClaimSubmit={onClaimSubmit} onDismiss={onDismiss}
