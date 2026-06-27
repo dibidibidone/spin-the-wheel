@@ -60,6 +60,8 @@ export const gatesCopy: OverlayCopy = {
   logo: "BOOMZINO",
   heading: "Summon the Gates of Olympus",
   subtitle: "Land 8 matching gems to call the storm",
+  offerHeadline: "Win up to €1,000",
+  offerSubline: "+ 500 Free Spins + ×500",
   ctaLabel: "INVOKE ZEUS",
   spinningLabel: "SPINNING…",
   retryLabel: "So close — try again!",
@@ -76,6 +78,7 @@ export const gatesOverlayVars: OverlayVars = {
 
 export const gatesConversion = withConversionDefaults({
   prize: "Gates Bonus — 500 Free Spins + ×500",
+  scarcity: { total: 60 },
   claimLabel: "Claim the storm bonus →",
   registerField: "email",
   registerPlaceholder: "you@email.com",

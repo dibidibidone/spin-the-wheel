@@ -54,6 +54,8 @@ export const bookOfRaCopy: OverlayCopy = {
   logo: "BOOMZINO",
   heading: "Unseal the Book of Riches",
   subtitle: "Line up 5 Explorers across a payline",
+  offerHeadline: "Win up to €500",
+  offerSubline: "+ 200 Free Spins",
   ctaLabel: "SPIN THE TEMPLE",
   spinningLabel: "SPINNING…",
   retryLabel: "So close — try again!",
@@ -70,6 +72,7 @@ export const bookOfRaOverlayVars: OverlayVars = {
 
 export const bookOfRaConversion = withConversionDefaults({
   prize: "Book of Riches — 200 Free Spins",
+  scarcity: { total: 45 },
   claimLabel: "Open my bonus →",
   registerField: "email",
   registerPlaceholder: "you@email.com",

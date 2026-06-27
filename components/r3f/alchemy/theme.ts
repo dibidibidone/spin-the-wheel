@@ -23,8 +23,10 @@ export const alchemySound: SoundConfig = {
 
 export const alchemyCopy: OverlayCopy = {
   logo: "BOOMZINO",
-  heading: "Spin the Wheel",
-  subtitle: "and win bonuses",
+  heading: "Brew your fortune",
+  subtitle: "Mix the potion, win the bonus",
+  offerHeadline: "Win up to €500",
+  offerSubline: "+ 150 Free Spins",
   ctaLabel: "SPIN",
   spinningLabel: "BREWING…",
   winTitle: "You won",
@@ -39,6 +41,7 @@ export const alchemyOverlayVars: OverlayVars = {
 
 export const alchemyConversion = withConversionDefaults({
   prize: "500 Free Spins",
+  scarcity: { total: 40 },
   claimLabel: "Claim my potion →",
   registerField: "email",
   registerPlaceholder: "you@email.com",

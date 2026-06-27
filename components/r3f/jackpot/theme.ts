@@ -25,6 +25,8 @@ export const jackpotCopy: OverlayCopy = {
   logo: "BOOMZINO",
   heading: "BOOM your luck",
   subBanner: "7 7 7",
+  offerHeadline: "Win up to €1,000",
+  offerSubline: "+ 200 Free Spins",
   ctaLabel: "SPIN TO WIN",
   spinningLabel: "SPINNING…",
   winTitle: "JACKPOT — You won",
@@ -39,6 +41,7 @@ export const jackpotOverlayVars: OverlayVars = {
 
 export const jackpotConversion = withConversionDefaults({
   prize: "1,000 Free Spins",
+  scarcity: { total: 50 },
   claimLabel: "Claim jackpot bonus →",
   registerField: "email",
   registerPlaceholder: "you@email.com",
