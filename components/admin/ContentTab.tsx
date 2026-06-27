@@ -15,6 +15,10 @@ export function ContentTab({ landing }: { landing: EditableLanding }) {
     almostText: landing.almostText,
     metaTitle: landing.metaTitle ?? "",
     metaDescription: landing.metaDescription ?? "",
+    offerHeadline: landing.offerHeadline,
+    offerSubline: landing.offerSubline,
+    bonusesTotal: String(landing.bonusesTotal),
+    countdownMinutes: String(landing.countdownMinutes),
   });
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -34,6 +38,10 @@ export function ContentTab({ landing }: { landing: EditableLanding }) {
         almostText: f.almostText,
         metaTitle: f.metaTitle.trim() || null,
         metaDescription: f.metaDescription.trim() || null,
+        offerHeadline: f.offerHeadline,
+        offerSubline: f.offerSubline,
+        bonusesTotal: Number(f.bonusesTotal),
+        countdownMinutes: Number(f.countdownMinutes),
       });
       setMsg("Saved");
     } catch (e) {
@@ -53,6 +61,13 @@ export function ContentTab({ landing }: { landing: EditableLanding }) {
       <Field label="Near-miss text" value={f.almostText} onChange={set("almostText")} />
       <Field label="SEO title" value={f.metaTitle} onChange={set("metaTitle")} />
       <Field label="SEO description" value={f.metaDescription} onChange={set("metaDescription")} textarea />
+      <fieldset>
+        <legend>Conversion</legend>
+        <Field label="Offer headline" value={f.offerHeadline} onChange={set("offerHeadline")} />
+        <Field label="Offer subline" value={f.offerSubline} onChange={set("offerSubline")} />
+        <Field label="Bonuses total" value={f.bonusesTotal} onChange={set("bonusesTotal")} type="number" />
+        <Field label="Countdown minutes" value={f.countdownMinutes} onChange={set("countdownMinutes")} type="number" />
+      </fieldset>
       <div className="save-row">
         <button className="btn-primary" onClick={save} disabled={busy}>Save</button>
         {msg && <span className="save-msg">{msg}</span>}

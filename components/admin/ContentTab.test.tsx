@@ -14,6 +14,7 @@ function landing(): EditableLanding {
     heading: "Spin", subtitle: "win", backLabel: "Back", winTitle: "You won {prize}!",
     claimLabel: "Claim", almostText: "Almost!",
     template: "classic-2d", pwaName: "App", pwaIconUrl: null, winText: "",
+    offerHeadline: "Win up to €500", offerSubline: "+ 200 FS", bonusesTotal: 50, countdownMinutes: 7,
     theme: { bg: "#0A1410", surface: "#13251A", accent: "#27C24C", gold: "#F5C24B", text: "#EAF6EE", muted: "#7FA88E" },
     logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
     spinsBeforeWin: 3, redirectUrl: "https://x.com", redirectPrizeParam: "bonus",
@@ -39,5 +40,24 @@ describe("ContentTab", () => {
       metaDescription: null,
     }));
     expect(await screen.findByText("Saved")).toBeInTheDocument();
+  });
+
+  it("Conversion group — edits and saves all four fields", async () => {
+    patchLanding.mockResolvedValue({ ok: true });
+    render(<ContentTab landing={landing()} />);
+
+    const headline = screen.getByLabelText("Offer headline");
+    expect(headline).toHaveValue("Win up to €500");
+
+    await userEvent.clear(headline);
+    await userEvent.type(headline, "Join Now");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(patchLanding).toHaveBeenCalledWith("l1", expect.objectContaining({
+      offerHeadline: "Join Now",
+      offerSubline: "+ 200 FS",
+      bonusesTotal: 50,
+      countdownMinutes: 7,
+    }));
   });
 });

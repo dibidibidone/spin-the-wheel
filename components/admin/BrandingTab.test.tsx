@@ -18,6 +18,7 @@ function landing(): EditableLanding {
     heading: "Spin", subtitle: "win", backLabel: "Back", winTitle: "You won {prize}!",
     claimLabel: "Claim", almostText: "Almost!",
     template: "classic-2d", pwaName: "App", pwaIconUrl: null, winText: "",
+    offerHeadline: "", offerSubline: "", bonusesTotal: 0, countdownMinutes: 60,
     theme: { bg: "#0A1410", surface: "#13251A", accent: "#27C24C", gold: "#F5C24B", text: "#EAF6EE", muted: "#7FA88E" },
     logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
     spinsBeforeWin: 3, redirectUrl: "https://x.com", redirectPrizeParam: "bonus",

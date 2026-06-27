@@ -94,6 +94,15 @@ describe("parseLandingPatch — template + PWA", () => {
     expect(parseLandingPatch({ winText: "200 Free Spins" }).ok).toBe(true);
   });
 
+  it("accepts conversion fields", () => {
+    const r = parseLandingPatch({ offerHeadline: "Win up to €500", offerSubline: "+ 200 FS", bonusesTotal: 50, countdownMinutes: 7 });
+    expect(r.ok).toBe(true);
+  });
+
+  it("rejects countdownMinutes below 1", () => {
+    expect(parseLandingPatch({ countdownMinutes: 0 }).ok).toBe(false);
+  });
+
   it("accepts spinsBeforeWin (slots edit it in Settings)", () => {
     expect(parseLandingPatch({ spinsBeforeWin: 2 }).ok).toBe(true);
   });

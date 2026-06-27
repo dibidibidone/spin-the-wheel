@@ -21,6 +21,10 @@ export type EditableLanding = {
   claimLabel: string;
   almostText: string;
   winText: string;
+  offerHeadline: string;
+  offerSubline: string;
+  bonusesTotal: number;
+  countdownMinutes: number;
   template: string;
   pwaName: string;
   pwaIconUrl: string | null;

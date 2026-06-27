@@ -49,6 +49,10 @@ const patchSchema = z
     pwaIconUrl: url.nullable(),
     redirectUrl: url,
     winText: z.string(),
+    offerHeadline: z.string().max(80).optional(),
+    offerSubline: z.string().max(80).optional(),
+    bonusesTotal: z.coerce.number().int().min(0).max(100000).optional(),
+    countdownMinutes: z.coerce.number().int().min(1).max(1440).optional(),
     spinsBeforeWin: z.number().int().min(1),
   })
   .partial()
