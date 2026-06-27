@@ -18,7 +18,7 @@ function view(): LandingView {
   }));
   return {
     slug: "demo",
-    texts: { heading: "Spin the Wheel", subtitle: "and win bonuses", backLabel: "Back", winTitle: "You won {prize}!", claimLabel: "Claim", almostText: "Almost! Spin again", offerHeadline: "", offerSubline: "" },
+    texts: { heading: "Spin the Wheel", subtitle: "and win bonuses", backLabel: "Back", winTitle: "You won {prize}!", claimLabel: "Claim", almostText: "Almost! Spin again", offerHeadline: "Win up to €500", offerSubline: "+ 200 FS" },
     theme: { bg: "#0A1410", surface: "#13251A", accent: "#27C24C", gold: "#F5C24B", text: "#EAF6EE", muted: "#7FA88E" },
     assets: { logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null },
     segments,
@@ -31,7 +31,7 @@ function view(): LandingView {
     pwaName: "",
     pwaIconUrl: null,
     winText: "",
-    bonusesTotal: 0,
+    bonusesTotal: 30,
     countdownMinutes: 10,
   };
 }
@@ -95,5 +95,11 @@ describe("WheelClient", () => {
     await userEvent.click(screen.getByRole("button", { name: "Claim" }));
     expect(navigate).toHaveBeenCalledWith("/go");
     expect(promptInstall).toHaveBeenCalledTimes(1);        // still once (guarded)
+  });
+
+  it("shows the offer banner and scarcity line", () => {
+    render(<WheelClient landing={view()} navigate={() => {}} />);
+    expect(screen.getByTestId("offer-banner")).toHaveTextContent("Win up to €500");
+    expect(screen.getByTestId("scarcity-line")).toHaveTextContent(/of 30 bonuses left/i);
   });
 });

@@ -6,6 +6,8 @@ import { WheelSvg } from "@/components/wheel/WheelSvg";
 import { Pointer } from "@/components/wheel/Pointer";
 import { WinModal } from "@/components/wheel/WinModal";
 import { LossBurst } from "@/components/r3f/kit/LossBurst";
+import { OfferBanner } from "@/components/r3f/kit/OfferBanner";
+import { ScarcityLine } from "@/components/r3f/kit/ScarcityLine";
 import { usePwaInstall } from "@/components/r3f/kit/usePwaInstall";
 import { IosInstallHint } from "@/components/r3f/kit/IosInstallHint";
 import type { LandingView } from "@/lib/types";
@@ -31,6 +33,7 @@ export function WheelClient({
 
   return (
     <>
+      <OfferBanner headline={landing.texts.offerHeadline} subline={landing.texts.offerSubline} />
     <div className={`wheel-stage${status === "almost" ? " shake" : ""}`}>
       <div className="wheel-pointer">
         <Pointer />
@@ -49,6 +52,7 @@ export function WheelClient({
           🎯 <b>{spinsLeft}</b> {spinsLeft === 1 ? "spin" : "spins"} left
         </p>
       )}
+      {landing.bonusesTotal > 0 && <ScarcityLine total={landing.bonusesTotal} />}
 
       <button
         className="spin-button"
