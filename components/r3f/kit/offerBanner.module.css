@@ -1,0 +1,9 @@
+.wrap { text-align: center; padding: 2px 16px 0; }
+.headline {
+  font-weight: 900; font-size: clamp(26px, 7.5vw, 40px); line-height: 1.05; letter-spacing: -0.5px;
+  color: var(--text); text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.subline {
+  margin-top: 4px; font-weight: 800; font-size: clamp(15px, 4.5vw, 20px); letter-spacing: 0.3px;
+  color: var(--gold); text-shadow: 0 0 14px color-mix(in srgb, var(--gold) 45%, transparent);
+}
