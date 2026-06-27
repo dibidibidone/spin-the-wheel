@@ -4,7 +4,7 @@ import type { LandingView } from "./types";
 
 const view: LandingView = {
   slug: "demo",
-  texts: { heading: "H", subtitle: "S", backLabel: "Back", winTitle: "You won!", claimLabel: "Claim →", almostText: "Almost", offerHeadline: "", offerSubline: "" },
+  texts: { heading: "H", subtitle: "S", backLabel: "Back", winTitle: "You won!", claimLabel: "Claim →", almostText: "Almost", offerHeadline: "Win up to €500", offerSubline: "+ 200 FS" },
   theme: { bg: "#000000", surface: "#111111", accent: "#222222", gold: "#FFD24A", text: "#FFFFFF", muted: "#888888" },
   assets: { logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null },
   segments: [],
@@ -13,8 +13,8 @@ const view: LandingView = {
   redirectPrizeParam: null,
   winningPrizeLabel: "JACKPOT",
   winText: "",
-  bonusesTotal: 0,
-  countdownMinutes: 10,
+  bonusesTotal: 40,
+  countdownMinutes: 5,
   metaTitle: "t",
   metaDescription: "d",
   template: "jackpot-vault",
@@ -36,6 +36,10 @@ describe("buildSceneConfig", () => {
     expect(c.copy?.winTitle).toBe("You won!");
     expect(c.copy?.nearMissLine).toBe("Almost");
     expect(c.copy?.almostText).toBe("Almost");
+    expect(c.copy?.offerHeadline).toBe("Win up to €500");
+    expect(c.copy?.offerSubline).toBe("+ 200 FS");
+    expect(c.conversion.scarcity).toEqual({ total: 40 });
+    expect(c.conversion.urgencyMs).toBe(5 * 60_000);
     expect(c.pwa).toEqual({ name: "Lucky App", iconUrl: "https://cdn.example.com/icon.png", openUrl: "/go" });
   });
 
@@ -66,5 +70,10 @@ describe("buildSceneConfig", () => {
     ]);
     expect(c.segmentCount).toBe(2);
     expect(c.logoSrc).toBe("https://cdn.example.com/logo.svg");
+  });
+
+  it("does not set scarcity when bonusesTotal is 0", () => {
+    const c = buildSceneConfig({ ...view, bonusesTotal: 0 });
+    expect(c.conversion.scarcity).toBeUndefined();
   });
 });

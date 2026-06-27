@@ -9,6 +9,8 @@ export function buildSceneConfig(view: LandingView): LandingSceneConfig {
       prize,
       claimLabel: view.texts.claimLabel,
       redirectUrl: "/go",
+      urgencyMs: view.countdownMinutes * 60_000,
+      scarcity: view.bonusesTotal > 0 ? { total: view.bonusesTotal } : undefined,
     }),
     copy: {
       heading: view.texts.heading,
@@ -17,6 +19,8 @@ export function buildSceneConfig(view: LandingView): LandingSceneConfig {
       winPrize: prize,
       nearMissLine: view.texts.almostText,
       almostText: view.texts.almostText,
+      offerHeadline: view.texts.offerHeadline,
+      offerSubline: view.texts.offerSubline,
     },
     winningIndex: view.spin.winningIndex,
     spinsBeforeWin: view.spin.spinsBeforeWin,
