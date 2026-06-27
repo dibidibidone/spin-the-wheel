@@ -9,6 +9,8 @@ import { LossBurst } from "./LossBurst";
 import { SocialProof } from "./SocialProof";
 import { Countdown } from "./Countdown";
 import { TrustBar } from "./TrustBar";
+import { OfferBanner } from "./OfferBanner";
+import { ScarcityLine } from "./ScarcityLine";
 
 export type OverlayVars = {
   gold: string; accent: string; surface: string; text: string; bannerBg: string; bannerBorder: string;
@@ -48,7 +50,8 @@ export function SpinOverlay({
       </div>
 
       <div className={css.hero}>
-        <h1>{copy.heading}</h1>
+        <OfferBanner headline={copy.offerHeadline} subline={copy.offerSubline} />
+        <h1 className={css.subhead}>{copy.heading}</h1>
         {copy.subtitle && <p className={css.subtitle}>{copy.subtitle}</p>}
         {copy.subBanner && <div className={css.banner}>{copy.subBanner}</div>}
       </div>
@@ -57,18 +60,19 @@ export function SpinOverlay({
         <div className={css.strip}>
           <SocialProof winners={config.social.winners} todayCount={config.social.todayCount} reduced={reduced} />
         </div>
+        {config.scarcity && <ScarcityLine total={config.scarcity.total} />}
         {spinsLeft != null && (status === "idle" || status === "nearmiss") && (
           <p className={css.spinsLeft} data-testid="spins-left">
             🎯 <b>{spinsLeft}</b> {spinsLeft === 1 ? "spin" : "spins"} left
           </p>
         )}
-        <button data-pe data-testid="spin-button" className={css.cta} onClick={onSpin} disabled={status === "spinning" || status === "won"}>
-          {status === "spinning" ? copy.spinningLabel : status === "nearmiss" ? (copy.retryLabel ?? copy.ctaLabel) : copy.ctaLabel}
-        </button>
-        {status === "nearmiss" && copy.nearMissLine && <p className={css.retryHint} data-pe>{copy.nearMissLine}</p>}
-        <div className={css.strip}>
-          <Countdown durationMs={config.urgencyMs} storageKey="stw-claim-deadline" />
+        <div className={css.ctaRow}>
+          <button data-pe data-testid="spin-button" className={css.cta} onClick={onSpin} disabled={status === "spinning" || status === "won"}>
+            {status === "spinning" ? copy.spinningLabel : status === "nearmiss" ? (copy.retryLabel ?? copy.ctaLabel) : copy.ctaLabel}
+          </button>
+          <div className={css.ctaTimer}><Countdown durationMs={config.urgencyMs} storageKey="stw-claim-deadline" /></div>
         </div>
+        {status === "nearmiss" && copy.nearMissLine && <p className={css.retryHint} data-pe>{copy.nearMissLine}</p>}
         <TrustBar text={config.trust} />
       </div>
 

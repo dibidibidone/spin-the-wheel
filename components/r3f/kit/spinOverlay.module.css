@@ -10,12 +10,13 @@
   border-radius: 999px; min-width: 44px; min-height: 44px; font-size: 16px; cursor: pointer; touch-action: manipulation; }
 
 .hero { position: absolute; top: calc(max(env(safe-area-inset-top), 14px) + 50px); left: 0; right: 0; text-align: center; padding: 0 16px; }
-.hero h1 { margin: 0; font-size: clamp(30px, 7.5vw, 58px); line-height: 1.0; font-weight: 900; letter-spacing: .5px;
+.hero h1 { margin: 0; font-size: clamp(22px, 5.5vw, 40px); line-height: 1.0; font-weight: 900; letter-spacing: .5px;
   background: linear-gradient(100deg, #FFF7EB 0%, var(--gold) 28%, #FFE9A8 50%, var(--gold) 72%, #C8881E 100%);
   background-size: 220% 100%; -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
   filter: drop-shadow(0 2px 1px rgba(0,0,0,.55)) drop-shadow(0 0 22px color-mix(in srgb, var(--gold) 50%, transparent));
   animation: shine 6s ease-in-out infinite; }
+.subhead { margin: 4px 0 0; font-size: 16px; font-weight: 700; opacity: 0.85; }
 @keyframes shine { 0%, 100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
 .subtitle { margin: 8px 0 0; color: var(--text); opacity: .82; font-size: clamp(13px, 2.6vw, 17px); letter-spacing: .4px;
   text-shadow: 0 1px 8px rgba(0,0,0,.6); }
@@ -32,10 +33,10 @@
 
 /* Bottom dock: social proof · sticky CTA · countdown — clears the home indicator.
    The gradient scrim lifts the controls off the busy wheel so text stays legible. */
-.dock { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 8px;
-  padding: 64px 16px max(env(safe-area-inset-bottom), 16px);
+.dock { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 52px 16px max(env(safe-area-inset-bottom), 16px);
   background: linear-gradient(to top, rgba(0,0,0,.94) 0%, rgba(0,0,0,.88) 46%, rgba(0,0,0,.6) 74%, transparent 100%); }
-.strip { min-height: 46px; display: flex; align-items: center; justify-content: center; }
+.strip { min-height: 36px; display: flex; align-items: center; justify-content: center; }
 .cta { position: relative; overflow: hidden; pointer-events: auto; min-height: 58px; padding: 16px 40px; border-radius: 999px; border: none; touch-action: manipulation;
   background: linear-gradient(180deg, #FFE9A8 0%, var(--gold) 48%, #C8881E 100%); color: #2a1e00; font-weight: 900; font-size: 18px; letter-spacing: .5px;
   cursor: pointer; width: min(360px, 100%);
@@ -56,6 +57,10 @@
   .dock { gap: 4px; padding-top: 28px; }
 }
 
+.ctaRow { display: flex; flex-direction: column; align-items: stretch; width: min(360px, 100%); }
+.ctaTimer { margin-top: 0; }
+.ctaTimer :global([data-testid="countdown"]) { border-top-left-radius: 0; border-top-right-radius: 0; }
+
 .retryHint { margin: 4px 0 0; font-weight: 700; font-size: 14px; color: var(--gold);
   text-shadow: 0 0 12px color-mix(in srgb, var(--gold) 50%, transparent); }
 
@@ -68,4 +73,4 @@
   box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.3); }
 .spinsLeft b { font-size: 1.5em; vertical-align: -1px; }
 /* When the bar is shown it sits flush on the CTA: square the CTA's top so they fuse. */
-.spinsLeft + .cta { border-top-left-radius: 0; border-top-right-radius: 0; }
+.spinsLeft + .ctaRow > .cta { border-top-left-radius: 0; border-top-right-radius: 0; }

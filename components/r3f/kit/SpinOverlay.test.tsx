@@ -11,9 +11,10 @@ const copy: OverlayCopy = {
   retryLabel: "So close — try again!", nearMissLine: "Two of three!",
   almostText: "Almost! Spin again",
   winTitle: "You won", winPrize: "WIN", winEmoji: "💰",
+  offerHeadline: "Win up to €500", offerSubline: "+ 200 FS",
 };
 const vars: OverlayVars = { gold: "#f5c24b", accent: "#ffd56a", surface: "#15564a", text: "#eaf6ee", bannerBg: "#e2483d", bannerBorder: "#f5c24b" };
-const config = withConversionDefaults({ prize: "200 Free Spins" });
+const config = withConversionDefaults({ prize: "200 Free Spins", scarcity: { total: 30 } });
 const noop = () => {};
 
 function renderAt(status: "idle" | "spinning" | "nearmiss" | "won", spinsLeft?: number) {
@@ -77,5 +78,17 @@ describe("SpinOverlay loss burst", () => {
     expect(screen.queryByTestId("loss-burst")).toBeNull();
     renderAt("won", 0);
     expect(screen.queryByTestId("loss-burst")).toBeNull();
+  });
+});
+
+describe("SpinOverlay conversion redesign", () => {
+  it("renders the offer banner above the game and the scarcity line", () => {
+    renderAt("idle", 2);
+    expect(screen.getByTestId("offer-banner")).toHaveTextContent("Win up to €500");
+    expect(screen.getByTestId("scarcity-line")).toHaveTextContent(/of 30 bonuses left/i);
+  });
+  it("keeps the countdown present (now on the CTA row)", () => {
+    renderAt("idle", 2);
+    expect(screen.getByTestId("countdown")).toBeInTheDocument();
   });
 });
