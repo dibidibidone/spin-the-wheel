@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { useState, useEffect } from "react";
 import css from "./spinOverlay.module.css";
 import type { OverlayStatus } from "./types";
 import type { OverlayCopy, ConversionConfig } from "./types";
@@ -11,6 +12,7 @@ import { Countdown } from "./Countdown";
 import { TrustBar } from "./TrustBar";
 import { OfferBanner } from "./OfferBanner";
 import { ScarcityLine } from "./ScarcityLine";
+import { SpinCoach } from "./SpinCoach";
 
 export type OverlayVars = {
   gold: string; accent: string; surface: string; text: string; bannerBg: string; bannerBorder: string;
@@ -35,6 +37,16 @@ export function SpinOverlay({
   onClaimSubmit: (value: string) => void;
   onDismiss: () => void;
 }) {
+  const [coach, setCoach] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setCoach(window.sessionStorage.getItem("stw-coach-done") !== "1");
+  }, []);
+  const handleSpin = () => {
+    if (coach) { window.sessionStorage.setItem("stw-coach-done", "1"); setCoach(false); }
+    onSpin();
+  };
+
   const style = {
     "--gold": vars.gold, "--accent": vars.accent, "--surface": vars.surface,
     "--text": vars.text, "--bannerBg": vars.bannerBg, "--bannerBorder": vars.bannerBorder,
@@ -67,11 +79,12 @@ export function SpinOverlay({
           </p>
         )}
         <div className={css.ctaRow}>
-          <button data-pe data-testid="spin-button" className={css.cta} onClick={onSpin} disabled={status === "spinning" || status === "won"}>
+          <button data-pe data-testid="spin-button" className={css.cta} onClick={handleSpin} disabled={status === "spinning" || status === "won"}>
             {status === "spinning" ? copy.spinningLabel : status === "nearmiss" ? (copy.retryLabel ?? copy.ctaLabel) : copy.ctaLabel}
           </button>
           <div className={css.ctaTimer}><Countdown durationMs={config.urgencyMs} storageKey="stw-claim-deadline" /></div>
         </div>
+        {status === "idle" && <SpinCoach show={coach} />}
         {status === "nearmiss" && copy.nearMissLine && <p className={css.retryHint} data-pe>{copy.nearMissLine}</p>}
         <TrustBar text={config.trust} />
       </div>

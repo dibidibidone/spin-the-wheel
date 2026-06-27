@@ -1,0 +1,7 @@
+.coach { position: relative; pointer-events: none; display: flex; align-items: center; justify-content: center;
+  gap: 6px; margin-top: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.5px; color: var(--gold);
+  animation: coachpulse 1.4s ease-in-out infinite; }
+.finger { font-size: 18px; display: inline-block; animation: coachtap 1.4s ease-in-out infinite; }
+@keyframes coachpulse { 0%,100% { opacity: 0.65; } 50% { opacity: 1; } }
+@keyframes coachtap { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .coach, .finger { animation: none; } .coach { opacity: 0.9; } }
