@@ -89,6 +89,6 @@ describe("SpinOverlay conversion redesign", () => {
   });
   it("keeps the countdown present (now on the CTA row)", () => {
     renderAt("idle", 2);
-    expect(screen.getByTestId("countdown")).toBeInTheDocument();
+    expect(screen.getByTestId("countdown").closest('[class*="ctaRow"]')).not.toBeNull();
   });
 });
