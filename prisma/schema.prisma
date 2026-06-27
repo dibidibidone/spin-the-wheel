@@ -25,6 +25,10 @@ model Landing {
   pwaName            String   @default("")
   pwaIconUrl         String?
   winText            String   @default("")
+  offerHeadline    String  @default("")
+  offerSubline     String  @default("")
+  bonusesTotal     Int     @default(0)
+  countdownMinutes Int     @default(10)
 
   theme              Json
   logoUrl            String?

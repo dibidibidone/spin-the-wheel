@@ -4,7 +4,7 @@ import type { LandingView } from "@/lib/types";
 
 const base: LandingView = {
   slug: "demo",
-  texts: { heading: "Spin the Wheel", subtitle: "and win bonuses", backLabel: "Back", winTitle: "You won {prize}!", claimLabel: "Claim", almostText: "Almost!" },
+  texts: { heading: "Spin the Wheel", subtitle: "and win bonuses", backLabel: "Back", winTitle: "You won {prize}!", claimLabel: "Claim", almostText: "Almost!", offerHeadline: "", offerSubline: "" },
   theme: { bg: "#0A1410", surface: "#13251A", accent: "#27C24C", gold: "#F5C24B", text: "#EAF6EE", muted: "#7FA88E" },
   assets: { logoUrl: null, faviconUrl: "https://cdn.example/fav.png", coinImageUrl: null, bgImageUrl: null },
   segments: [],
@@ -15,6 +15,8 @@ const base: LandingView = {
   pwaName: "",
   pwaIconUrl: null,
   winText: "",
+  bonusesTotal: 0,
+  countdownMinutes: 10,
 };
 
 describe("buildMetadata", () => {

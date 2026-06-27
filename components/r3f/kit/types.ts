@@ -19,6 +19,8 @@ export type OverlayCopy = {
   heading: string;
   subtitle?: string;
   subBanner?: string;
+  offerHeadline?: string;  // bold prize headline above the game (Variant A)
+  offerSubline?: string;   // gold sub-line under the headline (e.g. "+ 200 Free Spins")
   ctaLabel: string;
   spinningLabel: string;
   retryLabel?: string;     // shown on the CTA during a near-miss
@@ -40,6 +42,7 @@ export type ConversionConfig = {
   registerPlaceholder: string;
   redirectUrl: string;
   urgencyMs: number;
+  scarcity?: { total: number };  // "X of {total} bonuses left"; omit/0 hides the line
   social: { winners: SocialProofItem[]; todayCount: number };
   trust: string;
 };

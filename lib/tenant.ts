@@ -6,6 +6,7 @@ type PrizeRow = { id: string; order: number; label: string; icon: string; color:
 type LandingRow = {
   slug: string; status: string;
   heading: string; subtitle: string; backLabel: string; winTitle: string; claimLabel: string; almostText: string;
+  offerHeadline: string; offerSubline: string; bonusesTotal: number; countdownMinutes: number;
   theme: ThemeColors;
   logoUrl: string | null; faviconUrl: string | null; coinImageUrl: string | null; bgImageUrl: string | null;
   spinsBeforeWin: number; redirectUrl: string; redirectPrizeParam: string | null;
@@ -27,6 +28,7 @@ export function toLandingView(landing: LandingRow): LandingView {
     texts: {
       heading: landing.heading, subtitle: landing.subtitle, backLabel: landing.backLabel,
       winTitle: landing.winTitle, claimLabel: landing.claimLabel, almostText: landing.almostText,
+      offerHeadline: landing.offerHeadline, offerSubline: landing.offerSubline,
     },
     theme: landing.theme,
     assets: {
@@ -39,6 +41,8 @@ export function toLandingView(landing: LandingRow): LandingView {
     redirectPrizeParam: landing.redirectPrizeParam,
     winningPrizeLabel: landing.winningPrize?.label ?? "",
     winText: landing.winText,
+    bonusesTotal: landing.bonusesTotal,
+    countdownMinutes: landing.countdownMinutes,
     metaTitle: landing.metaTitle ?? landing.heading,
     metaDescription: landing.metaDescription ?? landing.subtitle,
     template: landing.template,

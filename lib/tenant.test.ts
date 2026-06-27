@@ -1,5 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+// ---------------------------------------------------------------------------
+// Task 1: conversion fields thread-through test
+// ---------------------------------------------------------------------------
+import { toLandingView as toLandingViewDirect } from "./tenant";
+
+const row = () => ({
+  slug: "s", status: "published",
+  heading: "H", subtitle: "S", backLabel: "Back", winTitle: "W", claimLabel: "C", almostText: "A",
+  offerHeadline: "Win up to €500", offerSubline: "+ 200 Free Spins", bonusesTotal: 50, countdownMinutes: 7,
+  theme: { bg: "#000", surface: "#111", accent: "#0f0", gold: "#fc0", text: "#fff", muted: "#999" },
+  logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
+  spinsBeforeWin: 2, redirectUrl: "/go", redirectPrizeParam: null,
+  metaTitle: null, metaDescription: null, template: "classic-2d", pwaName: "", pwaIconUrl: null, winText: "",
+  winningPrizeId: null, winningPrize: null, prizes: [],
+});
+
+describe("toLandingView conversion fields", () => {
+  it("threads offer + scarcity + countdown fields", () => {
+    const v = toLandingViewDirect(row());
+    expect(v.texts.offerHeadline).toBe("Win up to €500");
+    expect(v.texts.offerSubline).toBe("+ 200 Free Spins");
+    expect(v.bonusesTotal).toBe(50);
+    expect(v.countdownMinutes).toBe(7);
+  });
+});
+// ---------------------------------------------------------------------------
+
 const { findUnique } = vi.hoisted(() => ({ findUnique: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { domain: { findUnique } } }));
 

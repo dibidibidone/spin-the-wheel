@@ -29,6 +29,8 @@ export type LandingTexts = {
   winTitle: string;
   claimLabel: string;
   almostText: string;
+  offerHeadline: string;
+  offerSubline: string;
 };
 
 export type LandingAssets = {
@@ -49,6 +51,8 @@ export type LandingView = {
   redirectPrizeParam: string | null;
   winningPrizeLabel: string;
   winText: string;
+  bonusesTotal: number;
+  countdownMinutes: number;
   metaTitle: string;
   metaDescription: string;
   template: string;

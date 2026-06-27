@@ -4,7 +4,7 @@ import type { LandingView } from "./types";
 
 const view: LandingView = {
   slug: "demo",
-  texts: { heading: "H", subtitle: "S", backLabel: "Back", winTitle: "You won!", claimLabel: "Claim →", almostText: "Almost" },
+  texts: { heading: "H", subtitle: "S", backLabel: "Back", winTitle: "You won!", claimLabel: "Claim →", almostText: "Almost", offerHeadline: "", offerSubline: "" },
   theme: { bg: "#000000", surface: "#111111", accent: "#222222", gold: "#FFD24A", text: "#FFFFFF", muted: "#888888" },
   assets: { logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null },
   segments: [],
@@ -13,6 +13,8 @@ const view: LandingView = {
   redirectPrizeParam: null,
   winningPrizeLabel: "JACKPOT",
   winText: "",
+  bonusesTotal: 0,
+  countdownMinutes: 10,
   metaTitle: "t",
   metaDescription: "d",
   template: "jackpot-vault",

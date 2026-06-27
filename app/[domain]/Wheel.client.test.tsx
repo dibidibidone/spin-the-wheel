@@ -18,7 +18,7 @@ function view(): LandingView {
   }));
   return {
     slug: "demo",
-    texts: { heading: "Spin the Wheel", subtitle: "and win bonuses", backLabel: "Back", winTitle: "You won {prize}!", claimLabel: "Claim", almostText: "Almost! Spin again" },
+    texts: { heading: "Spin the Wheel", subtitle: "and win bonuses", backLabel: "Back", winTitle: "You won {prize}!", claimLabel: "Claim", almostText: "Almost! Spin again", offerHeadline: "", offerSubline: "" },
     theme: { bg: "#0A1410", surface: "#13251A", accent: "#27C24C", gold: "#F5C24B", text: "#EAF6EE", muted: "#7FA88E" },
     assets: { logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null },
     segments,
@@ -31,6 +31,8 @@ function view(): LandingView {
     pwaName: "",
     pwaIconUrl: null,
     winText: "",
+    bonusesTotal: 0,
+    countdownMinutes: 10,
   };
 }
 
