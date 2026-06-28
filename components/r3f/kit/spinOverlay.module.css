@@ -37,7 +37,6 @@
 .dock { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
   padding: 52px 16px max(env(safe-area-inset-bottom), 16px);
   background: linear-gradient(to top, rgba(0,0,0,.94) 0%, rgba(0,0,0,.88) 46%, rgba(0,0,0,.6) 74%, transparent 100%); }
-.strip { min-height: 36px; display: flex; align-items: center; justify-content: center; }
 .cta { position: relative; overflow: hidden; pointer-events: auto; min-height: 58px; padding: 16px 40px; border-radius: 999px; border: none; touch-action: manipulation;
   background: linear-gradient(180deg, #FFE9A8 0%, var(--gold) 48%, #C8881E 100%); color: #2a1e00; font-weight: 900; font-size: 18px; letter-spacing: .5px;
   cursor: pointer; width: min(360px, 100%);
@@ -59,9 +58,11 @@
   .dock { gap: 4px; padding-top: 28px; }
 }
 
-.ctaRow { display: flex; flex-direction: column; align-items: stretch; width: min(360px, 100%); }
-.ctaTimer { margin-top: 0; }
-.ctaTimer :global([data-testid="countdown"]) { border-top-left-radius: 0; border-top-right-radius: 0; }
+/* Live metrics sit at the top of the hero, above the offer headline. */
+.liveStrip { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 10px; }
+
+/* Countdown floats centered over the wheel/slot (between the hero and the game). */
+.gameTimer { position: absolute; left: 0; right: 0; top: 31%; display: flex; justify-content: center; padding: 0 16px; }
 
 .retryHint { margin: 4px 0 0; font-weight: 700; font-size: 14px; color: var(--gold);
   text-shadow: 0 0 12px color-mix(in srgb, var(--gold) 50%, transparent); }
@@ -75,4 +76,4 @@
   box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.3); }
 .spinsLeft b { font-size: 1.5em; vertical-align: -1px; }
 /* When the bar is shown it sits flush on the CTA: square the CTA's top so they fuse. */
-.spinsLeft + .ctaRow > .cta { border-top-left-radius: 0; border-top-right-radius: 0; }
+.spinsLeft + .cta { border-top-left-radius: 0; border-top-right-radius: 0; }

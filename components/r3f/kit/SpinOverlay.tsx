@@ -62,28 +62,30 @@ export function SpinOverlay({
       </div>
 
       <div className={css.hero}>
+        <div className={css.liveStrip}>
+          <SocialProof winners={config.social.winners} todayCount={config.social.todayCount} reduced={reduced} />
+        </div>
         <OfferBanner headline={copy.offerHeadline} subline={copy.offerSubline} />
         <h1 className={css.subhead}>{copy.heading}</h1>
         {copy.subtitle && <p className={css.subtitle}>{copy.subtitle}</p>}
         {copy.subBanner && <div className={css.banner}>{copy.subBanner}</div>}
       </div>
 
+      {/* Countdown floats centered just above the wheel/slot, not on the button. */}
+      <div className={css.gameTimer}>
+        <Countdown durationMs={config.urgencyMs} storageKey="stw-claim-deadline" />
+      </div>
+
       <div className={css.dock}>
-        <div className={css.strip}>
-          <SocialProof winners={config.social.winners} todayCount={config.social.todayCount} reduced={reduced} />
-        </div>
         {config.scarcity && <ScarcityLine total={config.scarcity.total} />}
         {spinsLeft != null && (status === "idle" || status === "nearmiss") && (
           <p className={css.spinsLeft} data-testid="spins-left">
             🎯 <b>{spinsLeft}</b> {spinsLeft === 1 ? "spin" : "spins"} left
           </p>
         )}
-        <div className={css.ctaRow}>
-          <button data-pe data-testid="spin-button" className={css.cta} onClick={handleSpin} disabled={status === "spinning" || status === "won"}>
-            {status === "spinning" ? copy.spinningLabel : status === "nearmiss" ? (copy.retryLabel ?? copy.ctaLabel) : copy.ctaLabel}
-          </button>
-          <div className={css.ctaTimer}><Countdown durationMs={config.urgencyMs} storageKey="stw-claim-deadline" /></div>
-        </div>
+        <button data-pe data-testid="spin-button" className={css.cta} onClick={handleSpin} disabled={status === "spinning" || status === "won"}>
+          {status === "spinning" ? copy.spinningLabel : status === "nearmiss" ? (copy.retryLabel ?? copy.ctaLabel) : copy.ctaLabel}
+        </button>
         {status === "idle" && <SpinCoach show={coach} />}
         {status === "nearmiss" && copy.nearMissLine && <p className={css.retryHint} data-pe>{copy.nearMissLine}</p>}
         <TrustBar text={config.trust} />
