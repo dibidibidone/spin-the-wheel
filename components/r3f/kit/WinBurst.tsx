@@ -2,17 +2,18 @@
 import { useMemo, type CSSProperties } from "react";
 import css from "./winBurst.module.css";
 
-// A one-shot celebration shown on win, behind the win sheet. Inherits --gold / --accent
-// from the overlay. Pure DOM/CSS (flash + confetti + a gold coin rain) — no physics or
-// WebGL, so it can't repeat the context-loss crash the old Rapier CoinStorm caused.
+// A one-shot BOOM celebration shown on win, behind the win sheet. Inherits --gold / --accent
+// from the overlay. Pure DOM/CSS — light rays + shockwave + a big radial flash + a "BIG WIN"
+// punch + a heavy gold coin shower + confetti. No physics or WebGL, so it can't repeat the
+// context-loss crash the old Rapier CoinStorm caused.
 export function WinBurst() {
   const pieces = useMemo(
-    () => Array.from({ length: 32 }, (_, i) => ({
+    () => Array.from({ length: 44 }, (_, i) => ({
       left: Math.random() * 100,
       delay: Math.random() * 0.5,
       dur: 1.7 + Math.random() * 1.4,
       rot: Math.random() * 360,
-      w: 6 + Math.random() * 7,
+      w: 6 + Math.random() * 8,
       hue: i % 3,
       drift: (Math.random() * 2 - 1) * 90,
     })),
@@ -20,20 +21,24 @@ export function WinBurst() {
   );
 
   const coins = useMemo(
-    () => Array.from({ length: 30 }, () => ({
+    () => Array.from({ length: 54 }, () => ({
       left: Math.random() * 100,
-      delay: Math.random() * 1.8,
-      dur: 2.8 + Math.random() * 2,
-      size: 26 + Math.random() * 28,
-      drift: (Math.random() * 2 - 1) * 80,
-      spin: 720 + Math.random() * 900,
+      delay: Math.random() * 1.7,
+      dur: 2.6 + Math.random() * 2,
+      size: 26 + Math.random() * 34,
+      drift: (Math.random() * 2 - 1) * 90,
+      spin: 720 + Math.random() * 1080,
     })),
     []
   );
 
   return (
     <div className={css.wrap} data-testid="win-burst" aria-hidden>
+      <div className={css.rays} />
       <div className={css.flash} />
+      <div className={css.core} />
+      <div className={css.shock} />
+      <div className={css.shock2} />
       {coins.map((c, i) => (
         <span
           key={`c${i}`}
@@ -64,6 +69,7 @@ export function WinBurst() {
           } as CSSProperties}
         />
       ))}
+      <div className={css.bigwin}>BIG WIN!</div>
     </div>
   );
 }

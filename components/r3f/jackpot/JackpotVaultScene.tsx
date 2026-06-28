@@ -58,7 +58,7 @@ export function JackpotVaultScene({ config }: { config?: LandingSceneConfig } = 
   if (!webgl) return <SceneFallback copy={copy} vars={jackpotOverlayVars} config={conversion} />;
 
   return (
-    <div className={`${shell.shell}${status === "nearmiss" ? " shake" : ""}`} style={{ "--base": "#070D0B", "--glow": "#F5C24B", "--glow2": "#5BE36A" } as CSSProperties}>
+    <div className={`${shell.shell}${status === "nearmiss" ? " shake" : status === "won" ? " boom" : ""}`} style={{ "--base": "#070D0B", "--glow": "#F5C24B", "--glow2": "#5BE36A" } as CSSProperties}>
       <div className={shell.bg} />
       <div className={shell.rays} />
       <div className={shell.vignette} />

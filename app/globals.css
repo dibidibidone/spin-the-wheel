@@ -162,3 +162,19 @@ body { font-family: var(--font-outfit), system-ui, sans-serif; }
   40%, 60% { transform: translate3d(7px, 0, 0); }
 }
 @media (prefers-reduced-motion: reduce) { .shake { animation: none; } }
+
+/* Bigger "BOOM" screen shake on a WIN — an impact punch (scale) then a heavier rattle than
+   the loss shake. Applied to a scene root while it is in the won state. */
+.boom { animation: boom 0.62s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; transform-origin: 50% 50%; }
+@keyframes boom {
+  0% { transform: scale(1.06) translate3d(0, -5px, 0); }
+  12% { transform: scale(1.03) translate3d(-12px, 0, 0); }
+  24% { transform: translate3d(13px, 2px, 0); }
+  36% { transform: translate3d(-13px, 0, 0); }
+  48% { transform: translate3d(11px, -2px, 0); }
+  60% { transform: translate3d(-9px, 0, 0); }
+  72% { transform: translate3d(7px, 0, 0); }
+  84% { transform: translate3d(-4px, 0, 0); }
+  100% { transform: scale(1) translate3d(0, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .boom { animation: none; } }
