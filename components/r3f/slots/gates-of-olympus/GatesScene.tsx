@@ -11,6 +11,7 @@ import { useReducedMotion } from "../../kit/useReducedMotion";
 import { useSlotScene } from "../../kit/useSlotScene";
 import { isWebGLAvailable } from "../../kit/webgl";
 import { OlympusBackdrop } from "./OlympusBackdrop";
+import { OlympusAtmosphere } from "./OlympusAtmosphere";
 import { gatesTheme, gatesSound, gatesCopy, gatesOverlayVars, gatesConversion } from "./theme";
 import type { LandingSceneConfig } from "../../kit/sceneConfig";
 import { usePwaInstall } from "../../kit/usePwaInstall";
@@ -73,6 +74,7 @@ export function GatesScene({ config }: { config?: LandingSceneConfig } = {}) {
         <AdaptiveDpr pixelated={false} />
         <Effects chromatic={typeof window !== "undefined" && window.innerWidth >= 700} />
       </Canvas>
+      <OlympusAtmosphere status={status} reduced={reduced} />
       {reels}
       {overlay}
       <IosInstallHint open={pwa.iosHintOpen} appName={config?.pwa.name ?? ""} iconUrl={config?.pwa.iconUrl ?? null} onClose={pwa.dismissIosHint} />
