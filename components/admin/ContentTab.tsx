@@ -41,7 +41,7 @@ export function ContentTab({ landing }: { landing: EditableLanding }) {
         offerHeadline: f.offerHeadline,
         offerSubline: f.offerSubline,
         bonusesTotal: Number(f.bonusesTotal),
-        countdownMinutes: Number(f.countdownMinutes),
+        countdownMinutes: f.countdownMinutes === "" ? undefined : Number(f.countdownMinutes),
       });
       setMsg("Saved");
     } catch (e) {

@@ -16,7 +16,8 @@
   -webkit-text-fill-color: transparent; color: transparent;
   filter: drop-shadow(0 2px 1px rgba(0,0,0,.55)) drop-shadow(0 0 22px color-mix(in srgb, var(--gold) 50%, transparent));
   animation: shine 6s ease-in-out infinite; }
-.hero .subhead { margin: 4px 0 0; font-size: 16px; font-weight: 700; opacity: 0.85; }
+.hero .subhead { margin: 4px 0 0; font-size: 16px; font-weight: 700; opacity: 0.85;
+  background: none; -webkit-text-fill-color: currentColor; color: var(--text); text-shadow: none; animation: none; }
 @keyframes shine { 0%, 100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
 .subtitle { margin: 8px 0 0; color: var(--text); opacity: .82; font-size: clamp(13px, 2.6vw, 17px); letter-spacing: .4px;
   text-shadow: 0 1px 8px rgba(0,0,0,.6); }

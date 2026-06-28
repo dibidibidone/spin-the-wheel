@@ -76,4 +76,16 @@ describe("buildSceneConfig", () => {
     const c = buildSceneConfig({ ...view, bonusesTotal: 0 });
     expect(c.conversion.scarcity).toBeUndefined();
   });
+
+  it("omits offerHeadline/offerSubline keys entirely when view values are empty", () => {
+    const c = buildSceneConfig({ ...view, texts: { ...view.texts, offerHeadline: "", offerSubline: "" } });
+    expect("offerHeadline" in (c.copy ?? {})).toBe(false);
+    expect("offerSubline" in (c.copy ?? {})).toBe(false);
+  });
+
+  it("omits offerHeadline key but keeps offerSubline when only headline is empty", () => {
+    const c = buildSceneConfig({ ...view, texts: { ...view.texts, offerHeadline: "" } });
+    expect("offerHeadline" in (c.copy ?? {})).toBe(false);
+    expect(c.copy?.offerSubline).toBe("+ 200 FS");
+  });
 });
