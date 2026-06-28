@@ -1,6 +1,6 @@
-import { put } from "@vercel/blob";
 import { requireApiSession } from "@/lib/admin/guard";
 import { validateUpload } from "@/lib/admin/upload";
+import { storeUpload } from "@/lib/admin/storage";
 
 export async function POST(req: Request) {
   const guard = await requireApiSession();
@@ -15,6 +15,6 @@ export async function POST(req: Request) {
   const check = validateUpload({ type: file.type, size: file.size });
   if (!check.ok) return Response.json({ error: check.error }, { status: 400 });
 
-  const blob = await put(`landings/${crypto.randomUUID()}-${file.name}`, file, { access: "public" });
-  return Response.json({ url: blob.url });
+  const stored = await storeUpload(file);
+  return Response.json({ url: stored.url });
 }

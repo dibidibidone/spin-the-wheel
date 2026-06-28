@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 const { requireApiSession, put } = vi.hoisted(() => ({
   requireApiSession: vi.fn(),
@@ -23,6 +23,10 @@ function formWith(file: File | null): Request {
 beforeEach(() => {
   requireApiSession.mockReset();
   put.mockReset();
+  process.env.BLOB_READ_WRITE_TOKEN = "test-token"; // exercise the Vercel Blob path (mocked above)
+});
+afterEach(() => {
+  delete process.env.BLOB_READ_WRITE_TOKEN;
 });
 
 describe("POST /api/admin/upload", () => {

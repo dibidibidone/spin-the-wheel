@@ -5,3 +5,6 @@ node_modules/
 *.log
 tsconfig.tsbuildinfo
 .superpowers/
+
+# Local dev image uploads (Blob fallback)
+public/uploads/
