@@ -53,6 +53,7 @@ const patchSchema = z
     offerSubline: z.string().max(80).optional(),
     bonusesTotal: z.coerce.number().int().min(0).max(100000).optional(),
     countdownMinutes: z.coerce.number().int().min(1).max(1440).optional(),
+    atmosphere: z.enum(["off", "subtle", "normal", "intense"]).optional(),
     spinsBeforeWin: z.number().int().min(1),
   })
   .partial()

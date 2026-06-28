@@ -62,3 +62,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) { .wrap { display: none; } }
+
+/* admin-configurable intensity (normal = default) */
+.subtle { opacity: .5; }
+.intense { filter: brightness(1.35) saturate(1.15); }

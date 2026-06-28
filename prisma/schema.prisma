@@ -29,6 +29,7 @@ model Landing {
   offerSubline     String  @default("")
   bonusesTotal     Int     @default(0)
   countdownMinutes Int     @default(10)
+  atmosphere       String  @default("normal") // off | subtle | normal | intense (3D/slot background)
 
   theme              Json
   logoUrl            String?

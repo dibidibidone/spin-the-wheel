@@ -76,7 +76,7 @@ export function BookOfRaScene({ config }: { config?: LandingSceneConfig } = {}) 
         <AdaptiveDpr pixelated={false} />
         <Effects chromatic={false} />
       </Canvas>
-      <TempleAtmosphere status={status} reduced={reduced} />
+      {(config?.atmosphere ?? "normal") !== "off" && <TempleAtmosphere status={status} reduced={reduced} intensity={config?.atmosphere ?? "normal"} />}
       {reels}
       {overlay}
       <IosInstallHint open={pwa.iosHintOpen} appName={config?.pwa.name ?? ""} iconUrl={config?.pwa.iconUrl ?? null} onClose={pwa.dismissIosHint} />

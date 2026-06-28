@@ -14,7 +14,7 @@ function landing(): EditableLanding {
     heading: "Spin", subtitle: "win", backLabel: "Back", winTitle: "You won {prize}!",
     claimLabel: "Claim", almostText: "Almost!",
     template: "classic-2d", pwaName: "App", pwaIconUrl: null, winText: "",
-    offerHeadline: "Win up to €500", offerSubline: "+ 200 FS", bonusesTotal: 50, countdownMinutes: 7,
+    offerHeadline: "Win up to €500", offerSubline: "+ 200 FS", bonusesTotal: 50, countdownMinutes: 7, atmosphere: "normal",
     theme: { bg: "#0A1410", surface: "#13251A", accent: "#27C24C", gold: "#F5C24B", text: "#EAF6EE", muted: "#7FA88E" },
     logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
     spinsBeforeWin: 3, redirectUrl: "https://x.com", redirectPrizeParam: "bonus",
@@ -57,7 +57,7 @@ describe("ContentTab", () => {
       offerHeadline: "Join Now",
       offerSubline: "+ 200 FS",
       bonusesTotal: 50,
-      countdownMinutes: 7,
+      countdownMinutes: 7, atmosphere: "normal",
     }));
   });
 });

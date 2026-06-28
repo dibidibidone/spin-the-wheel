@@ -8,7 +8,7 @@ const RUNES = ["🜍", "⚗", "☿", "🜔", "✶", "🜚", "☉"];
 // Reactive alchemy atmosphere: rising potion bubbles + slowly drifting glowing runes over a
 // toxic-green glow, layered as pure DOM/CSS additive light (crash-safe). The brew bubbles
 // faster while spinning and erupts green on the win.
-export function LabAtmosphere({ status, reduced }: { status: OverlayStatus; reduced: boolean }) {
+export function LabAtmosphere({ status, reduced, intensity = "normal" }: { status: OverlayStatus; reduced: boolean; intensity?: string }) {
   const bubbles = useMemo(
     () => Array.from({ length: 22 }, () => ({
       left: Math.random() * 100,
@@ -36,7 +36,7 @@ export function LabAtmosphere({ status, reduced }: { status: OverlayStatus; redu
     status === "won" ? css.won :
     status === "nearmiss" ? css.nearmiss : css.idle;
   return (
-    <div className={`${css.wrap} ${mode}`} aria-hidden data-testid="atmosphere">
+    <div className={`${css.wrap} ${mode} ${css[intensity] ?? ""}`} aria-hidden data-testid="atmosphere">
       <div className={css.glow} />
       {runes.map((r, i) => (
         <span

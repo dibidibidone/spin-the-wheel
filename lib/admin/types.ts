@@ -25,6 +25,7 @@ export type EditableLanding = {
   offerSubline: string;
   bonusesTotal: number;
   countdownMinutes: number;
+  atmosphere: string;
   template: string;
   pwaName: string;
   pwaIconUrl: string | null;

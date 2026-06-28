@@ -6,7 +6,7 @@ import type { OverlayStatus } from "../kit/types";
 // Reactive vault atmosphere: floating gold dust + a warm gold glow + neon light sweep,
 // layered over the 3D scene as pure DOM/CSS additive light (crash-safe). Calm at idle;
 // the dust rises faster and the glow pulses while spinning; a gold flood on the win.
-export function VaultAtmosphere({ status, reduced }: { status: OverlayStatus; reduced: boolean }) {
+export function VaultAtmosphere({ status, reduced, intensity = "normal" }: { status: OverlayStatus; reduced: boolean; intensity?: string }) {
   const dust = useMemo(
     () => Array.from({ length: 24 }, () => ({
       left: Math.random() * 100,
@@ -23,7 +23,7 @@ export function VaultAtmosphere({ status, reduced }: { status: OverlayStatus; re
     status === "won" ? css.won :
     status === "nearmiss" ? css.nearmiss : css.idle;
   return (
-    <div className={`${css.wrap} ${mode}`} aria-hidden data-testid="atmosphere">
+    <div className={`${css.wrap} ${mode} ${css[intensity] ?? ""}`} aria-hidden data-testid="atmosphere">
       <div className={css.glow} />
       <div className={css.rays} />
       <div className={css.sweep} />

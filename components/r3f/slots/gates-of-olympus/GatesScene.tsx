@@ -74,7 +74,7 @@ export function GatesScene({ config }: { config?: LandingSceneConfig } = {}) {
         <AdaptiveDpr pixelated={false} />
         <Effects chromatic={typeof window !== "undefined" && window.innerWidth >= 700} />
       </Canvas>
-      <OlympusAtmosphere status={status} reduced={reduced} />
+      {(config?.atmosphere ?? "normal") !== "off" && <OlympusAtmosphere status={status} reduced={reduced} intensity={config?.atmosphere ?? "normal"} />}
       {reels}
       {overlay}
       <IosInstallHint open={pwa.iosHintOpen} appName={config?.pwa.name ?? ""} iconUrl={config?.pwa.iconUrl ?? null} onClose={pwa.dismissIosHint} />

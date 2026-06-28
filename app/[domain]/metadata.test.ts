@@ -16,7 +16,7 @@ const base: LandingView = {
   pwaIconUrl: null,
   winText: "",
   bonusesTotal: 0,
-  countdownMinutes: 10,
+  countdownMinutes: 10, atmosphere: "normal",
 };
 
 describe("buildMetadata", () => {

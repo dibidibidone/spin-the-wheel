@@ -8,7 +8,7 @@ import { toLandingView as toLandingViewDirect } from "./tenant";
 const row = () => ({
   slug: "s", status: "published",
   heading: "H", subtitle: "S", backLabel: "Back", winTitle: "W", claimLabel: "C", almostText: "A",
-  offerHeadline: "Win up to €500", offerSubline: "+ 200 Free Spins", bonusesTotal: 50, countdownMinutes: 7,
+  offerHeadline: "Win up to €500", offerSubline: "+ 200 Free Spins", bonusesTotal: 50, countdownMinutes: 7, atmosphere: "normal",
   theme: { bg: "#000", surface: "#111", accent: "#0f0", gold: "#fc0", text: "#fff", muted: "#999" },
   logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
   spinsBeforeWin: 2, redirectUrl: "/go", redirectPrizeParam: null,

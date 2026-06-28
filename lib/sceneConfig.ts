@@ -27,6 +27,7 @@ export function buildSceneConfig(view: LandingView): LandingSceneConfig {
     segments: view.segments.map((s) => ({ label: s.label, color: s.color })),
     segmentCount: view.segments.length,
     logoSrc: view.assets.logoUrl,
+    atmosphere: view.atmosphere,
     pwa: { name: view.pwaName, iconUrl: view.pwaIconUrl, openUrl: "/go" },
   };
 }

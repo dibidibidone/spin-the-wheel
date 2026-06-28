@@ -14,5 +14,6 @@ export type LandingSceneConfig = {
   segments?: { label: string; color: string }[]; // wheel templates: the DB prize face
   segmentCount?: number;
   logoSrc?: string | null; // casino logo shown on the page (null → default)
+  atmosphere?: string; // off | subtle | normal | intense — 3D/slot reactive background
   pwa: PwaConfig;
 };

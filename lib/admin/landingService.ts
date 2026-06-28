@@ -140,6 +140,7 @@ export async function getEditableLanding(id: string): Promise<EditableLanding | 
     offerSubline: l.offerSubline,
     bonusesTotal: l.bonusesTotal,
     countdownMinutes: l.countdownMinutes,
+    atmosphere: l.atmosphere,
     template: l.template,
     pwaName: l.pwaName,
     pwaIconUrl: l.pwaIconUrl,

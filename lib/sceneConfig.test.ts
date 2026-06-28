@@ -14,7 +14,7 @@ const view: LandingView = {
   winningPrizeLabel: "JACKPOT",
   winText: "",
   bonusesTotal: 40,
-  countdownMinutes: 5,
+  countdownMinutes: 5, atmosphere: "normal",
   metaTitle: "t",
   metaDescription: "d",
   template: "jackpot-vault",
@@ -30,6 +30,7 @@ describe("buildSceneConfig", () => {
     expect(c.conversion.redirectUrl).toBe("/go");
     expect(c.winningIndex).toBe(7);
     expect(c.spinsBeforeWin).toBe(2);
+    expect(c.atmosphere).toBe("normal");
     expect(c.copy?.winPrize).toBe("JACKPOT");
     expect(c.copy?.heading).toBe("H");
     expect(c.copy?.subtitle).toBe("S");

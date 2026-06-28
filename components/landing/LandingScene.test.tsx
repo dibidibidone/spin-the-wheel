@@ -21,7 +21,7 @@ function view(): LandingView {
     pwaIconUrl: null,
     winText: "",
     bonusesTotal: 0,
-    countdownMinutes: 10,
+    countdownMinutes: 10, atmosphere: "normal",
   };
 }
 

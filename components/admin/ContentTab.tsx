@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { Field } from "./Field";
 import { patchLanding } from "@/lib/adminClient";
+import { templateKind } from "@/lib/templateKind";
 import type { EditableLanding } from "@/lib/admin/types";
 
 export function ContentTab({ landing }: { landing: EditableLanding }) {
+  const hasAtmosphere = templateKind(landing.template) !== "wheel-2d"; // 3D wheels + slots
   const [f, setF] = useState({
     heading: landing.heading,
     subtitle: landing.subtitle,
@@ -19,6 +21,7 @@ export function ContentTab({ landing }: { landing: EditableLanding }) {
     offerSubline: landing.offerSubline,
     bonusesTotal: String(landing.bonusesTotal),
     countdownMinutes: String(landing.countdownMinutes),
+    atmosphere: landing.atmosphere,
   });
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -42,6 +45,7 @@ export function ContentTab({ landing }: { landing: EditableLanding }) {
         offerSubline: f.offerSubline,
         bonusesTotal: Number(f.bonusesTotal),
         countdownMinutes: f.countdownMinutes === "" ? undefined : Number(f.countdownMinutes),
+        atmosphere: f.atmosphere,
       });
       setMsg("Saved");
     } catch (e) {
@@ -68,6 +72,20 @@ export function ContentTab({ landing }: { landing: EditableLanding }) {
         <Field label="Bonuses total" value={f.bonusesTotal} onChange={set("bonusesTotal")} type="number" />
         <Field label="Countdown minutes" value={f.countdownMinutes} onChange={set("countdownMinutes")} type="number" />
       </fieldset>
+      {hasAtmosphere && (
+        <fieldset>
+          <legend>Background</legend>
+          <label className="field">
+            <span>Atmosphere</span>
+            <select aria-label="Atmosphere" value={f.atmosphere} onChange={(e) => set("atmosphere")(e.target.value)}>
+              <option value="off">Off</option>
+              <option value="subtle">Subtle</option>
+              <option value="normal">Normal</option>
+              <option value="intense">Intense</option>
+            </select>
+          </label>
+        </fieldset>
+      )}
       <div className="save-row">
         <button className="btn-primary" onClick={save} disabled={busy}>Save</button>
         {msg && <span className="save-msg">{msg}</span>}

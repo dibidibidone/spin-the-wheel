@@ -53,6 +53,7 @@ export type LandingView = {
   winText: string;
   bonusesTotal: number;
   countdownMinutes: number;
+  atmosphere: string;
   metaTitle: string;
   metaDescription: string;
   template: string;

@@ -63,7 +63,7 @@ export function JackpotVaultScene({ config }: { config?: LandingSceneConfig } = 
       <div className={shell.bg} />
       <div className={shell.rays} />
       <div className={shell.vignette} />
-      <VaultAtmosphere status={status} reduced={reduced} />
+      {(config?.atmosphere ?? "normal") !== "off" && <VaultAtmosphere status={status} reduced={reduced} intensity={config?.atmosphere ?? "normal"} />}
       <Canvas className={shell.canvas} camera={{ position: [0, 0.2, 7], fov: 42 }} dpr={[1, 2]} gl={{ alpha: true, antialias: false }}>
         <ResponsiveCamera radius={jackpotWheel.radius} />
         <ambientLight intensity={0.35} />
