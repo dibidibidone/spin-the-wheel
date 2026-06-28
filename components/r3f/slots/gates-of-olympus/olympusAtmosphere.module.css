@@ -6,59 +6,59 @@
 .haze {
   position: absolute; inset: -12%;
   background:
-    radial-gradient(50% 40% at 20% 14%, rgba(120, 90, 220, .30), transparent 70%),
-    radial-gradient(55% 45% at 82% 22%, rgba(80, 60, 180, .26), transparent 72%),
-    radial-gradient(62% 52% at 50% 92%, rgba(60, 40, 140, .34), transparent 70%);
-  filter: blur(10px); animation: hazeDrift 16s ease-in-out infinite alternate;
+    radial-gradient(52% 42% at 20% 14%, rgba(140, 105, 245, .46), transparent 70%),
+    radial-gradient(56% 46% at 82% 22%, rgba(95, 70, 210, .40), transparent 72%),
+    radial-gradient(64% 54% at 50% 92%, rgba(72, 48, 170, .50), transparent 70%);
+  filter: blur(8px); animation: hazeDrift 14s ease-in-out infinite alternate;
 }
 @keyframes hazeDrift {
-  0% { transform: translate3d(-2%, -1%, 0) scale(1.03); }
-  100% { transform: translate3d(2%, 1%, 0) scale(1.07); }
+  0% { transform: translate3d(-3%, -1%, 0) scale(1.03); }
+  100% { transform: translate3d(3%, 1%, 0) scale(1.08); }
 }
 
 /* God-ray beams angling down from Olympus, slowly panning. */
 .rays {
   position: absolute; top: -28%; left: 50%; width: 170%; height: 135%; transform: translateX(-50%);
   background: repeating-linear-gradient(96deg,
-    rgba(200, 180, 255, .085) 0 9px, transparent 9px 58px);
-  mix-blend-mode: screen; opacity: .42; animation: raysPan 11s linear infinite;
+    rgba(206, 188, 255, .16) 0 11px, transparent 11px 56px);
+  mix-blend-mode: screen; opacity: .62; animation: raysPan 11s linear infinite;
 }
 @keyframes raysPan { 0% { transform: translateX(-53%); } 100% { transform: translateX(-47%); } }
 
 /* Two lightning sources that flicker on independent cycles. */
 .bolt1, .bolt2 { position: absolute; inset: 0; mix-blend-mode: screen; opacity: 0; }
 .bolt1 {
-  background: radial-gradient(120% 80% at 30% 6%, rgba(225, 215, 255, .95), rgba(150, 120, 255, .32) 28%, transparent 58%);
-  animation: bolt 7s linear infinite;
+  background: radial-gradient(125% 85% at 30% 5%, rgba(235, 228, 255, 1), rgba(165, 135, 255, .42) 26%, transparent 56%);
+  animation: bolt 5s linear infinite;
 }
 .bolt2 {
-  background: radial-gradient(120% 80% at 74% 5%, rgba(225, 215, 255, .95), rgba(150, 120, 255, .32) 28%, transparent 58%);
-  animation: bolt 9s linear infinite 2.6s;
+  background: radial-gradient(125% 85% at 74% 4%, rgba(235, 228, 255, 1), rgba(165, 135, 255, .42) 26%, transparent 56%);
+  animation: bolt 6.5s linear infinite 2s;
 }
 @keyframes bolt {
   0%, 100% { opacity: 0; }
-  1.4% { opacity: 1; } 2.4% { opacity: .18; } 3.4% { opacity: .85; } 5% { opacity: 0; }
+  1.2% { opacity: 1; } 2.2% { opacity: .25; } 3.4% { opacity: .95; } 4.4% { opacity: .35; } 5.6% { opacity: 0; }
 }
 
 /* Win flood — a sustained bright flash. */
 .flash { position: absolute; inset: 0; mix-blend-mode: screen; background: transparent; }
 
 /* ---- reactive modes ---- */
-.spinning .bolt1 { animation-duration: 2.6s; }
-.spinning .bolt2 { animation-duration: 3.2s; animation-delay: 1s; }
-.spinning .haze { animation-duration: 8s; opacity: 1.2; }
-.spinning .rays { opacity: .75; }
+.spinning .bolt1 { animation-duration: 1.7s; }
+.spinning .bolt2 { animation-duration: 2.1s; animation-delay: .7s; }
+.spinning .haze { animation-duration: 7s; filter: blur(6px) brightness(1.25); }
+.spinning .rays { opacity: .9; }
 
-.nearmiss .haze { filter: blur(10px) saturate(.55); opacity: .8; }
+.nearmiss .haze { filter: blur(8px) saturate(.5); opacity: .7; }
 
-.won .bolt1 { animation-duration: 1.3s; }
-.won .bolt2 { animation-duration: 1.6s; animation-delay: .35s; }
-.won .rays { opacity: .9; }
+.won .bolt1 { animation-duration: 1s; }
+.won .bolt2 { animation-duration: 1.2s; animation-delay: .25s; }
+.won .rays { opacity: 1; }
 .won .flash { animation: bigFlash 1.05s ease-out both; }
 @keyframes bigFlash {
-  0% { background: rgba(232, 226, 255, .9); }
-  35% { background: rgba(232, 226, 255, .35); }
-  100% { background: rgba(232, 226, 255, 0); }
+  0% { background: rgba(236, 230, 255, 1); }
+  30% { background: rgba(236, 230, 255, .45); }
+  100% { background: rgba(236, 230, 255, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) { .wrap { display: none; } }

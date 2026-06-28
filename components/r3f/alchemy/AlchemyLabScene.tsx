@@ -19,6 +19,7 @@ import shell from "../kit/sceneShell.module.css";
 import type { LandingSceneConfig } from "../kit/sceneConfig";
 import { usePwaInstall } from "../kit/usePwaInstall";
 import { IosInstallHint } from "../kit/IosInstallHint";
+import { LabAtmosphere } from "./LabAtmosphere";
 
 function WheelRig({ rotationRef, reduced, segments, winningIndex }: {
   rotationRef: React.MutableRefObject<number>; reduced: boolean;
@@ -65,6 +66,7 @@ export function AlchemyLabScene({ config }: { config?: LandingSceneConfig } = {}
       <div className={shell.bg} />
       <div className={shell.rays} />
       <div className={shell.vignette} />
+      <LabAtmosphere status={status} reduced={reduced} />
       <Canvas className={shell.canvas} camera={{ position: [0, 0.1, 7], fov: 42 }} dpr={[1, 2]} gl={{ alpha: true, antialias: false }}>
         <ResponsiveCamera radius={alchemyWheel.radius} />
         <ambientLight intensity={0.4} />

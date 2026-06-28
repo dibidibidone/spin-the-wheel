@@ -11,6 +11,7 @@ import { useReducedMotion } from "../../kit/useReducedMotion";
 import { useSlotScene } from "../../kit/useSlotScene";
 import { isWebGLAvailable } from "../../kit/webgl";
 import { TempleBackdrop } from "./TempleBackdrop";
+import { TempleAtmosphere } from "./TempleAtmosphere";
 import {
   bookOfRaTheme, bookOfRaSound, bookOfRaCopy, bookOfRaOverlayVars, bookOfRaConversion,
 } from "./theme";
@@ -75,6 +76,7 @@ export function BookOfRaScene({ config }: { config?: LandingSceneConfig } = {}) 
         <AdaptiveDpr pixelated={false} />
         <Effects chromatic={false} />
       </Canvas>
+      <TempleAtmosphere status={status} reduced={reduced} />
       {reels}
       {overlay}
       <IosInstallHint open={pwa.iosHintOpen} appName={config?.pwa.name ?? ""} iconUrl={config?.pwa.iconUrl ?? null} onClose={pwa.dismissIosHint} />

@@ -9,6 +9,7 @@ import { SpinOverlay } from "../kit/SpinOverlay";
 import { createSound } from "../kit/sound";
 import { useReducedMotion } from "../kit/useReducedMotion";
 import { NeonSign } from "./NeonSign";
+import { VaultAtmosphere } from "./VaultAtmosphere";
 import { ResponsiveCamera } from "../kit/ResponsiveCamera";
 import { jackpotWheel, jackpotSound, jackpotCopy, jackpotOverlayVars, jackpotConversion } from "./theme";
 import { isWebGLAvailable } from "../kit/webgl";
@@ -62,6 +63,7 @@ export function JackpotVaultScene({ config }: { config?: LandingSceneConfig } = 
       <div className={shell.bg} />
       <div className={shell.rays} />
       <div className={shell.vignette} />
+      <VaultAtmosphere status={status} reduced={reduced} />
       <Canvas className={shell.canvas} camera={{ position: [0, 0.2, 7], fov: 42 }} dpr={[1, 2]} gl={{ alpha: true, antialias: false }}>
         <ResponsiveCamera radius={jackpotWheel.radius} />
         <ambientLight intensity={0.35} />
