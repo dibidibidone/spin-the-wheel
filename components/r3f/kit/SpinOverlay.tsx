@@ -63,7 +63,7 @@ export function SpinOverlay({
 
       <div className={css.hero}>
         <div className={css.liveStrip}>
-          <SocialProof winners={config.social.winners} todayCount={config.social.todayCount} reduced={reduced} />
+          <SocialProof winners={config.social.winners} todayCount={config.social.todayCount} reduced={reduced} part="count" />
         </div>
         <OfferBanner headline={copy.offerHeadline} subline={copy.offerSubline} />
         <h1 className={css.subhead}>{copy.heading}</h1>
@@ -77,6 +77,7 @@ export function SpinOverlay({
       </div>
 
       <div className={css.dock}>
+        <SocialProof winners={config.social.winners} todayCount={config.social.todayCount} reduced={reduced} part="winner" />
         {config.scarcity && <ScarcityLine total={config.scarcity.total} />}
         {spinsLeft != null && (status === "idle" || status === "nearmiss") && (
           <p className={css.spinsLeft} data-testid="spins-left">
