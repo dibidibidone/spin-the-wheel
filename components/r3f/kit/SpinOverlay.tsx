@@ -6,6 +6,7 @@ import type { OverlayCopy, ConversionConfig } from "./types";
 import type { ClaimStep } from "./claimMachine";
 import { WinSheet } from "./WinSheet";
 import { WinBurst } from "./WinBurst";
+import { WinAnticipation } from "./WinAnticipation";
 import { LossBurst } from "./LossBurst";
 import { SocialProof } from "./SocialProof";
 import { Countdown } from "./Countdown";
@@ -13,6 +14,8 @@ import { TrustBar } from "./TrustBar";
 import { OfferBanner } from "./OfferBanner";
 import { ScarcityLine } from "./ScarcityLine";
 import { SpinCoach } from "./SpinCoach";
+import { ExitIntent } from "./ExitIntent";
+import { useExitIntent } from "./useExitIntent";
 
 export type OverlayVars = {
   gold: string; accent: string; surface: string; text: string; bannerBg: string; bannerBorder: string;
@@ -46,6 +49,15 @@ export function SpinOverlay({
     if (coach) { window.sessionStorage.setItem("stw-coach-done", "1"); setCoach(false); }
     onSpin();
   };
+  const exit = useExitIntent();
+  // On a win, play a brief anticipation build-up, then the BOOM.
+  const [winPhase, setWinPhase] = useState<"none" | "anticipate" | "boom">("none");
+  useEffect(() => {
+    if (status !== "won") { setWinPhase("none"); return; }
+    setWinPhase("anticipate");
+    const t = window.setTimeout(() => setWinPhase("boom"), reduced ? 0 : 700);
+    return () => window.clearTimeout(t);
+  }, [status, reduced]);
 
   const style = {
     "--gold": vars.gold, "--accent": vars.accent, "--surface": vars.surface,
@@ -93,11 +105,17 @@ export function SpinOverlay({
       </div>
 
       {status === "nearmiss" && <LossBurst text={copy.almostText ?? ""} />}
-      {status === "won" && <WinBurst />}
+      {winPhase === "anticipate" && <WinAnticipation />}
+      {winPhase === "boom" && <WinBurst />}
 
       <WinSheet
         step={claimStep} copy={copy} config={config} reduced={reduced} logoSrc={logoSrc}
         onOpen={onClaimOpen} onSubmit={onClaimSubmit} onDismiss={onDismiss}
+      />
+
+      <ExitIntent
+        show={exit.show && claimStep === "hidden"}
+        headline={copy.offerHeadline} subline={copy.offerSubline} onClose={exit.dismiss}
       />
     </div>
   );

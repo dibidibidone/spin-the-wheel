@@ -1,0 +1,48 @@
+.wrap { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 58; }
+
+/* Quick darken to focus attention on the build-up. */
+.dim { position: absolute; inset: 0; background: #000; animation: dim .7s ease-out both; }
+@keyframes dim { 0% { opacity: 0; } 35% { opacity: .42; } 100% { opacity: 0; } }
+
+/* Light rays rushing inward toward the win point. */
+.converge {
+  position: absolute; top: 42%; left: 50%; width: 200vmax; height: 200vmax; transform: translate(-50%, -50%);
+  mix-blend-mode: screen; opacity: 0;
+  background: repeating-conic-gradient(from 0deg at 50% 50%,
+    color-mix(in srgb, var(--gold) 60%, transparent) 0deg 4deg, transparent 4deg 16deg);
+  animation: converge .7s cubic-bezier(.4, 0, .2, 1) both;
+}
+@keyframes converge {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(1.6) rotate(0deg); }
+  40% { opacity: .7; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(.15) rotate(-20deg); }
+}
+
+/* White-gold core charging up. */
+.core {
+  position: absolute; top: 42%; left: 50%; width: 50vmax; height: 50vmax; border-radius: 50%;
+  transform: translate(-50%, -50%); mix-blend-mode: screen;
+  background: radial-gradient(circle, #fff 0%, color-mix(in srgb, var(--gold) 88%, white) 22%, transparent 60%);
+  animation: charge .7s ease-in both;
+}
+@keyframes charge {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.9); }
+  60% { opacity: .9; transform: translate(-50%, -50%) scale(.4); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
+}
+
+/* A pulsing ring snapping inward. */
+.ring {
+  position: absolute; top: 42%; left: 50%; width: 60vmax; height: 60vmax; border-radius: 50%;
+  transform: translate(-50%, -50%); opacity: 0;
+  border: 3px solid color-mix(in srgb, var(--gold) 85%, white);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--gold) 65%, transparent);
+  animation: ringIn .7s cubic-bezier(.4, 0, .2, 1) both;
+}
+@keyframes ringIn {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+  45% { opacity: .85; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+}
+
+@media (prefers-reduced-motion: reduce) { .wrap { display: none; } }

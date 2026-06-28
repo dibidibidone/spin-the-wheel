@@ -79,7 +79,7 @@ export function useSpinScene({ reduced, sound, conversion, winningIndex = 7, win
 
   useEffect(() => {
     if (status !== "won") { dispatch({ type: "reset" }); return; }
-    const t = setTimeout(() => dispatch({ type: "won" }), reduced ? 0 : 1100);
+    const t = setTimeout(() => dispatch({ type: "won" }), reduced ? 0 : 1900);
     return () => clearTimeout(t);
   }, [status, reduced]);
 
