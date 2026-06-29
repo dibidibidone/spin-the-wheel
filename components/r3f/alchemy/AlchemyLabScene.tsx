@@ -34,7 +34,12 @@ export function AlchemyLabScene({ config }: { config?: LandingSceneConfig } = {}
   const sound = useMemo(() => createSound(alchemySound), []);
   const conversion = config?.conversion ?? alchemyConversion;
   const copy = config?.copy ? { ...alchemyCopy, ...config.copy } : alchemyCopy;
-  const segments = config?.segments ?? alchemyWheel.labels.map((label, i) => ({ label, color: alchemyWheel.segmentColors[i] }));
+  // Memoize: a new array identity here makes Wheel3D rebuild its 1024² label texture + all
+  // extruded wedge geometry on every re-render — which, on the win re-render, froze the BOOM.
+  const segments = useMemo(
+    () => config?.segments ?? alchemyWheel.labels.map((label, i) => ({ label, color: alchemyWheel.segmentColors[i] })),
+    [config?.segments]
+  );
   const winningIndex = config?.winningIndex ?? alchemyWheel.jackpotIndex;
   const pwa = usePwaInstall();
   const prompted = useRef(false);

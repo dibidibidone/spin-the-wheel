@@ -32,7 +32,12 @@ export function JackpotVaultScene({ config }: { config?: LandingSceneConfig } = 
   const sound = useMemo(() => createSound(jackpotSound), []);
   const conversion = config?.conversion ?? jackpotConversion;
   const copy = config?.copy ? { ...jackpotCopy, ...config.copy } : jackpotCopy;
-  const segments = config?.segments ?? jackpotWheel.labels.map((label, i) => ({ label, color: jackpotWheel.segmentColors[i] }));
+  // Memoize: a new array identity here makes Wheel3D rebuild its 1024² label texture + all
+  // extruded wedge geometry on every re-render — which, on the win re-render, froze the BOOM.
+  const segments = useMemo(
+    () => config?.segments ?? jackpotWheel.labels.map((label, i) => ({ label, color: jackpotWheel.segmentColors[i] })),
+    [config?.segments]
+  );
   const winningIndex = config?.winningIndex ?? jackpotWheel.jackpotIndex;
   const pwa = usePwaInstall();
   const prompted = useRef(false);
