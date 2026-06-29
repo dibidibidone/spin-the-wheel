@@ -48,6 +48,7 @@ export const gatesTheme: SlotTheme = {
     [2, 2], [4, 4],                                                  // ×100 + ×500 orbs
   ],
   durationMs: 2800,
+  winDurationMs: 7500, // win drags out and settles slowly (a touch quicker than the 3D wheels)
   cabinet: { frame: "#241a52", glass: "#120c2e", glow: "#4a39a0", accent: "#FFD56A" },
 };
 

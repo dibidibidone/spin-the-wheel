@@ -2,11 +2,18 @@ import { easeOutQuint, targetRotationDeg } from "./spinMath";
 
 export type SpinStatus = "idle" | "spinning" | "nearmiss" | "won";
 
+// easeOutQuint leaves a long, imperceptible "dead creep" near the end (the wheel is within a
+// hair of the target while elapsed crawls to the full duration). Once the remaining rotation is
+// under this many degrees the wheel *looks* stopped, so we land it — and fire the BOOM — then,
+// instead of waiting out the dead tail.
+const SETTLED_DEG = 0.5;
+
 export function createSpinController(
   {
     winningIndex = 7,
     winOnSpin = 1,
     durationMs = 4500,
+    winDurationMs = durationMs,
     turns = 6,
     segments = 8,
     nearMissIndex,
@@ -14,6 +21,7 @@ export function createSpinController(
     winningIndex?: number;
     winOnSpin?: number;
     durationMs?: number;
+    winDurationMs?: number; // win spin runs longer than a near-miss for a drawn-out final creep
     turns?: number;
     segments?: number;
     nearMissIndex?: number;
@@ -33,6 +41,7 @@ export function createSpinController(
   let spinCount = 0;
   let winning = false;
   let target = winTarget;
+  let duration = durationMs; // active spin's duration (the win runs longer than a near-miss)
 
   return {
     start() {
@@ -40,14 +49,15 @@ export function createSpinController(
       spinCount += 1;
       winning = spinCount >= winOnSpin;
       target = winning ? winTarget : nearTarget;
+      duration = winning ? winDurationMs : durationMs;
       status = "spinning";
       elapsed = 0;
     },
     update(dtMs: number) {
       if (status !== "spinning") return;
-      elapsed = Math.min(elapsed + dtMs, durationMs);
-      rotation = easeOutQuint(elapsed / durationMs) * target;
-      if (elapsed >= durationMs) {
+      elapsed = Math.min(elapsed + dtMs, duration);
+      rotation = easeOutQuint(elapsed / duration) * target;
+      if (elapsed >= duration || target - rotation <= SETTLED_DEG) {
         rotation = target;
         status = winning ? "won" : "nearmiss";
       }
@@ -59,6 +69,7 @@ export function createSpinController(
       spinCount = 0;
       winning = false;
       target = winTarget;
+      duration = durationMs;
     },
     get status() { return status; },
     get rotation() { return rotation; },

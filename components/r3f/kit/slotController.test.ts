@@ -65,3 +65,33 @@ describe("createSlotController", () => {
     expect(c.strips.map((s) => s.slice(-3))).not.toEqual(winGrid); // reset rebuilds neutral strips, not the win grid
   });
 });
+
+describe("createSlotController — win spin is slower in the end", () => {
+  it("runs the win for winDurationMs while a near-miss settles by durationMs", () => {
+    const c = createSlotController({ reels: 3, rows: 3, pool, nearMissGrid, winGrid, winOnSpin: 2, durationMs: 1000, winDurationMs: 4000, spinRows: 10 });
+    c.start();
+    c.update(1000); // near-miss: last reel stops at durationMs
+    expect(c.status).toBe("nearmiss");
+
+    c.start();
+    c.update(1000); // win: last reel stops at winDurationMs (4000), so still spinning here
+    expect(c.status).toBe("spinning");
+    c.update(3000); // total 4000
+    expect(c.status).toBe("won");
+  });
+
+  it("scales the win spin distance so the longer spin keeps a believable scroll speed", () => {
+    const c = createSlotController({ reels: 3, rows: 3, pool, nearMissGrid, winGrid, winOnSpin: 1, durationMs: 1000, winDurationMs: 4000, spinRows: 10 });
+    c.start(); // spin 1 is the win (winOnSpin 1)
+    expect(c.spinRows).toBe(40);              // 10 * 4000/1000
+    expect(c.strips[0]).toHaveLength(40 + 3); // scaled filler + rows
+  });
+
+  it("defaults winDurationMs to durationMs (near-miss timing unchanged)", () => {
+    const c = make(); // no winDurationMs
+    c.start(); settle(c);   // near-miss
+    c.start(); c.update(1000); // win settles by durationMs when winDurationMs omitted
+    expect(c.status).toBe("won");
+    expect(c.spinRows).toBe(10);
+  });
+});

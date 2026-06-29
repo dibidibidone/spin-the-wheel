@@ -73,7 +73,13 @@ export function useSpinScene({ reduced, sound, conversion, winningIndex = 7, win
   const go = navigate ?? ((url: string) => { if (typeof window !== "undefined") window.location.assign(url); });
 
   const controller = useMemo(
-    () => createSpinController({ winningIndex, winOnSpin, segments: segmentCount ?? 8, durationMs: reduced ? 250 : 5200, turns: reduced ? 0 : 7 }),
+    () => createSpinController({
+      winningIndex, winOnSpin, segments: segmentCount ?? 8,
+      // A near-miss already creeps; the win drags the final approach out much longer for suspense.
+      durationMs: reduced ? 250 : 6200,
+      winDurationMs: reduced ? 250 : 9000,
+      turns: reduced ? 0 : 7,
+    }),
     [reduced, winningIndex, winOnSpin, segmentCount]
   );
 

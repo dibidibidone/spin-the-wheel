@@ -74,5 +74,6 @@ export type SlotTheme = {
   winningCells: SlotCell[]; // cells forming the win; lit on `won`, others dimmed
   winLineRow?: number;      // optional payline row (Book of Ra draws a line across it)
   durationMs: number;
+  winDurationMs?: number;   // win spin runs longer with a slow settle (defaults to durationMs)
   cabinet: { frame: string; glass: string; glow: string; accent: string };
 };

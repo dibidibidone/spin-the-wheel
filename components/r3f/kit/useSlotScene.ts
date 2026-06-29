@@ -33,8 +33,9 @@ export function useSlotScene({ reduced, sound, theme, conversion, onClaim, navig
       winGrid: theme.winGrid,
       winOnSpin: theme.winOnSpin,
       durationMs: reduced ? 350 : theme.durationMs,
+      winDurationMs: reduced ? 350 : (theme.winDurationMs ?? theme.durationMs),
     }),
-    [theme.reels, theme.rows, theme.symbols, theme.nearMissGrid, theme.winGrid, theme.winOnSpin, theme.durationMs, reduced]
+    [theme.reels, theme.rows, theme.symbols, theme.nearMissGrid, theme.winGrid, theme.winOnSpin, theme.durationMs, theme.winDurationMs, reduced]
   );
 
   useEffect(() => {

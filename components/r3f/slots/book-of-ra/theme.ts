@@ -42,6 +42,7 @@ export const bookOfRaTheme: SlotTheme = {
   winningCells: [[0, 1], [1, 1], [2, 1], [3, 1], [4, 1]],
   winLineRow: 1,
   durationMs: 2600,
+  winDurationMs: 7500, // win drags out and settles slowly (a touch quicker than the 3D wheels)
   cabinet: { frame: "#3a2410", glass: "#1c1206", glow: "#7a4a12", accent: "#C8881E" },
 };
 

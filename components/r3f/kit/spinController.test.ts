@@ -67,3 +67,43 @@ d3("createSpinController — win on Nth spin", () => {
     e3(c.status).toBe("won");
   });
 });
+
+d3("createSpinController — win spin is slower than the near-miss", () => {
+  i3("runs the win for winDurationMs and the near-miss for durationMs", () => {
+    const c = make({ winningIndex: 7, winOnSpin: 2, durationMs: 1000, winDurationMs: 3000, turns: 1 });
+    // spin 1 is a near-miss: it lands after the (shorter) near-miss duration.
+    c.start();
+    c.update(1000);
+    e3(c.status).toBe("nearmiss");
+    // spin 2 is the win: at the near-miss duration it is still creeping, not landed.
+    c.start();
+    c.update(1000);
+    e3(c.status).toBe("spinning");
+    c.update(2000); // total 3000 >= winDurationMs
+    e3(c.status).toBe("won");
+  });
+
+  i3("defaults winDurationMs to durationMs (backward compatible)", () => {
+    const c = make({ winOnSpin: 1, durationMs: 500, turns: 1 });
+    c.start();
+    c.update(500);
+    e3(c.status).toBe("won");
+  });
+});
+
+d3("createSpinController — BOOM fires as soon as the wheel has effectively stopped", () => {
+  i3("lands before the full duration once it has settled onto the target (no dead creep)", () => {
+    const c = make({ winningIndex: 7, winOnSpin: 1, durationMs: 10000, turns: 7 });
+    c.start();
+    c.update(8500); // 85% in: easeOutQuint is already within a fraction of a degree of target
+    e3(c.status).toBe("won");                 // BOOM now, not at the full 10000ms
+    e3(c.rotation).toBeCloseTo(c.target, 5);  // snapped exactly onto the winning segment
+  });
+
+  i3("still spins while the wheel is visibly moving", () => {
+    const c = make({ winningIndex: 7, winOnSpin: 1, durationMs: 10000, turns: 7 });
+    c.start();
+    c.update(5000); // halfway: still a long way (many degrees) from target
+    e3(c.status).toBe("spinning");
+  });
+});
