@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createSpinController } from "./spinController";
-import { targetRotationDeg } from "./spinMath";
+import { segmentUnderPointer } from "./spinMath";
 
 describe("createSpinController", () => {
   it("starts idle at rotation 0", () => {
@@ -18,7 +18,8 @@ describe("createSpinController", () => {
     expect(c.rotation).toBeGreaterThan(0);
     c.update(600); // total 1100 >= 1000
     expect(c.status).toBe("won");
-    expect(c.rotation).toBeCloseTo(targetRotationDeg(7, 8, 6), 5);
+    expect(c.rotation).toBeCloseTo(c.target, 5);
+    expect(segmentUnderPointer(c.rotation, 8)).toBe(7); // lands barely inside the winning segment
   });
 
   it("ignores start() while spinning and update() while idle/won", () => {
@@ -52,6 +53,7 @@ d3("createSpinController — win on Nth spin", () => {
     c.start();
     c.update(100);
     e3(c.status).toBe("nearmiss");
+    e3(segmentUnderPointer(c.rotation, 8)).toBe(0); // stops on the near-miss segment (winningIndex+1), just short
     c.start(); // allowed from nearmiss
     c.update(100);
     e3(c.status).toBe("won");

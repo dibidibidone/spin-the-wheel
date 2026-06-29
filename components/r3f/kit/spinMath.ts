@@ -13,10 +13,15 @@ export function easeOutQuint(t: number): number {
   return 1 - Math.pow(1 - c, 5);
 }
 
-export function targetRotationDeg(winningIndex: number, segments = 8, turns = 6): number {
+// landFraction = where across the target segment the pointer comes to rest, measured from
+// the segment's lower edge (0 = lower edge, 0.5 = center, 1 = upper edge). The wheel
+// decelerates from higher rest-angles, so a value near 1 means it creeps in across the upper
+// edge and stops *barely* inside; a value near 0 means it stops *just short* of crossing the
+// lower edge. Both still resolve to `winningIndex` under the pointer.
+export function targetRotationDeg(winningIndex: number, segments = 8, turns = 6, landFraction = 0.5): number {
   const seg = 360 / segments;
-  const center = winningIndex * seg + seg / 2; // rest clock angle of the segment center
-  const base = (((-center) % 360) + 360) % 360; // clockwise rotation that brings it to the top
+  const land = winningIndex * seg + landFraction * seg; // rest clock angle of the landing point
+  const base = (((-land) % 360) + 360) % 360; // clockwise rotation that brings it to the top
   return 360 * turns + base;
 }
 

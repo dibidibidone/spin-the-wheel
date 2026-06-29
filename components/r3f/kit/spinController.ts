@@ -20,8 +20,12 @@ export function createSpinController(
   } = {}
 ) {
   const nearIdx = nearMissIndex ?? (winningIndex + 1) % segments;
-  const winTarget = targetRotationDeg(winningIndex, segments, turns);
-  const nearTarget = targetRotationDeg(nearIdx, segments, turns);
+  // The wheel decelerates from higher rest-angles, so the pointer enters each segment across
+  // its upper edge. Land the win at 0.95 — it creeps in *barely* (5% past the edge), looking
+  // like it'll stop in the next segment until the last moment. Land the near-miss at 0.05 —
+  // it creeps all the way down to the win boundary and stops just short ("so close!").
+  const winTarget = targetRotationDeg(winningIndex, segments, turns, 0.95);
+  const nearTarget = targetRotationDeg(nearIdx, segments, turns, 0.05);
 
   let status: SpinStatus = "idle";
   let elapsed = 0;
