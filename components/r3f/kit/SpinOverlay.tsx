@@ -9,7 +9,6 @@ import { WinBurst } from "./WinBurst";
 import { LossBurst } from "./LossBurst";
 import { SocialProof } from "./SocialProof";
 import { Countdown } from "./Countdown";
-import { TrustBar } from "./TrustBar";
 import { OfferBanner } from "./OfferBanner";
 import { ScarcityLine } from "./ScarcityLine";
 import { LiveCounter } from "./LiveCounter";
@@ -93,7 +92,6 @@ export function SpinOverlay({
         {status === "idle" && <SpinCoach show={coach} />}
         {status === "nearmiss" && copy.nearMissLine && <p className={css.retryHint} data-pe>{copy.nearMissLine}</p>}
         <LiveCounter reduced={reduced} />
-        <TrustBar text={config.trust} />
       </div>
 
       {status === "nearmiss" && <LossBurst text={copy.almostText ?? ""} />}

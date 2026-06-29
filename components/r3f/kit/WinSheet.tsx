@@ -4,7 +4,6 @@ import type { OverlayCopy, ConversionConfig } from "./types";
 import type { ClaimStep } from "./claimMachine";
 import { Countdown } from "./Countdown";
 import { SocialProof } from "./SocialProof";
-import { TrustBar } from "./TrustBar";
 import css from "./winSheet.module.css";
 
 export function WinSheet({ step, copy, config, reduced, logoSrc, onOpen, onSubmit, onDismiss }: {
@@ -62,7 +61,6 @@ export function WinSheet({ step, copy, config, reduced, logoSrc, onOpen, onSubmi
 
         <div className={css.footer}>
           <SocialProof winners={config.social.winners} todayCount={config.social.todayCount} reduced={reduced} />
-          <TrustBar text={config.trust} />
         </div>
       </div>
     </div>
