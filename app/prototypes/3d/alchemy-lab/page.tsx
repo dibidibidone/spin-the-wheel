@@ -1,20 +1,10 @@
 "use client";
 import dynamic from "next/dynamic";
+import { SceneLoader } from "@/components/r3f/kit/SceneLoader";
 
 const AlchemyLabScene = dynamic(
   () => import("@/components/r3f/alchemy/AlchemyLabScene").then((m) => m.AlchemyLabScene),
-  {
-    ssr: false,
-    loading: () => (
-      <div style={{
-        position: "fixed", inset: 0, display: "grid", placeItems: "center",
-        background: "#0A1A14", color: "#8BFF5A", fontFamily: "system-ui, sans-serif",
-        fontWeight: 800, letterSpacing: "2px",
-      }}>
-        BREWING THE LAB…
-      </div>
-    ),
-  }
+  { ssr: false, loading: () => <SceneLoader label="Brewing the Lab" accent="#8BFF5A" bg="#0A1A14" /> }
 );
 
 export default function Page() {

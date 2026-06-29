@@ -1,0 +1,61 @@
+.wrap {
+  position: fixed; inset: 0; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+  background: radial-gradient(125% 90% at 50% 32%, color-mix(in srgb, var(--ld-accent) 12%, var(--ld-bg)) 0%, var(--ld-bg) 72%);
+  color: var(--ld-accent); font-family: system-ui, sans-serif;
+}
+
+/* iGaming spinning prize wheel: a conic 8-wedge disc that spins, with a fixed pointer + hub. */
+.wheel {
+  position: relative; width: 104px; height: 104px; border-radius: 50%;
+  background: conic-gradient(from -22.5deg,
+    var(--ld-accent) 0 45deg, color-mix(in srgb, var(--ld-accent) 26%, #000) 45deg 90deg,
+    var(--ld-accent) 90deg 135deg, color-mix(in srgb, var(--ld-accent) 26%, #000) 135deg 180deg,
+    var(--ld-accent) 180deg 225deg, color-mix(in srgb, var(--ld-accent) 26%, #000) 225deg 270deg,
+    var(--ld-accent) 270deg 315deg, color-mix(in srgb, var(--ld-accent) 26%, #000) 315deg 360deg);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ld-accent) 55%, transparent),
+    0 0 36px color-mix(in srgb, var(--ld-accent) 45%, transparent);
+  animation: ld-spin 1.15s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+.wheel::after { /* hub */
+  content: ""; position: absolute; inset: 37%; border-radius: 50%;
+  background: var(--ld-bg); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ld-accent) 70%, transparent);
+}
+.pointer {
+  position: absolute; top: -11px; left: 50%; transform: translateX(-50%); z-index: 1;
+  border-left: 8px solid transparent; border-right: 8px solid transparent;
+  border-top: 13px solid var(--ld-accent);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--ld-accent) 75%, transparent));
+}
+
+.label {
+  font-weight: 800; letter-spacing: 2.5px; font-size: 13px; text-transform: uppercase;
+  text-shadow: 0 0 16px color-mix(in srgb, var(--ld-accent) 50%, transparent);
+}
+
+/* Progress bar: a determinate-looking fill that ramps toward "almost there", with a sheen. */
+.bar {
+  position: relative; width: min(240px, 64vw); height: 6px; border-radius: 999px; overflow: hidden;
+  background: color-mix(in srgb, var(--ld-accent) 14%, rgba(0, 0, 0, 0.45));
+}
+.fill {
+  position: absolute; inset: 0 auto 0 0; width: 6%; border-radius: 999px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--ld-accent) 65%, #C8881E), var(--ld-accent));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--ld-accent) 60%, transparent);
+  animation: ld-fill 2.6s cubic-bezier(0.18, 0.7, 0.16, 1) forwards;
+}
+.fill::after {
+  content: ""; position: absolute; inset: 0; border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: ld-sheen 1.1s linear infinite;
+}
+
+@keyframes ld-spin { to { transform: rotate(360deg); } }
+@keyframes ld-fill { from { width: 6%; } to { width: 92%; } }
+@keyframes ld-sheen { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel { animation: none; }
+  .fill { animation: none; width: 90%; }
+  .fill::after { display: none; }
+}
