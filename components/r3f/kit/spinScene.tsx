@@ -73,13 +73,13 @@ export function useSpinScene({ reduced, sound, conversion, winningIndex = 7, win
   const go = navigate ?? ((url: string) => { if (typeof window !== "undefined") window.location.assign(url); });
 
   const controller = useMemo(
-    () => createSpinController({ winningIndex, winOnSpin, segments: segmentCount ?? 8, durationMs: reduced ? 250 : 4500, turns: reduced ? 0 : 6 }),
+    () => createSpinController({ winningIndex, winOnSpin, segments: segmentCount ?? 8, durationMs: reduced ? 250 : 5200, turns: reduced ? 0 : 7 }),
     [reduced, winningIndex, winOnSpin, segmentCount]
   );
 
   useEffect(() => {
     if (status !== "won") { dispatch({ type: "reset" }); return; }
-    const t = setTimeout(() => dispatch({ type: "won" }), reduced ? 0 : 1900);
+    const t = setTimeout(() => dispatch({ type: "won" }), reduced ? 0 : 1300);
     return () => clearTimeout(t);
   }, [status, reduced]);
 

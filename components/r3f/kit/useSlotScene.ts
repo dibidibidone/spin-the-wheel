@@ -39,7 +39,7 @@ export function useSlotScene({ reduced, sound, theme, conversion, onClaim, navig
 
   useEffect(() => {
     if (status !== "won") { dispatch({ type: "reset" }); return; }
-    const t = setTimeout(() => dispatch({ type: "won" }), reduced ? 0 : 1900);
+    const t = setTimeout(() => dispatch({ type: "won" }), reduced ? 0 : 1300);
     return () => clearTimeout(t);
   }, [status, reduced]);
 

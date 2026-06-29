@@ -1,4 +1,4 @@
-import { easeOutCubic, targetRotationDeg } from "./spinMath";
+import { easeOutQuint, targetRotationDeg } from "./spinMath";
 
 export type SpinStatus = "idle" | "spinning" | "nearmiss" | "won";
 
@@ -42,7 +42,7 @@ export function createSpinController(
     update(dtMs: number) {
       if (status !== "spinning") return;
       elapsed = Math.min(elapsed + dtMs, durationMs);
-      rotation = easeOutCubic(elapsed / durationMs) * target;
+      rotation = easeOutQuint(elapsed / durationMs) * target;
       if (elapsed >= durationMs) {
         rotation = target;
         status = winning ? "won" : "nearmiss";

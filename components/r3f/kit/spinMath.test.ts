@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { targetRotationDeg, segmentUnderPointer, easeOutCubic } from "./spinMath";
+import { targetRotationDeg, segmentUnderPointer, easeOutCubic, easeOutQuint } from "./spinMath";
 
 describe("spinMath", () => {
   it("lands the winning segment under the top pointer", () => {
@@ -23,5 +23,13 @@ describe("spinMath", () => {
     expect(easeOutCubic(0)).toBeCloseTo(0, 5);
     expect(easeOutCubic(1)).toBeCloseTo(1, 5);
     expect(easeOutCubic(0.5)).toBeGreaterThan(0.5);
+  });
+
+  it("easeOutQuint decelerates harder than cubic (a longer slow creep to the win)", () => {
+    expect(easeOutQuint(0)).toBeCloseTo(0, 5);
+    expect(easeOutQuint(1)).toBeCloseTo(1, 5);
+    // by mid-spin it's already nearly there, then creeps the rest — stronger than cubic
+    expect(easeOutQuint(0.5)).toBeGreaterThan(easeOutCubic(0.5));
+    expect(easeOutQuint(0.8)).toBeGreaterThan(0.99);
   });
 });

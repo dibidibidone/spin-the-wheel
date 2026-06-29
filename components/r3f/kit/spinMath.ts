@@ -6,6 +6,13 @@ export function easeOutCubic(t: number): number {
   return 1 - Math.pow(1 - c, 3);
 }
 
+// Stronger deceleration for the wheel: it rushes early then creeps slowly onto the
+// winning segment for a suspenseful final approach before the win.
+export function easeOutQuint(t: number): number {
+  const c = Math.min(Math.max(t, 0), 1);
+  return 1 - Math.pow(1 - c, 5);
+}
+
 export function targetRotationDeg(winningIndex: number, segments = 8, turns = 6): number {
   const seg = 360 / segments;
   const center = winningIndex * seg + seg / 2; // rest clock angle of the segment center
