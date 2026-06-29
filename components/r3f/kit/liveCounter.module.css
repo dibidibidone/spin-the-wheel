@@ -1,0 +1,18 @@
+.live {
+  margin: 6px 0 0; display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.3px;
+  color: color-mix(in srgb, var(--text) 84%, var(--gold) 16%);
+  font-variant-numeric: tabular-nums;
+}
+.live b { color: var(--gold); font-size: 1.08em; text-shadow: 0 0 10px color-mix(in srgb, var(--gold) 40%, transparent); }
+.dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #25D366; flex: none;
+  box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6);
+  animation: livepulse 1.7s ease-out infinite;
+}
+@keyframes livepulse {
+  0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
+  70% { box-shadow: 0 0 0 7px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }

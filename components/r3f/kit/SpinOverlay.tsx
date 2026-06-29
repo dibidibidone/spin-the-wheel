@@ -12,6 +12,7 @@ import { Countdown } from "./Countdown";
 import { TrustBar } from "./TrustBar";
 import { OfferBanner } from "./OfferBanner";
 import { ScarcityLine } from "./ScarcityLine";
+import { LiveCounter } from "./LiveCounter";
 import { SpinCoach } from "./SpinCoach";
 import { ExitIntent } from "./ExitIntent";
 import { useExitIntent } from "./useExitIntent";
@@ -91,6 +92,7 @@ export function SpinOverlay({
         </button>
         {status === "idle" && <SpinCoach show={coach} />}
         {status === "nearmiss" && copy.nearMissLine && <p className={css.retryHint} data-pe>{copy.nearMissLine}</p>}
+        <LiveCounter reduced={reduced} />
         <TrustBar text={config.trust} />
       </div>
 
