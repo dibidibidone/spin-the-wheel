@@ -74,14 +74,13 @@ export function SpinOverlay({
         {copy.subBanner && <div className={css.banner}>{copy.subBanner}</div>}
       </div>
 
-      {/* Countdown floats centered just above the wheel/slot, not on the button. */}
-      <div className={css.gameTimer}>
-        <Countdown durationMs={config.urgencyMs} storageKey="stw-claim-deadline" />
-      </div>
-
       <div className={css.dock}>
         <SocialProof winners={config.social.winners} todayCount={config.social.todayCount} reduced={reduced} part="winner" />
         {config.scarcity && <ScarcityLine total={config.scarcity.total} />}
+        {/* Urgency timer sits in the control cluster (over the dock scrim), not floating over the game. */}
+        <div className={css.dockTimer}>
+          <Countdown durationMs={config.urgencyMs} storageKey="stw-claim-deadline" />
+        </div>
         {spinsLeft != null && (status === "idle" || status === "nearmiss") && (
           <p className={css.spinsLeft} data-testid="spins-left">
             🎯 <b>{spinsLeft}</b> {spinsLeft === 1 ? "spin" : "spins"} left

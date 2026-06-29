@@ -87,8 +87,9 @@ describe("SpinOverlay conversion redesign", () => {
     expect(screen.getByTestId("offer-banner")).toHaveTextContent("Win up to €500");
     expect(screen.getByTestId("scarcity-line")).toHaveTextContent(/of 30 bonuses left/i);
   });
-  it("floats the countdown over the game (centered), not on the CTA row", () => {
+  it("docks the countdown in the control cluster, not floating over the game", () => {
     renderAt("idle", 2);
-    expect(screen.getByTestId("countdown").closest('[class*="gameTimer"]')).not.toBeNull();
+    expect(screen.getByTestId("countdown").closest('[class*="dockTimer"]')).not.toBeNull();
+    expect(screen.getByTestId("countdown").closest('[class*="gameTimer"]')).toBeNull();
   });
 });

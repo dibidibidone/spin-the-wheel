@@ -61,8 +61,8 @@
 /* Live metrics sit at the top of the hero, above the offer headline. */
 .liveStrip { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 10px; }
 
-/* Countdown floats centered over the wheel/slot (between the hero and the game). */
-.gameTimer { position: absolute; left: 0; right: 0; top: 31%; display: flex; justify-content: center; padding: 0 16px; }
+/* Urgency countdown, docked just above the spins-left/CTA cluster (no longer floating over the game). */
+.dockTimer { display: flex; justify-content: center; margin: 2px 0; }
 
 .retryHint { margin: 4px 0 0; font-weight: 700; font-size: 14px; color: var(--gold);
   text-shadow: 0 0 12px color-mix(in srgb, var(--gold) 50%, transparent); }
