@@ -33,3 +33,25 @@ export async function uploadFile(file: File): Promise<{ url: string }> {
   }
   return res.json() as Promise<{ url: string }>;
 }
+
+export async function suggestDomains(keyword: string): Promise<{ candidates: { name: string; available: boolean; priceUsd: number }[] }> {
+  const res = await fetch(`/api/admin/domains/suggest?keyword=${encodeURIComponent(keyword)}`);
+  if (!res.ok) throw new Error((await res.json()).error ?? "suggest failed");
+  return res.json();
+}
+export async function buyDomain(landingId: string, hostname: string): Promise<{ domainId: string; status: string }> {
+  const res = await fetch("/api/admin/domains/buy", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ landingId, hostname }) });
+  if (!res.ok) throw new Error((await res.json()).error ?? "buy failed");
+  return res.json();
+}
+export async function rotateDomain(landingId: string, hostname: string): Promise<{ domainId: string }> {
+  const res = await fetch("/api/admin/domains/rotate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ landingId, hostname }) });
+  if (!res.ok) throw new Error((await res.json()).error ?? "rotate failed");
+  return res.json();
+}
+export async function flagDomain(id: string, reason: string): Promise<void> {
+  await fetch(`/api/admin/domains/${id}/flag`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason }) });
+}
+export async function retryDomain(id: string): Promise<void> {
+  await fetch(`/api/admin/domains/${id}/retry`, { method: "POST" });
+}
