@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import type { Providers } from "@/lib/providers/types";
 import { nextStep } from "./lifecycle";
 import type { DomainStatus } from "./status";
+import { isTerminal } from "./status";
 
 export async function purchaseDomainForLanding(
   _providers: Providers, landingId: string, hostname: string,
@@ -60,4 +61,35 @@ export async function advanceDomain(providers: Providers, domainId: string): Pro
 async function persist(id: string, data: Record<string, unknown>): Promise<DomainStatus> {
   const row = await prisma.domain.update({ where: { id }, data });
   return row.status as DomainStatus;
+}
+
+export async function flagDomain(domainId: string, reason: string): Promise<void> {
+  await prisma.domain.update({ where: { id: domainId }, data: { status: "flagged", statusReason: reason } });
+}
+
+export async function retireDomain(providers: Providers, domainId: string): Promise<void> {
+  const d = await prisma.domain.findUnique({ where: { id: domainId } });
+  if (!d) return;
+  await prisma.domain.update({ where: { id: domainId }, data: { status: "retiring" } });
+  if (d.edgeZoneId) await providers.edge.deleteZone(d.edgeZoneId).catch(() => {});
+  await providers.origin.detach(d.hostname).catch(() => {});
+  await prisma.domain.update({ where: { id: domainId }, data: { status: "retired", retiredAt: new Date() } });
+}
+
+// Zero-downtime swap: the old domain keeps serving until the new one is fully live.
+export async function rotateDomain(providers: Providers, landingId: string, newHostname: string): Promise<string> {
+  const newId = await purchaseDomainForLanding(providers, landingId, newHostname);
+  // Drive to a terminal status (live or failed). Bounded by the number of lifecycle steps.
+  for (let i = 0; i < 6; i++) {
+    const status = await advanceDomain(providers, newId);
+    if (isTerminal(status)) break;
+  }
+  const fresh = await prisma.domain.findUnique({ where: { id: newId } });
+  if (fresh?.status !== "live") throw new Error(`Rotation failed: new domain ${newHostname} is ${fresh?.status}`);
+
+  const landing = await prisma.landing.findUnique({ where: { id: landingId } });
+  const oldPrimaryId = landing?.primaryDomainId ?? null;
+  await prisma.landing.update({ where: { id: landingId }, data: { primaryDomainId: newId } });
+  if (oldPrimaryId && oldPrimaryId !== newId) await retireDomain(providers, oldPrimaryId);
+  return newId;
 }
