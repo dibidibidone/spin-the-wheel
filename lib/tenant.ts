@@ -12,6 +12,7 @@ type LandingRow = {
   spinsBeforeWin: number; redirectUrl: string; redirectPrizeParam: string | null;
   metaTitle: string | null; metaDescription: string | null;
   template: string; pwaName: string; pwaIconUrl: string | null;
+  fbPixelIds: string[];
   winText: string;
   winningPrizeId: string | null;
   winningPrize: PrizeRow | null;
@@ -49,6 +50,7 @@ export function toLandingView(landing: LandingRow): LandingView {
     template: landing.template,
     pwaName: landing.pwaName,
     pwaIconUrl: landing.pwaIconUrl,
+    fbPixelIds: landing.fbPixelIds,
   };
 }
 

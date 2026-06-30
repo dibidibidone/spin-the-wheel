@@ -17,6 +17,7 @@ const base: LandingView = {
   winText: "",
   bonusesTotal: 0,
   countdownMinutes: 10, atmosphere: "normal",
+  fbPixelIds: [],
 };
 
 describe("buildMetadata", () => {

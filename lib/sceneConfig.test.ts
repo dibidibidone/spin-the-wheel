@@ -20,6 +20,7 @@ const view: LandingView = {
   template: "jackpot-vault",
   pwaName: "Lucky App",
   pwaIconUrl: "https://cdn.example.com/icon.png",
+  fbPixelIds: [],
 };
 
 describe("buildSceneConfig", () => {

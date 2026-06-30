@@ -59,4 +59,5 @@ export type LandingView = {
   template: string;
   pwaName: string;
   pwaIconUrl: string | null;
+  fbPixelIds: string[];
 };

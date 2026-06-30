@@ -24,6 +24,7 @@ model Landing {
 
   pwaName            String   @default("")
   pwaIconUrl         String?
+  fbPixelIds         String[] @default([])
   winText            String   @default("")
   offerHeadline    String  @default("")
   offerSubline     String  @default("")

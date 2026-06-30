@@ -33,6 +33,7 @@ function view(): LandingView {
     winText: "",
     bonusesTotal: 30,
     countdownMinutes: 10, atmosphere: "normal",
+    fbPixelIds: [],
   };
 }
 

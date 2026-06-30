@@ -13,6 +13,7 @@ const row = () => ({
   logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
   spinsBeforeWin: 2, redirectUrl: "/go", redirectPrizeParam: null,
   metaTitle: null, metaDescription: null, template: "classic-2d", pwaName: "", pwaIconUrl: null, winText: "",
+  fbPixelIds: ["111111111111", "222222222222"],
   winningPrizeId: null, winningPrize: null, prizes: [],
 });
 
@@ -23,6 +24,11 @@ describe("toLandingView conversion fields", () => {
     expect(v.texts.offerSubline).toBe("+ 200 Free Spins");
     expect(v.bonusesTotal).toBe(50);
     expect(v.countdownMinutes).toBe(7);
+  });
+
+  it("threads fbPixelIds into the view", () => {
+    const v = toLandingViewDirect(row());
+    expect(v.fbPixelIds).toEqual(["111111111111", "222222222222"]);
   });
 });
 // ---------------------------------------------------------------------------
@@ -55,6 +61,7 @@ function fakeLanding(overrides: Record<string, unknown> = {}) {
     winningPrizeId: "p1",
     winningPrize: prizes[1],
     prizes,
+    fbPixelIds: [],
     ...overrides,
   };
 }
