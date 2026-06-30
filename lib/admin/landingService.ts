@@ -144,6 +144,7 @@ export async function getEditableLanding(id: string): Promise<EditableLanding | 
     template: l.template,
     pwaName: l.pwaName,
     pwaIconUrl: l.pwaIconUrl,
+    fbPixelIds: l.fbPixelIds,
     theme: l.theme as ThemeColors,
     logoUrl: l.logoUrl,
     faviconUrl: l.faviconUrl,

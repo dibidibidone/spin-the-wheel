@@ -20,7 +20,7 @@ function landing(): EditableLanding {
     template: "classic-2d", pwaName: "App", pwaIconUrl: null, winText: "",
     offerHeadline: "", offerSubline: "", bonusesTotal: 0, countdownMinutes: 60, atmosphere: "normal",
     theme: { bg: "#0A1410", surface: "#13251A", accent: "#27C24C", gold: "#F5C24B", text: "#EAF6EE", muted: "#7FA88E" },
-    logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
+    logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null, fbPixelIds: [],
     spinsBeforeWin: 3, redirectUrl: "https://x.com", redirectPrizeParam: "bonus",
     metaTitle: null, metaDescription: null, winningPrizeId: "p1", prizes: [],
   };

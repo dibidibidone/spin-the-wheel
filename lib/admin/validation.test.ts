@@ -30,6 +30,13 @@ describe("parseLandingPatch", () => {
   it("rejects an invalid status", () => {
     expect(parseLandingPatch({ status: "live" }).ok).toBe(false);
   });
+
+  it("accepts numeric fbPixelIds and rejects non-numeric", () => {
+    const ok = parseLandingPatch({ fbPixelIds: ["123456789012345"] });
+    expect(ok.ok).toBe(true);
+    if (ok.ok) expect(ok.value.fbPixelIds).toEqual(["123456789012345"]);
+    expect(parseLandingPatch({ fbPixelIds: ["not-a-pixel"] }).ok).toBe(false);
+  });
 });
 
 describe("parseWheelInput", () => {

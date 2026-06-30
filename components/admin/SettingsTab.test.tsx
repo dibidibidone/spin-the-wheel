@@ -16,7 +16,7 @@ function landing(): EditableLanding {
     offerHeadline: "", offerSubline: "", bonusesTotal: 0, countdownMinutes: 60, atmosphere: "normal",
     template: "classic-2d", pwaName: "App", pwaIconUrl: null,
     theme: { bg: "#0A1410", surface: "#13251A", accent: "#27C24C", gold: "#F5C24B", text: "#EAF6EE", muted: "#7FA88E" },
-    logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null,
+    logoUrl: null, faviconUrl: null, coinImageUrl: null, bgImageUrl: null, fbPixelIds: [],
     spinsBeforeWin: 3, redirectUrl: "https://x.com", redirectPrizeParam: "bonus",
     metaTitle: null, metaDescription: null, winningPrizeId: "p1", prizes: [],
   };
@@ -41,7 +41,24 @@ describe("SettingsTab", () => {
       redirectUrl: "https://x.com",
       pwaName: "App",
       pwaIconUrl: null,
+      fbPixelIds: [],
     });
+  });
+});
+
+describe("SettingsTab — Facebook Pixels", () => {
+  it("shows the configured pixel IDs and saves edits as an array", async () => {
+    patchLanding.mockResolvedValue({ ok: true });
+    render(<SettingsTab landing={{ ...landing(), fbPixelIds: ["111111111111"] }} />);
+    const box = screen.getByLabelText("Facebook Pixels") as HTMLTextAreaElement;
+    expect(box.value).toBe("111111111111");
+    await userEvent.clear(box);
+    await userEvent.type(box, "111111111111{enter}222222222222");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(patchLanding).toHaveBeenCalledWith(
+      "l1",
+      expect.objectContaining({ fbPixelIds: ["111111111111", "222222222222"] }),
+    );
   });
 });
 

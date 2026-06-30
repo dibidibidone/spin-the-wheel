@@ -8,6 +8,9 @@ import type { EditableLanding } from "@/lib/admin/types";
 
 const TEMPLATES = ["classic-2d", "jackpot-vault", "alchemy-lab", "book-of-ra", "gates-of-olympus"] as const;
 
+const parsePixels = (raw: string): string[] =>
+  raw.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
+
 export function SettingsTab({ landing }: { landing: EditableLanding }) {
   const [name, setName] = useState(landing.name);
   const [slug, setSlug] = useState(landing.slug);
@@ -17,6 +20,7 @@ export function SettingsTab({ landing }: { landing: EditableLanding }) {
   const [redirectUrl, setRedirectUrl] = useState(landing.redirectUrl);
   const [pwaName, setPwaName] = useState(landing.pwaName);
   const [pwaIconUrl, setPwaIconUrl] = useState<string | null>(landing.pwaIconUrl);
+  const [fbPixelRaw, setFbPixelRaw] = useState<string>(landing.fbPixelIds.join("\n"));
   const [winText, setWinText] = useState(landing.winText);
   const [spinsBeforeWin, setSpins] = useState(landing.spinsBeforeWin);
   const [busy, setBusy] = useState(false);
@@ -41,7 +45,7 @@ export function SettingsTab({ landing }: { landing: EditableLanding }) {
     setMsg("");
     try {
       await patchLanding(landing.id, {
-        name, slug, status, template, logoUrl, redirectUrl, pwaName, pwaIconUrl,
+        name, slug, status, template, logoUrl, redirectUrl, pwaName, pwaIconUrl, fbPixelIds: parsePixels(fbPixelRaw),
         ...(isSlot ? { winText, spinsBeforeWin: Number(spinsBeforeWin) } : {}),
       });
       setMsg("Saved");
@@ -98,6 +102,18 @@ export function SettingsTab({ landing }: { landing: EditableLanding }) {
           <input type="file" accept="image/*" onChange={(e) => onUpload(setPwaIconUrl, e)} />
         </label>
         {pwaIconUrl && <img className="asset-preview" src={pwaIconUrl} alt="" />}
+        <label className="field">
+          <span>Facebook Pixels</span>
+          <textarea
+            value={fbPixelRaw}
+            onChange={(e) => setFbPixelRaw(e.target.value)}
+            rows={3}
+            placeholder="One pixel ID per line"
+          />
+        </label>
+        <small className="field-hint">
+          One Meta pixel ID per line. Fires PageView on the page and Lead when the installed app is opened.
+        </small>
       </fieldset>
 
       <div className="save-row">

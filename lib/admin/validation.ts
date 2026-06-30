@@ -47,6 +47,7 @@ const patchSchema = z
     template: z.enum(TEMPLATE_VALUES),
     pwaName: z.string(),
     pwaIconUrl: url.nullable(),
+    fbPixelIds: z.array(z.string().regex(/^\d{6,20}$/)),
     redirectUrl: url,
     winText: z.string(),
     offerHeadline: z.string().max(80).optional(),

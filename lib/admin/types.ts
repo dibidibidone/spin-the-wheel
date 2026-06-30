@@ -29,6 +29,7 @@ export type EditableLanding = {
   template: string;
   pwaName: string;
   pwaIconUrl: string | null;
+  fbPixelIds: string[];
   theme: ThemeColors;
   logoUrl: string | null;
   faviconUrl: string | null;
