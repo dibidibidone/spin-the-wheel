@@ -1,0 +1,41 @@
+name: E2E (nightly)
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: spinwheel
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/spinwheel
+      AUTH_SECRET: ci-dummy-secret-not-real
+      AUTH_TRUST_HOST: "true"
+      ADMIN_HOST: admin.localhost:3000
+      ADMIN_EMAIL: admin@boomzino.local
+      ADMIN_PASSWORD: ChangeMe!Dev123
+      BLOB_READ_WRITE_TOKEN: ""
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma db push --skip-generate
+      - run: npm run db:seed
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/e2e/admin.spec.ts tests/e2e/landing.spec.ts tests/e2e/mobileFunnel.spec.ts
+      - run: npx playwright test tests/e2e/jackpotVault3d.spec.ts tests/e2e/alchemyLab3d.spec.ts tests/e2e/prototypes.spec.ts
+      - run: npx playwright test tests/e2e/bookOfRa.spec.ts tests/e2e/gatesOfOlympus.spec.ts tests/e2e/templatePwa.spec.ts
