@@ -5,6 +5,7 @@ import { buildMetadata } from "./buildMetadata";
 import { buildSceneConfig } from "@/lib/sceneConfig";
 import { LandingScene } from "@/components/landing/LandingScene";
 import { TemplateScene } from "./TemplateScene.client";
+import { MetaPixel } from "@/components/analytics/MetaPixel";
 
 type Params = { params: Promise<{ domain: string }> };
 
@@ -18,6 +19,14 @@ export default async function LandingPage({ params }: Params) {
   const { domain } = await params;
   const view = await getLandingByHost(decodeURIComponent(domain));
   if (!view) notFound();
-  if (view.template === "classic-2d") return <LandingScene view={view} />;
-  return <TemplateScene template={view.template} config={buildSceneConfig(view)} />;
+  const scene =
+    view.template === "classic-2d"
+      ? <LandingScene view={view} />
+      : <TemplateScene template={view.template} config={buildSceneConfig(view)} />;
+  return (
+    <>
+      <MetaPixel pixelIds={view.fbPixelIds} />
+      {scene}
+    </>
+  );
 }
