@@ -18,7 +18,7 @@ export async function GET(_req: Request, ctx: Ctx) {
   const manifest = {
     name,
     short_name: name,
-    start_url: "/go",
+    start_url: "/launch",
     scope: "/",
     display: "standalone",
     background_color: view.theme.bg,

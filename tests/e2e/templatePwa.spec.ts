@@ -14,7 +14,7 @@ test("serves a per-landing manifest with the configured app", async ({ request }
   expect(res.headers()["content-type"]).toContain("application/manifest+json");
   const m = await res.json();
   expect(m.name).toBe("Boomzino App");
-  expect(m.start_url).toBe("/go");
+  expect(m.start_url).toBe("/launch");
 });
 
 test("/go redirects to the configured app link", async ({ request }) => {
@@ -30,7 +30,7 @@ test("slot landing serves its manifest with the slot app name", async ({ request
   expect(res.status()).toBe(200);
   const m = await res.json();
   expect(m.name).toBe("Book of Riches");
-  expect(m.start_url).toBe("/go");
+  expect(m.start_url).toBe("/launch");
 });
 
 test("slot /go redirects to the slot offer link", async ({ request }) => {

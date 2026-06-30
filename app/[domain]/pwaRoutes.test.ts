@@ -27,7 +27,7 @@ describe("GET /manifest", () => {
     expect(res.headers.get("content-type")).toContain("application/manifest+json");
     const m = await res.json();
     expect(m.name).toBe("Lucky App");
-    expect(m.start_url).toBe("/go");
+    expect(m.start_url).toBe("/launch");
     expect(m.icons[0].src).toBe("https://cdn.example.com/i.png");
   });
 
