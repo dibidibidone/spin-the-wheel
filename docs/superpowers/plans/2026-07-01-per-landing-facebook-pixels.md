@@ -418,7 +418,7 @@ export default async function LaunchPage({ params }: Params) {
 }
 ```
 
-- [ ] **Step 4: Point the PWA at `/launch`**
+- [ ] **Step 4: Point the PWA at `/launch` and fix the start_url assertions**
 
 In `app/[domain]/manifest/route.ts`, change `start_url: "/go",` to:
 
@@ -426,16 +426,18 @@ In `app/[domain]/manifest/route.ts`, change `start_url: "/go",` to:
     start_url: "/launch",
 ```
 
-Then grep for any test asserting the old start_url and update it:
+Three existing tests assert the old value — change each `"/go"` to `"/launch"`:
+- `app/[domain]/pwaRoutes.test.ts` — the `expect(m.start_url).toBe("/go")` in "returns the landing's app name, icon and start_url".
+- `tests/e2e/templatePwa.spec.ts` — **two** occurrences of `expect(m.start_url).toBe("/go")`.
 
-Run: `grep -rn '"/go"' app components tests --include=*.ts --include=*.tsx | grep -i start_url` — if a unit/e2e test asserts `start_url` is `/go`, change that assertion to `/launch`. (The `/go` route handler + its own redirect tests are unchanged — only the manifest's `start_url` moved.)
+(The `/go` route handler and its own redirect tests are unchanged — only the manifest's `start_url` moved.)
 
 - [ ] **Step 5: Run + commit**
 
-Run: `npx vitest run "app/[domain]/launch/LaunchRedirect.test.tsx" && npx tsc --noEmit` — Expected: PASS.
+Run: `npx vitest run "app/[domain]/launch/LaunchRedirect.test.tsx" "app/[domain]/pwaRoutes.test.ts" && npx tsc --noEmit` — Expected: PASS. (The e2e `templatePwa.spec.ts` runs under Playwright, not vitest; its assertion was updated for parity.)
 
 ```bash
-git add "app/[domain]/launch" "app/[domain]/manifest/route.ts"
+git add "app/[domain]/launch" "app/[domain]/manifest/route.ts" "app/[domain]/pwaRoutes.test.ts" tests/e2e/templatePwa.spec.ts
 git commit -m "feat(pixels): /launch interstitial fires Lead on PWA open; manifest start_url -> /launch"
 ```
 
@@ -453,16 +455,16 @@ git commit -m "feat(pixels): /launch interstitial fires Lead on PWA open; manife
 
 - [ ] **Step 1: Validation — failing test**
 
-In `lib/admin/validation.test.ts`, add:
+In `lib/admin/validation.test.ts`, add inside the `describe("parseLandingPatch", …)` block. `parseLandingPatch` returns a `{ ok: true; value } | { ok: false; error }` result — it does **not** throw and does **not** return the parsed value directly (mirror the existing `r.ok` / `r.value` tests):
 
 ```ts
 it("accepts numeric fbPixelIds and rejects non-numeric", () => {
-  expect(parseLandingPatch({ fbPixelIds: ["123456789012345"] }).fbPixelIds).toEqual(["123456789012345"]);
-  expect(() => parseLandingPatch({ fbPixelIds: ["not-a-pixel"] })).toThrow();
+  const ok = parseLandingPatch({ fbPixelIds: ["123456789012345"] });
+  expect(ok.ok).toBe(true);
+  if (ok.ok) expect(ok.value.fbPixelIds).toEqual(["123456789012345"]);
+  expect(parseLandingPatch({ fbPixelIds: ["not-a-pixel"] }).ok).toBe(false);
 });
 ```
-
-(If the test file uses `patchSchema.safeParse` instead of `parseLandingPatch`, mirror that file's existing style.)
 
 Run: `npx vitest run lib/admin/validation.test.ts` — Expected: FAIL.
 
@@ -474,7 +476,7 @@ In `lib/admin/validation.ts`, add to the `patchSchema` object (after `pwaIconUrl
     fbPixelIds: z.array(z.string().regex(/^\d{6,20}$/)),
 ```
 
-(It's inside `.partial()`, so it's optional on a patch.)
+(`patchSchema` is `.partial().strict()`, so the key is optional on a patch — but it **must** be declared here, or `.strict()` would reject any payload that includes `fbPixelIds`.)
 
 - [ ] **Step 3: EditableLanding + service**
 
@@ -484,30 +486,81 @@ In `lib/admin/types.ts`, add to `EditableLanding` (after `pwaIconUrl: string | n
   fbPixelIds: string[];
 ```
 
-In `lib/admin/landingService.ts`, in the object `getEditableLanding` returns (next to `pwaIconUrl`), add:
+In `lib/admin/landingService.ts`, in the object `getEditableLanding` returns (the local row is `l`, next to `pwaIconUrl: l.pwaIconUrl,`), add:
 
 ```ts
-    fbPixelIds: landing.fbPixelIds,
+    fbPixelIds: l.fbPixelIds,
 ```
 
-(The function `include`s the full landing, so `landing.fbPixelIds` is already fetched. The save path passes the validated patch straight to `prisma.landing.update`, so `fbPixelIds` persists with no extra change.)
+(`getEditableLanding` reads the full landing, so `l.fbPixelIds` is already fetched. The save path `updateLanding(id, patch)` passes the validated patch straight to `prisma.landing.update({ where: { id }, data: patch })`, so `fbPixelIds` persists with no extra change.)
 
 - [ ] **Step 4: SettingsTab field — failing test**
 
-In `components/admin/SettingsTab.test.tsx`, mirror the existing `pwaName` test: render with an editable landing whose `fbPixelIds: ["111111111111"]`, assert the textarea shows `111111111111`, type a two-line value `111111111111\n222222222222`, click save, and assert the saved patch includes `fbPixelIds: ["111111111111", "222222222222"]`. Use the file's existing render + mocked-save harness.
+In `components/admin/SettingsTab.test.tsx`:
 
-Run: `npx vitest run components/admin/SettingsTab.test.tsx` — Expected: FAIL.
+First, two updates the new save-key forces on the existing suite (do these or the file won't compile/pass):
+1. Add `fbPixelIds: []` to the `landing()` fixture object — it must now satisfy `EditableLanding`; put it next to `pwaIconUrl: null,`.
+2. The existing "publishes the landing…" test asserts the **exact** `patchLanding` payload via `toHaveBeenCalledWith`. The save now always includes `fbPixelIds`, so add `fbPixelIds: [],` to that asserted object (next to `pwaIconUrl: null,`).
+
+Then add the round-trip test:
+
+```tsx
+it("shows the configured pixel IDs and saves edits as an array", async () => {
+  patchLanding.mockResolvedValue({ ok: true });
+  render(<SettingsTab landing={{ ...landing(), fbPixelIds: ["111111111111"] }} />);
+  const box = screen.getByLabelText("Facebook Pixels") as HTMLTextAreaElement;
+  expect(box.value).toBe("111111111111");
+  await userEvent.clear(box);
+  await userEvent.type(box, "111111111111{enter}222222222222");
+  await userEvent.click(screen.getByRole("button", { name: "Save" }));
+  expect(patchLanding).toHaveBeenCalledWith(
+    "l1",
+    expect.objectContaining({ fbPixelIds: ["111111111111", "222222222222"] }),
+  );
+});
+```
+
+Run: `npx vitest run components/admin/SettingsTab.test.tsx` — Expected: FAIL (no "Facebook Pixels" field yet).
 
 - [ ] **Step 5: SettingsTab field — implement**
 
-In `components/admin/SettingsTab.tsx`, add a labelled `<textarea aria-label="Facebook Pixels">` near the PWA fields. Display value = `editable.fbPixelIds.join("\n")`. On change, parse to the array and update the editable state:
+The component uses per-field `useState` + an explicit `save()` payload object (there is no `editable`/`update()` helper). Make four edits to `components/admin/SettingsTab.tsx`:
+
+1. Add a module-scope parser, above the component (after the imports):
 
 ```tsx
 const parsePixels = (raw: string): string[] =>
   raw.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
 ```
 
-Bind: `onChange={(e) => update({ fbPixelIds: parsePixels(e.target.value) })}` (use whatever the tab's existing field-update helper is — mirror how `pwaName` updates). Add helper text: "One Meta pixel ID per line. Fires PageView on the page and Lead when the installed app is opened." Ensure the tab's `save()` payload already spreads the editable landing (so `fbPixelIds` is included) — mirror `pwaName`.
+2. Add state alongside the other hooks (after `const [pwaIconUrl, setPwaIconUrl] = useState<…>(landing.pwaIconUrl);`):
+
+```tsx
+  const [fbPixelIds, setFbPixelIds] = useState<string[]>(landing.fbPixelIds);
+```
+
+3. Include it in the always-sent part of the `save()` payload (the object passed to `patchLanding`, next to `pwaName, pwaIconUrl`):
+
+```tsx
+        name, slug, status, template, logoUrl, redirectUrl, pwaName, pwaIconUrl, fbPixelIds,
+```
+
+4. Render the field inside the `<fieldset className="pwa-group">`, after the App-icon block and before `</fieldset>`. The `<span>` inside the wrapping `<label>` is the textarea's accessible name (so `getByLabelText("Facebook Pixels")` resolves it); keep the hint as a **sibling** of the `<label>` so it doesn't pollute that name:
+
+```tsx
+        <label className="field">
+          <span>Facebook Pixels</span>
+          <textarea
+            value={fbPixelIds.join("\n")}
+            onChange={(e) => setFbPixelIds(parsePixels(e.target.value))}
+            rows={3}
+            placeholder="One pixel ID per line"
+          />
+        </label>
+        <small className="field-hint">
+          One Meta pixel ID per line. Fires PageView on the page and Lead when the installed app is opened.
+        </small>
+```
 
 - [ ] **Step 6: Run full suite + commit**
 
@@ -530,7 +583,7 @@ git commit -m "feat(admin): Facebook Pixels field in Settings (numeric-validated
 - §8 testing → each task's tests (`lib/fbq.test`, `MetaPixel.test`, `LaunchRedirect.test`, `tenant.test`, `validation.test`, `SettingsTab.test`). ✓
 - §9 out-of-scope (CAPI/dedup/funnel/consent) → not implemented, by design. ✓
 
-**Placeholder scan:** Task 4 Step 4 and Task 5 Steps 4–5 reference "mirror the existing harness / field-update helper" because they extend files whose exact local helper names the implementer reads in-file — but the field name (`fbPixelIds`), the parse function, the validation regex, the exact assertions, and all new-file code are given verbatim. No "TBD/handle errors". ✓
+**Placeholder scan:** Every step carries verbatim code, exact file/line targets, and concrete assertions. Task 4 Step 4 names the three `start_url` tests to flip (`pwaRoutes.test.ts` ×1, `templatePwa.spec.ts` ×2). Task 5 reflects the real component shape — per-field `useState` + a wrapping-`<label>` textarea + an explicit `save()` payload (not an `editable`/`update()` object) — and the validation test uses the real `{ ok, value }` result (`parseLandingPatch` never throws). It also calls out the two updates the new `fbPixelIds` save-key forces on the existing SettingsTab suite (fixture + the exact-payload assertion). No "TBD/handle errors". ✓
 
 **Type consistency:** `fbPixelIds: string[]` is identical across `schema` (Task 1), `LandingRow`/`LandingView`/`toLandingView` (Task 1), `MetaPixel`/`LaunchRedirect` props (Tasks 3–4), `EditableLanding`/`patchSchema` (Task 5). `ensureBaseSnippet()`/`initPixels(ids)`/`track(event, params?)` are defined in Task 2 and consumed identically in Tasks 3–4. ✓
 
