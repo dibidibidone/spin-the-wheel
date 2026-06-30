@@ -54,6 +54,7 @@ model Landing {
 
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  events             Event[]
 }
 
 model Prize {
@@ -98,4 +99,22 @@ model Admin {
   id           String @id @default(cuid())
   email        String @unique
   passwordHash String
+}
+
+enum EventType {
+  VISIT
+  INSTALL
+  OPEN
+}
+
+model Event {
+  id        String    @id @default(cuid())
+  landingId String
+  landing   Landing   @relation(fields: [landingId], references: [id], onDelete: Cascade)
+  visitorId String
+  type      EventType
+  createdAt DateTime  @default(now())
+
+  @@index([landingId, type, createdAt])
+  @@index([landingId, type, visitorId])
 }
