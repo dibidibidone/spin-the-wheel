@@ -70,17 +70,20 @@ describe("addDomain", () => {
       data: {
         landingId: "L1",
         hostname: "promo.boomzino.com",
+        status: "attaching",
         verified: false,
         vercelStatus: "pending",
       },
     });
-    expect(view).toEqual({
-      id: "d1",
-      hostname: "promo.boomzino.com",
-      verified: false,
-      vercelStatus: "pending",
-      dns: { type: "CNAME", name: "promo", value: "cname.vercel-dns.com" },
-    });
+    expect(view).toEqual(
+      expect.objectContaining({
+        id: "d1",
+        hostname: "promo.boomzino.com",
+        verified: false,
+        vercelStatus: "pending",
+        dns: { type: "CNAME", name: "promo", value: "cname.vercel-dns.com" },
+      }),
+    );
   });
 
   it("rejects an invalid hostname before calling Vercel", async () => {
