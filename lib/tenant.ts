@@ -65,6 +65,14 @@ export async function getLandingByHost(host: string): Promise<LandingView | null
   return toLandingView(landing);
 }
 
+export async function getLandingIdByHost(host: string): Promise<string | null> {
+  const domain = await prisma.domain.findUnique({
+    where: { hostname: host.toLowerCase() },
+    select: { landingId: true },
+  });
+  return domain?.landingId ?? null;
+}
+
 export async function getLandingViewById(id: string): Promise<LandingView | null> {
   const landing = await prisma.landing.findUnique({
     where: { id },
