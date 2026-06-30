@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireApiSession } from "@/lib/admin/guard";
 import { providersFromEnv } from "@/lib/providers";
-import { advanceDomain } from "@/lib/domains/service";
+import { retryDomain } from "@/lib/domains/service";
 import { domainErrorResponse } from "../../errors";
 
 export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -9,7 +9,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   if (!guard.ok) return guard.response;
   const { id } = await params;
   try {
-    const status = await advanceDomain(providersFromEnv(), id);
+    const status = await retryDomain(providersFromEnv(), id);
     return NextResponse.json({ domainId: id, status });
   } catch (err) {
     return domainErrorResponse(err);

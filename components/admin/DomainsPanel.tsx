@@ -93,6 +93,7 @@ export function DomainsPanel({ landingId, pollMs = 8000 }: { landingId: string; 
       const result = await buyDomain(landingId, name);
       setProvisionedStatuses((prev) => [...prev, { hostname: name, status: result.status }]);
       setCandidates((prev) => prev.filter((c) => c.name !== name));
+      await load();
     } catch (err) {
       setSuggestError(err instanceof Error ? err.message : "Buy failed");
     }

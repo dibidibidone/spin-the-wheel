@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import type { Prisma } from "@prisma/client";
 import type { Providers } from "@/lib/providers/types";
 import { nextStep } from "./lifecycle";
 import type { DomainStatus } from "./status";
@@ -22,8 +23,19 @@ export async function advanceDomain(providers: Providers, domainId: string): Pro
     const step = nextStep({ status, registrarOrderId: d.registrarOrderId });
     switch (step) {
       case "register": {
+        // IMPORTANT 3: double-buy guard — if the sentinel is already set, a previous register()
+        // call succeeded but the persist of registrarOrderId crashed. Mark failed for manual check.
+        if (d.statusReason === "registering") {
+          return persist(domainId, {
+            status: "failed",
+            statusReason: "register crashed before orderId was saved; check registrar and update registrarOrderId manually",
+          });
+        }
+        // Write sentinel before calling the external API — if we crash here, the next advance
+        // sees "registering" and does NOT call register() again.
+        await persist(domainId, { statusReason: "registering" });
         const r = await providers.registrar.register(d.hostname);
-        return persist(domainId, { status: "dns_pending", registrarOrderId: r.orderId, expiresAt: r.expiresAt });
+        return persist(domainId, { status: "dns_pending", registrarOrderId: r.orderId, expiresAt: r.expiresAt, statusReason: null });
       }
       case "provision_edge": {
         const zone = await providers.edge.createZone(d.hostname);
@@ -40,14 +52,15 @@ export async function advanceDomain(providers: Providers, domainId: string): Pro
         return persist(domainId, { status: "ssl_pending", verified: a.verified, vercelStatus: a.verified ? "verified" : "pending" });
       }
       case "verify": {
-        const ssl = d.edgeZoneId ? await providers.edge.ensureSsl(d.edgeZoneId) : "none";
+        // IMPORTANT 4: Phase-0 is DNS-only (gray-cloud); Vercel serves the cert.
+        // Gate go-live on Vercel origin verification only — not on Cloudflare ensureSsl.
         const att = await providers.origin.verify(d.hostname);
-        if (ssl === "active" && att.verified) {
-          const out = await persist(domainId, { status: "live", sslStatus: ssl, verified: true, vercelStatus: "verified", lastCheckedAt: new Date() });
+        if (att.verified) {
+          const out = await persist(domainId, { status: "live", verified: true, vercelStatus: "verified", lastCheckedAt: new Date() });
           await prisma.landing.update({ where: { id: d.landingId }, data: { primaryDomainId: domainId } });
           return out;
         }
-        return persist(domainId, { status: "ssl_pending", sslStatus: ssl, verified: att.verified, lastCheckedAt: new Date() });
+        return persist(domainId, { status: "ssl_pending", verified: att.verified, lastCheckedAt: new Date() });
       }
       default:
         return status; // terminal / holding — nothing to do
@@ -58,7 +71,29 @@ export async function advanceDomain(providers: Providers, domainId: string): Pro
   }
 }
 
-async function persist(id: string, data: Record<string, unknown>): Promise<DomainStatus> {
+// IMPORTANT 2: Retry a failed domain by deriving the correct resume status from persisted fields.
+export async function retryDomain(providers: Providers, domainId: string): Promise<DomainStatus> {
+  const d = await prisma.domain.findUnique({ where: { id: domainId } });
+  if (!d) throw new Error(`Domain not found: ${domainId}`);
+  if (d.status !== "failed") throw new Error(`retryDomain called on non-failed domain ${domainId}: ${d.status}`);
+
+  // Walk through lifecycle milestones (most advanced first) to find where to resume.
+  let resumeStatus: DomainStatus;
+  if (d.verified) {
+    resumeStatus = "ssl_pending";
+  } else if (d.edgeZoneId || (d.nameservers && d.nameservers.length > 0)) {
+    resumeStatus = "attaching";
+  } else if (d.registrarOrderId) {
+    resumeStatus = "dns_pending";
+  } else {
+    resumeStatus = "purchasing";
+  }
+
+  await persist(domainId, { status: resumeStatus, statusReason: null });
+  return advanceDomain(providers, domainId);
+}
+
+async function persist(id: string, data: Prisma.DomainUpdateInput): Promise<DomainStatus> {
   const row = await prisma.domain.update({ where: { id }, data });
   return row.status as DomainStatus;
 }
@@ -71,13 +106,25 @@ export async function retireDomain(providers: Providers, domainId: string): Prom
   const d = await prisma.domain.findUnique({ where: { id: domainId } });
   if (!d) return;
   await prisma.domain.update({ where: { id: domainId }, data: { status: "retiring" } });
-  if (d.edgeZoneId) await providers.edge.deleteZone(d.edgeZoneId).catch(() => {});
-  await providers.origin.detach(d.hostname).catch(() => {});
+  if (d.edgeZoneId) {
+    await providers.edge.deleteZone(d.edgeZoneId).catch((err) =>
+      console.error(`retireDomain: deleteZone failed for ${domainId}:`, err),
+    );
+  }
+  await providers.origin.detach(d.hostname).catch((err) =>
+    console.error(`retireDomain: detach failed for ${domainId}:`, err),
+  );
   await prisma.domain.update({ where: { id: domainId }, data: { status: "retired", retiredAt: new Date() } });
 }
 
 // Zero-downtime swap: the old domain keeps serving until the new one is fully live.
 export async function rotateDomain(providers: Providers, landingId: string, newHostname: string): Promise<string> {
+  // CRITICAL 1: capture the old primary BEFORE the advance loop.
+  // The verify step inside advanceDomain writes primaryDomainId = newId, so reading after the
+  // loop would always yield the new id and the guard (oldPrimaryId !== newId) would be false.
+  const landingBefore = await prisma.landing.findUnique({ where: { id: landingId } });
+  const oldPrimaryId = landingBefore?.primaryDomainId ?? null;
+
   const newId = await purchaseDomainForLanding(providers, landingId, newHostname);
   // Drive to a terminal status (live or failed). Bounded by the number of lifecycle steps.
   for (let i = 0; i < 6; i++) {
@@ -87,8 +134,7 @@ export async function rotateDomain(providers: Providers, landingId: string, newH
   const fresh = await prisma.domain.findUnique({ where: { id: newId } });
   if (fresh?.status !== "live") throw new Error(`Rotation failed: new domain ${newHostname} is ${fresh?.status}`);
 
-  const landing = await prisma.landing.findUnique({ where: { id: landingId } });
-  const oldPrimaryId = landing?.primaryDomainId ?? null;
+  // Ensure primaryDomainId is set to the new domain (verify step may have done this already).
   await prisma.landing.update({ where: { id: landingId }, data: { primaryDomainId: newId } });
   if (oldPrimaryId && oldPrimaryId !== newId) await retireDomain(providers, oldPrimaryId);
   return newId;

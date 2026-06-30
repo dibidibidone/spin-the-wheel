@@ -9,8 +9,14 @@ export async function reconcilePending(providers: Providers): Promise<{ advanced
   const rows = await prisma.domain.findMany({ where: { status: { in: ACTIVE_STATUSES } } });
   let advanced = 0;
   for (const row of rows) {
-    await advanceDomain(providers, row.id);
-    advanced += 1;
+    const prevStatus = row.status;
+    try {
+      const newStatus = await advanceDomain(providers, row.id);
+      if (newStatus !== prevStatus) advanced += 1;
+    } catch (err) {
+      // A row deleted mid-pass (or any other transient error) must not abort the whole pass.
+      console.error(`reconcilePending: failed to advance ${row.id}:`, err);
+    }
   }
   return { advanced };
 }

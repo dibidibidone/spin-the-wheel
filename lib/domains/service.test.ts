@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // In-memory prisma fake (only the calls the service makes).
-const db: { domains: any[]; landings: any[] } = { domains: [], landings: [] };
+// db.landings stores actual landing objects keyed by id so that landing.update() writes are
+// visible to the subsequent landing.findUnique() call — this mirrors real Prisma behaviour and
+// is required by CRITICAL 1: rotateDomain must read oldPrimaryId BEFORE the advance loop.
+const db: { domains: any[]; landings: Record<string, any> } = { domains: [], landings: {} };
 vi.mock("@/lib/db", () => ({
   prisma: {
     domain: {
@@ -10,13 +13,19 @@ vi.mock("@/lib/db", () => ({
       update: vi.fn(async ({ where, data }: any) => { const row = db.domains.find((d) => d.id === where.id); Object.assign(row, data); return row; }),
     },
     landing: {
-      update: vi.fn(async ({ where, data }: any) => { db.landings.push({ where, data }); return {}; }),
-      findUnique: vi.fn(async ({ where }: any) => ({ id: where.id, primaryDomainId: db.domains.find((d) => d.landingId === where.id && d.status === "live")?.id ?? null })),
+      update: vi.fn(async ({ where, data }: any) => {
+        const existing = db.landings[where.id] ?? { id: where.id };
+        Object.assign(existing, data);
+        db.landings[where.id] = existing;
+        return existing;
+      }),
+      // Returns the persisted landing object — the same one written by landing.update().
+      findUnique: vi.fn(async ({ where }: any) => db.landings[where.id] ?? null),
     },
   },
 }));
 
-import { purchaseDomainForLanding, advanceDomain, flagDomain, retireDomain, rotateDomain } from "./service";
+import { purchaseDomainForLanding, advanceDomain, flagDomain, retireDomain, rotateDomain, retryDomain } from "./service";
 import type { Providers } from "@/lib/providers/types";
 
 function fakeProviders(over: Partial<Providers> = {}): Providers {
@@ -43,7 +52,7 @@ function fakeProviders(over: Partial<Providers> = {}): Providers {
   } as Providers;
 }
 
-beforeEach(() => { db.domains = []; db.landings = []; });
+beforeEach(() => { db.domains = []; db.landings = {}; });
 
 describe("domain service", () => {
   it("purchaseDomainForLanding creates a purchasing row", async () => {
@@ -69,8 +78,11 @@ describe("domain service", () => {
     expect(await advanceDomain(p, id)).toBe("ssl_pending");      // attach_origin
     expect(p.origin.attach).toHaveBeenCalledWith("boomzino.click");
 
-    expect(await advanceDomain(p, id)).toBe("live");             // verify (ssl active + verified)
+    // IMPORTANT 4: go-live is gated on Vercel origin verify only (not ensureSsl)
+    expect(await advanceDomain(p, id)).toBe("live");             // verify (Vercel verified)
     expect(db.domains[0].status).toBe("live");
+    expect(p.origin.verify).toHaveBeenCalledWith("boomzino.click");
+    expect(p.edge.ensureSsl).not.toHaveBeenCalled();
   });
 
   it("buy-once guard: re-advancing a purchasing row that already has an order does NOT re-register", async () => {
@@ -82,8 +94,9 @@ describe("domain service", () => {
     expect(p.registrar.register).toHaveBeenCalledOnce();
   });
 
-  it("stays in ssl_pending while SSL is not yet active", async () => {
-    const p = fakeProviders({ edge: { ...fakeProviders().edge, ensureSsl: vi.fn(async () => "pending" as const) } });
+  // IMPORTANT 4: go-live now gates on Vercel origin verified, not Cloudflare ensureSsl.
+  it("stays in ssl_pending while Vercel origin is not yet verified", async () => {
+    const p = fakeProviders({ origin: { ...fakeProviders().origin, verify: vi.fn(async () => ({ verified: false })) } });
     const id = await purchaseDomainForLanding(p, "land-1", "x.com");
     await advanceDomain(p, id); await advanceDomain(p, id); await advanceDomain(p, id);
     expect(await advanceDomain(p, id)).toBe("ssl_pending");
@@ -94,6 +107,19 @@ describe("domain service", () => {
     const id = await purchaseDomainForLanding(p, "land-1", "x.com");
     expect(await advanceDomain(p, id)).toBe("failed");
     expect(db.domains[0].statusReason).toMatch(/balance too low/);
+  });
+
+  // IMPORTANT 3: double-buy crash window guard.
+  it("double-buy guard: if sentinel is set (register crashed), next advance marks failed without re-registering", async () => {
+    const p = fakeProviders();
+    const id = await purchaseDomainForLanding(p, "land-1", "x.com");
+    // Simulate: a previous advance wrote the sentinel but crashed before persisting orderId.
+    db.domains[0].statusReason = "registering";
+
+    const status = await advanceDomain(p, id);
+    expect(status).toBe("failed");
+    expect(p.registrar.register).not.toHaveBeenCalled();
+    expect(db.domains[0].statusReason).toMatch(/orderId.*manually|register.*crash/i);
   });
 });
 
@@ -116,17 +142,92 @@ describe("rotation / retire / flag", () => {
     expect(db.domains[0].retiredAt).toBeInstanceOf(Date);
   });
 
+  // CRITICAL 1: rotateDomain must capture oldPrimaryId BEFORE the advance loop.
   it("rotateDomain provisions a fresh live domain then retires the old primary", async () => {
     const p = fakeProviders();
     const oldId = await purchaseDomainForLanding(p, "land-1", "old.com");
     for (let i = 0; i < 4; i++) await advanceDomain(p, oldId); // -> live (sets primaryDomainId)
     db.domains[0].edgeZoneId = "zold";
 
+    // Sanity: verify step wrote oldId as primaryDomainId via landing.update
+    expect(db.landings["land-1"]).toMatchObject({ primaryDomainId: oldId });
+
     const newId = await rotateDomain(p, "land-1", "fresh.com");
 
     expect(db.domains.find((d) => d.id === newId)?.status).toBe("live");
+    // The old domain must be retired — this fails if rotateDomain reads oldPrimaryId after the loop
     expect(db.domains.find((d) => d.id === oldId)?.status).toBe("retired");
     // primaryDomainId repointed to the new domain
-    expect(db.landings.at(-1)).toMatchObject({ where: { id: "land-1" }, data: { primaryDomainId: newId } });
+    expect(db.landings["land-1"]).toMatchObject({ primaryDomainId: newId });
+  });
+});
+
+describe("retryDomain", () => {
+  // IMPORTANT 2: failed domains must be recoverable; retry resumes from the right step.
+  it("retries a failed domain from dns_pending when registrarOrderId is set (no re-register)", async () => {
+    const p = fakeProviders();
+    const id = await purchaseDomainForLanding(p, "land-1", "x.com");
+    await advanceDomain(p, id); // register -> dns_pending; register called once
+    // Simulate failure at edge provision step
+    db.domains[0].status = "failed";
+    db.domains[0].statusReason = "edge timeout";
+    expect(db.domains[0].registrarOrderId).toBe("ord-1");
+
+    const status = await retryDomain(p, id);
+    // Resumed at dns_pending -> provision_edge -> attaching
+    expect(status).toBe("attaching");
+    // register must NOT have been called again
+    expect(p.registrar.register).toHaveBeenCalledOnce();
+  });
+
+  it("retries from purchasing when nothing has been persisted yet", async () => {
+    const p = fakeProviders();
+    const id = await purchaseDomainForLanding(p, "land-1", "x.com");
+    db.domains[0].status = "failed";
+    db.domains[0].statusReason = "initial failure";
+    // No registrarOrderId, no edgeZoneId, not verified
+
+    const status = await retryDomain(p, id);
+    // Resumed at purchasing -> register -> dns_pending
+    expect(status).toBe("dns_pending");
+    expect(p.registrar.register).toHaveBeenCalledOnce();
+  });
+
+  it("retries from attaching when edge was provisioned but origin not attached", async () => {
+    const p = fakeProviders();
+    const id = await purchaseDomainForLanding(p, "land-1", "x.com");
+    db.domains[0].status = "failed";
+    db.domains[0].statusReason = "attach error";
+    db.domains[0].registrarOrderId = "ord-1";
+    db.domains[0].edgeZoneId = "z1";
+
+    const status = await retryDomain(p, id);
+    // Resumed at attaching -> attach_origin -> ssl_pending
+    expect(status).toBe("ssl_pending");
+    expect(p.registrar.register).not.toHaveBeenCalled();
+    expect(p.edge.createZone).not.toHaveBeenCalled();
+  });
+
+  it("retries from ssl_pending when origin was already verified", async () => {
+    const p = fakeProviders();
+    const id = await purchaseDomainForLanding(p, "land-1", "x.com");
+    db.domains[0].status = "failed";
+    db.domains[0].statusReason = "verify error";
+    db.domains[0].registrarOrderId = "ord-1";
+    db.domains[0].edgeZoneId = "z1";
+    db.domains[0].verified = true;
+
+    const status = await retryDomain(p, id);
+    // Resumed at ssl_pending -> verify -> live (origin.verify returns verified: true)
+    expect(status).toBe("live");
+    expect(p.registrar.register).not.toHaveBeenCalled();
+    expect(p.origin.attach).not.toHaveBeenCalled();
+  });
+
+  it("throws if called on a non-failed domain", async () => {
+    const p = fakeProviders();
+    const id = await purchaseDomainForLanding(p, "land-1", "x.com");
+    // status is "purchasing"
+    await expect(retryDomain(p, id)).rejects.toThrow(/non-failed/);
   });
 });

@@ -53,6 +53,22 @@ describe("namecheap registrar", () => {
     await expect(r.register("taken.com")).rejects.toThrow(/Domain taken/);
   });
 
+  it("suggest parses availability and price for each TLD candidate", async () => {
+    mockFetch(xml(
+      `<CommandResponse>` +
+      `<DomainCheckResult Domain="casino.click" Available="true" PremiumRegistrationPrice="9.88"/>` +
+      `<DomainCheckResult Domain="casino.win" Available="false" PremiumRegistrationPrice="0.0"/>` +
+      `</CommandResponse>`
+    ));
+    const r = createNamecheapRegistrar(config);
+    const candidates = await r.suggest("casino", ["click", "win"]);
+    expect(candidates).toHaveLength(2);
+    expect(candidates[0]).toMatchObject({ name: "casino.click", available: true, priceUsd: 9.88 });
+    expect(candidates[1]).toMatchObject({ name: "casino.win", available: false, priceUsd: 0 });
+    expect(calls[0].url).toContain("Command=namecheap.domains.check");
+    expect(calls[0].url).toContain("DomainList=casino.click%2Ccasino.win");
+  });
+
   it("setNameservers calls domains.dns.setCustom with the NS list", async () => {
     mockFetch(xml(`<CommandResponse><DomainDNSSetCustomResult Domain="boomzino.click" Updated="true"/></CommandResponse>`));
     const r = createNamecheapRegistrar(config);

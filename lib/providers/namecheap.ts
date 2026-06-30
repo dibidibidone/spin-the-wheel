@@ -51,11 +51,15 @@ export function createNamecheapRegistrar(config: NamecheapConfig): Registrar {
       // Namecheap has no first-class "suggest"; check `keyword.<tld>` across the requested TLDs.
       const names = tlds.map((t) => `${keyword}.${t.replace(/^\./, "")}`);
       const body = await call("namecheap.domains.check", { DomainList: names.join(",") });
-      return names.map((name) => ({
-        name,
-        available: new RegExp(`Domain="${name}"[^>]*Available="true"`, "i").test(body),
-        priceUsd: 0,
-      }));
+      return names.map((name) => {
+        const priceMatch = body.match(new RegExp(`Domain="${name}"[^>]*PremiumRegistrationPrice="([^"]*)"`, "i"));
+        const price = Number(priceMatch?.[1] ?? "0");
+        return {
+          name,
+          available: new RegExp(`Domain="${name}"[^>]*Available="true"`, "i").test(body),
+          priceUsd: Number.isFinite(price) ? price : 0,
+        };
+      });
     },
 
     async register(name): Promise<RegisterResult> {
