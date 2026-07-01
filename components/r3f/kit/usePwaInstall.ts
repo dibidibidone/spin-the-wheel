@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { beaconEvent } from "@/lib/track";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -43,7 +44,7 @@ export function usePwaInstall(): PwaInstall {
       e.preventDefault();
       deferred.current = e as BeforeInstallPromptEvent;
     };
-    const onInstalled = () => { setInstalled(true); deferred.current = null; };
+    const onInstalled = () => { setInstalled(true); deferred.current = null; beaconEvent("install"); };
     window.addEventListener("beforeinstallprompt", onBip);
     window.addEventListener("appinstalled", onInstalled);
     return () => {

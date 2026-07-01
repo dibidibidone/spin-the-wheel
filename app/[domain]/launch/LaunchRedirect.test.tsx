@@ -1,16 +1,24 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render } from "@testing-library/react";
-import { LaunchRedirect } from "./LaunchRedirect.client";
 
-declare global { interface Window { fbq?: (...a: unknown[]) => void; } }
+const beaconEvent = vi.fn();
+vi.mock("@/lib/track", () => ({ beaconEvent: (t: string) => beaconEvent(t) }));
+const track = vi.fn();
+vi.mock("@/lib/fbq", () => ({ ensureBaseSnippet: vi.fn(), initPixels: vi.fn(), track: (...a: unknown[]) => track(...a) }));
+
+import { LaunchRedirect } from "./LaunchRedirect.client";
 
 let replace: ReturnType<typeof vi.fn>;
 function setStandalone(on: boolean) {
-  window.matchMedia = ((q: string) => ({ matches: on && q.includes("standalone"), media: q, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent() { return false; }, onchange: null })) as unknown as typeof window.matchMedia;
+  window.matchMedia = ((q: string) => ({
+    matches: on && q.includes("standalone"), media: q,
+    addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {},
+    dispatchEvent() { return false; }, onchange: null,
+  })) as unknown as typeof window.matchMedia;
 }
 beforeEach(() => {
   vi.useFakeTimers();
-  window.fbq = vi.fn();
+  beaconEvent.mockReset(); track.mockReset();
   replace = vi.fn();
   Object.defineProperty(window, "location", { value: { replace }, writable: true, configurable: true });
 });
@@ -20,28 +28,39 @@ afterEach(() => {
 });
 
 describe("LaunchRedirect", () => {
-  it("standalone PWA open: fires Lead then redirects to the admin link", () => {
+  it("standalone with pixels: beacons open, fires Lead, redirects after the delay", () => {
     setStandalone(true);
     render(<LaunchRedirect pixelIds={["100000000001"]} redirectUrl="https://offer.example/app" />);
-    const calls = (window.fbq as ReturnType<typeof vi.fn>).mock.calls;
-    expect(calls).toContainEqual(["track", "Lead", undefined]);
-    expect(replace).not.toHaveBeenCalled(); // waits ~500ms
+    expect(beaconEvent).toHaveBeenCalledWith("open");
+    expect(track).toHaveBeenCalledWith("Lead");
+    expect(replace).not.toHaveBeenCalled();
     vi.advanceTimersByTime(600);
     expect(replace).toHaveBeenCalledWith("https://offer.example/app");
   });
-  it("normal browser (not standalone): redirects immediately, no Lead", () => {
+
+  it("standalone WITHOUT pixels: still beacons open, no Lead, redirects after the delay", () => {
+    setStandalone(true);
+    render(<LaunchRedirect pixelIds={[]} redirectUrl="https://offer.example/app" />);
+    expect(beaconEvent).toHaveBeenCalledWith("open");
+    expect(track).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(600);
+    expect(replace).toHaveBeenCalledWith("https://offer.example/app");
+  });
+
+  it("not standalone: redirects immediately, no open beacon, no Lead", () => {
     setStandalone(false);
     render(<LaunchRedirect pixelIds={["100000000001"]} redirectUrl="https://offer.example/app" />);
     expect(replace).toHaveBeenCalledWith("https://offer.example/app");
-    expect((window.fbq as ReturnType<typeof vi.fn>).mock.calls.some((c) => c[1] === "Lead")).toBe(false);
+    expect(beaconEvent).not.toHaveBeenCalled();
+    expect(track).not.toHaveBeenCalled();
   });
-  it("iOS standalone (navigator.standalone) fires Lead then redirects", () => {
-    setStandalone(false); // display-mode arm is false; iOS arm drives it
+
+  it("iOS standalone (navigator.standalone): beacons open + Lead, redirects after the delay", () => {
+    setStandalone(false);
     Object.defineProperty(window.navigator, "standalone", { value: true, configurable: true });
     render(<LaunchRedirect pixelIds={["100000000001"]} redirectUrl="https://offer.example/app" />);
-    const calls = (window.fbq as ReturnType<typeof vi.fn>).mock.calls;
-    expect(calls).toContainEqual(["track", "Lead", undefined]);
-    expect(replace).not.toHaveBeenCalled(); // waits ~500ms
+    expect(beaconEvent).toHaveBeenCalledWith("open");
+    expect(track).toHaveBeenCalledWith("Lead");
     vi.advanceTimersByTime(600);
     expect(replace).toHaveBeenCalledWith("https://offer.example/app");
   });
