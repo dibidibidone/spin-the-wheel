@@ -6,6 +6,7 @@ import { buildSceneConfig } from "@/lib/sceneConfig";
 import { LandingScene } from "@/components/landing/LandingScene";
 import { TemplateScene } from "./TemplateScene.client";
 import { MetaPixel } from "@/components/analytics/MetaPixel";
+import { VisitBeacon } from "@/components/analytics/VisitBeacon";
 
 type Params = { params: Promise<{ domain: string }> };
 
@@ -26,6 +27,7 @@ export default async function LandingPage({ params }: Params) {
   return (
     <>
       <MetaPixel pixelIds={view.fbPixelIds} />
+      <VisitBeacon />
       {scene}
     </>
   );

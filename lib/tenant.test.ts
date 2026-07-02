@@ -36,7 +36,7 @@ describe("toLandingView conversion fields", () => {
 const { findUnique } = vi.hoisted(() => ({ findUnique: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { domain: { findUnique } } }));
 
-import { toLandingView, getLandingByHost } from "@/lib/tenant";
+import { toLandingView, getLandingByHost, getLandingIdByHost } from "@/lib/tenant";
 
 function fakeLanding(overrides: Record<string, unknown> = {}) {
   const prizes = [
@@ -76,6 +76,13 @@ describe("toLandingView", () => {
     expect(view.winningPrizeLabel).toBe("JACKPOT");
     expect(view.metaTitle).toBe("Spin the Wheel"); // falls back to heading
   });
+});
+
+it("getLandingIdByHost returns the landingId for a known host, null otherwise", async () => {
+  findUnique.mockResolvedValueOnce({ landingId: "l9" });
+  expect(await getLandingIdByHost("Foo.com")).toBe("l9");
+  findUnique.mockResolvedValueOnce(null);
+  expect(await getLandingIdByHost("nope.com")).toBeNull();
 });
 
 describe("getLandingByHost", () => {
